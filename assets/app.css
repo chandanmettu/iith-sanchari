@@ -47,10 +47,10 @@ svg{display:block}
 
 /* ---- hero / greeting ---- */
 .hero{position:relative;margin-top:6px;border-radius:var(--r-card);overflow:hidden;background:#fef8f1;
-  min-height:172px;display:flex;align-items:flex-start;box-shadow:0 14px 30px -20px var(--sh)}
+  min-height:128px;display:flex;align-items:center;box-shadow:0 14px 30px -20px var(--sh)}
 .hero-art{position:absolute;right:0;top:0;height:100%;width:auto;max-width:74%;object-fit:cover;object-position:right center;
   -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 16%);mask-image:linear-gradient(to right,transparent 0%,#000 16%)}
-.hero-txt{position:relative;z-index:2;padding:36px 18px 20px;max-width:58%}
+.hero-txt{position:relative;z-index:2;padding:16px 18px;max-width:58%}
 .hero-txt .hi{font-size:13px;color:var(--m2);font-weight:600}
 .hero-txt .big{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:3px;color:var(--ink);line-height:1.22}
 .hero-txt .big .hl{color:var(--ox)}
