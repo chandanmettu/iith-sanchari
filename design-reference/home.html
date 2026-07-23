@@ -1,0 +1,389 @@
+<title>IITH Transit — Home (Interactive)</title>
+<style>
+  :root{ --pg:#eceaf0; --fg:#1a1620; --mut:#6b6570; }
+  @media (prefers-color-scheme:dark){ :root{ --pg:#100e14; --fg:#ece8f0; --mut:#9a94a2; } }
+  :root[data-theme="dark"]{ --pg:#100e14; --fg:#ece8f0; --mut:#9a94a2; }
+  :root[data-theme="light"]{ --pg:#eceaf0; --fg:#1a1620; --mut:#6b6570; }
+
+  /* Ivory & Oxblood */
+  .ivo{ --stage:#e7e1db; --paper:linear-gradient(180deg,#fffdf9,#f7f1e9); --paper2:#f3ece2; --ink:#2a1518; --m2:#9a857f;
+        --ox:#7a1f2b; --ox2:#66131d; --gold:#c39a44; --goldt:#a8791a; --pline:rgba(150,110,100,.22); --dash:rgba(120,60,55,.4); --sh:rgba(70,30,30,.28); --live:#1a7a4e;
+        /* radius system: cards 18 · tracks 14 · buttons 12 · inset segments 10 · capsule for badges */
+        --r-card:18px; --r-track:14px; --r-btn:12px; --r-seg:10px; }
+
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--pg);color:var(--fg);min-height:100dvh;padding:36px 16px 64px;display:flex;flex-direction:column;align-items:center;gap:22px}
+  .intro{max-width:360px;text-align:center}
+  .intro .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:0 0 8px}
+  .intro p{font-size:14px;line-height:1.5;color:var(--mut);margin:0}
+  .intro b{color:var(--fg)}
+
+  .phone{width:100%;max-width:360px;border-radius:44px;padding:11px;background:#0a0a0d;
+    box-shadow:0 36px 70px -28px rgba(30,15,20,.55),0 0 0 1px rgba(0,0,0,.05)}
+  .screen{position:relative;border-radius:33px;overflow:hidden;height:780px;font-size:13px;background:var(--stage);color:var(--ink)}
+  .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:22px;background:#0a0a0d;border-radius:0 0 15px 15px;z-index:20}
+  .stat{position:absolute;top:0;left:0;right:0;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:11px;font-weight:700;z-index:15}
+  .bodyw{position:absolute;inset:34px 0 0;display:flex;flex-direction:column}
+  .scroll{flex:1;overflow-y:auto;padding:6px 15px 16px;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{width:0}
+  svg{display:block}
+
+  .greet{padding:6px 3px 2px}
+  .greet .hi{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m2)}
+  .greet .big{font-size:23px;font-weight:800;letter-spacing:-.02em;margin-top:3px;color:var(--ink)}
+
+  /* ---- internal shuttle (unchanged, clean) ---- */
+  .card{background:var(--paper);border:1px solid var(--pline);border-radius:var(--r-card);margin-top:14px;overflow:hidden;
+    box-shadow:0 10px 24px -14px var(--sh),0 1px 0 rgba(255,255,255,.8) inset}
+  .card-h{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--pline)}
+  .card-h .t{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--m2)}
+  .tag-free{color:#fff;background:linear-gradient(180deg,#2a8a5a,#1a7a4e);padding:4px 11px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 1px 2px var(--sh)}
+  .dir{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 15px;cursor:pointer;border-top:1px solid var(--pline)}
+  .dir:first-of-type{border-top:none}
+  .dir.sel{background:var(--paper2)}
+  .dir .route{display:flex;align-items:center;gap:9px;min-width:0}
+  .dir .dot{width:9px;height:9px;border-radius:50%;background:var(--ox);flex-shrink:0;box-shadow:0 0 0 3px rgba(122,31,43,.14)}
+  .dir .rt{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.2}
+  .dir .rt small{display:block;font-size:10px;color:var(--m2);font-weight:600;margin-top:1px}
+  .dir .eta{text-align:right;flex-shrink:0}
+  .dir .eta .m{font-size:15px;font-weight:900;color:var(--ox);font-variant-numeric:tabular-nums;line-height:1}
+  .dir .eta .l{font-size:9px;color:var(--m2);font-weight:700;margin-top:2px}
+  .sched-btn{width:100%;border:none;background:none;border-top:1px solid var(--pline);padding:11px;font-size:12px;font-weight:800;color:var(--ox);
+    display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+  .sched-btn svg{width:14px;height:14px;transition:transform .25s}
+  .sched-btn.open svg{transform:rotate(180deg)}
+  .sched-panel{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--paper2)}
+  .sched-panel.open{max-height:460px}
+  .sched-inner{padding:12px 15px 15px}
+  .pills{display:flex;gap:4px;margin-bottom:12px;background:rgba(122,31,43,.06);border-radius:var(--r-track);padding:4px}
+  .pill{flex:1;text-align:center;font-size:11.5px;font-weight:800;padding:8px;border-radius:var(--r-seg);border:none;background:none;cursor:pointer;color:var(--m2)}
+  .pill.on{background:linear-gradient(180deg,var(--ox),var(--ox2));color:#fff;box-shadow:0 2px 5px -1px var(--sh)}
+  .slist{display:flex;flex-direction:column;gap:2px}
+  .srow{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px dashed var(--pline)}
+  .srow:last-child{border-bottom:none}
+  .srow .ct{font-size:13px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .srow .rel{font-size:11px;font-weight:700;color:var(--m2)}
+  .srow.next .rel{color:var(--live)}
+  .srow.next .ct{color:var(--ox)}
+
+  .sect{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--m2);margin:0 3px 9px}
+  .special-head{margin-top:22px}
+  .toggle{display:flex;background:var(--paper2);border-radius:var(--r-track);padding:4px;gap:4px}
+  .toggle button{flex:1;border:none;background:none;padding:9px;border-radius:var(--r-seg);font-size:12.5px;font-weight:800;color:var(--m2);cursor:pointer;transition:.2s}
+  .toggle button.on{background:linear-gradient(180deg,var(--ox),var(--ox2));color:#fff;box-shadow:0 2px 5px -1px var(--sh)}
+
+  /* ---- clean tear-off route cards ---- */
+  .rcards{display:flex;flex-direction:column;gap:13px;margin-top:13px}
+  .rcard{}
+  .stubcard{display:flex;background:var(--paper);border:1px solid var(--pline);border-radius:var(--r-card);overflow:hidden;position:relative;
+    box-shadow:0 10px 24px -14px var(--sh),0 1px 0 rgba(255,255,255,.8) inset}
+  .rc-main{flex:1;text-align:left;background:none;border:none;padding:14px 15px;cursor:pointer;font:inherit;color:inherit;min-width:0}
+  .rc-route{font-size:16.5px;font-weight:800;color:var(--ox);letter-spacing:-.01em;white-space:nowrap}
+  .rc-actions{display:flex;align-items:center;gap:8px;margin-top:13px}
+  .rc-live{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;letter-spacing:.04em;color:var(--live);
+    background:rgba(26,122,78,.1);border:1px solid rgba(26,122,78,.3);border-radius:var(--r-btn);padding:7px 12px 7px 11px;text-decoration:none;flex-shrink:0}
+  .rc-live .pulse{width:6px;height:6px;border-radius:50%;background:var(--live);animation:bl 1.4s infinite}
+  .rc-live svg{width:11px;height:11px}
+  .rc-next{margin-top:8px;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+  .rc-at{font-size:13px;font-weight:700;color:var(--m2)}
+  .rc-time{font-size:21px;font-weight:900;color:var(--goldt);font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}
+  .rc-rel{font-size:12.5px;font-weight:800;color:var(--m2)}
+  .rc-rel::before{content:"·";margin-right:6px;color:var(--m2);font-weight:800}
+  .rc-rel:empty{display:none}
+  .rc-expand{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.02em;color:var(--ox);
+    background:var(--paper2);border:1px solid var(--pline);border-radius:var(--r-btn);padding:7px 13px;cursor:pointer}
+  .rc-expand svg{width:12px;height:12px;transition:transform .28s}
+  .rcard.open .rc-expand svg{transform:rotate(180deg)}
+  .rc-vp{width:0;border-left:2px dashed var(--dash);position:relative;margin:14px 0;flex-shrink:0}
+  .rc-vp::before,.rc-vp::after{content:"";position:absolute;left:-8px;width:15px;height:15px;border-radius:50%;background:var(--stage)}
+  .rc-vp::before{top:-19px}.rc-vp::after{bottom:-19px}
+  .rc-stub{width:98px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:13px 8px}
+  .rc-farel{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--m2)}
+  .rc-fare{font-size:23px;font-weight:900;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}
+  .rc-buy{margin-top:7px;border:none;background:linear-gradient(180deg,var(--ox),var(--ox2));color:#fff;font-weight:800;font-size:12.5px;padding:8px 18px;border-radius:var(--r-btn);cursor:pointer;
+    box-shadow:0 3px 7px -1px rgba(122,31,43,.5),0 1px 0 rgba(255,255,255,.15) inset}
+
+  .rc-detail{max-height:0;overflow:hidden;transition:max-height .34s ease}
+  .rcard.open .rc-detail{max-height:1400px}
+  .rc-detail-in{margin-top:9px;background:var(--paper);border:1px solid var(--pline);border-radius:var(--r-card);padding:14px 15px 15px;
+    box-shadow:0 8px 20px -14px var(--sh),0 1px 0 rgba(255,255,255,.8) inset}
+  .rc-sec{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--m2);margin:4px 2px 8px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--live);margin-top:12px}
+  .live i{width:6px;height:6px;border-radius:50%;background:var(--live);display:block;animation:bl 1.4s infinite}
+  .livelink{text-decoration:none;cursor:pointer}
+  .livelink svg{margin-left:2px}
+  .note-days{font-size:10.5px;color:var(--m2);font-weight:600;margin-top:11px}
+
+  /* Miyapur stop timeline */
+  .stops{display:flex;flex-direction:column;margin-top:12px}
+  .stop{display:flex;gap:11px}
+  .stop .rail{display:flex;flex-direction:column;align-items:center}
+  .stop .rail .d{width:9px;height:9px;border-radius:50%;background:var(--ox);margin-top:3px;flex-shrink:0}
+  .stop .rail .ln{width:2px;flex:1;background:var(--pline);min-height:14px}
+  .stop:last-child .rail .ln{display:none}
+  .stop .si{flex:1;display:flex;justify-content:space-between;gap:8px;padding-bottom:11px}
+  .stop .nm2{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.2}
+  .stop .lm{font-size:10px;color:var(--m2);margin-top:2px}
+  .stop .tm{font-size:11.5px;font-weight:800;color:var(--ox);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .retnote{background:var(--paper);border:1px solid var(--pline);border-radius:10px;padding:11px 12px;font-size:11.5px;color:var(--ink);line-height:1.45;margin-top:6px}
+  .retnote b{color:var(--ox)}
+  .terms{margin-top:13px;border-top:1px dashed var(--pline);padding-top:11px}
+  .terms .th{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--m2);margin-bottom:6px}
+  .terms ul{margin:0;padding-left:15px;display:flex;flex-direction:column;gap:4px}
+  .terms li{font-size:10.5px;color:var(--m2);line-height:1.4}
+
+  .nav{height:60px;display:flex;justify-content:space-around;align-items:center;flex-shrink:0;background:linear-gradient(180deg,#f2ece2,#e6ded3);border-top:1px solid var(--pline)}
+  .nav svg{width:22px;height:22px}
+  .navi{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;font-weight:600;color:#a99a90}
+  .navi.on{color:var(--ox)}
+
+  @keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+  @media (prefers-reduced-motion:reduce){.live i{animation:none}}
+</style>
+
+<div class="wrap ivo">
+  <div class="intro">
+    <p class="eyebrow">IITH Transit · Interactive home</p>
+    <p>Calm by default. <b>Tap a route card</b> (or the Schedule chip) for full timings; tap <b>● Live</b> to track the bus. Flip <b>From / To IITH</b> up top. Countdowns are live.</p>
+  </div>
+
+  <div class="phone"><div class="screen">
+    <div class="notch"></div>
+    <div class="stat"><span id="clk">9:41</span><span>▲ 5G ▮▮▮</span></div>
+    <div class="bodyw">
+      <div class="scroll">
+        <div class="greet"><div class="hi" id="daypart">Good morning</div><div class="big">Where to today?</div></div>
+
+        <!-- INTERNAL SHUTTLE -->
+        <div class="card">
+          <div class="card-h"><span class="t">Internal Shuttle</span><span class="tag-free">Free</span></div>
+          <div class="dir sel" data-dir="ab">
+            <div class="route"><span class="dot"></span><span class="rt">Main Gate → Hostel Circle</span></div>
+            <div class="eta"><div class="m" id="eta-ab">–</div><div class="l">arriving</div></div>
+          </div>
+          <div class="dir" data-dir="ba">
+            <div class="route"><span class="dot"></span><span class="rt">Hostel Circle → Main Gate</span></div>
+            <div class="eta"><div class="m" id="eta-ba">–</div><div class="l">arriving</div></div>
+          </div>
+          <button class="sched-btn" id="schedBtn">See full schedule
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="sched-panel" id="schedPanel"><div class="sched-inner">
+            <div class="pills">
+              <div class="pill on" data-sdir="ab">→ Hostel Circle</div>
+              <div class="pill" data-sdir="ba">→ Main Gate</div>
+            </div>
+            <div class="slist" id="slist"></div>
+          </div></div>
+        </div>
+
+        <!-- SPECIAL BUSES -->
+        <div class="special-head">
+          <div class="sect">Special buses</div>
+          <div class="toggle" id="specialToggle">
+            <button class="on" data-tdir="from">From IITH</button>
+            <button data-tdir="to">To IITH</button>
+          </div>
+        </div>
+
+        <div class="rcards">
+          <!-- PATANCHERU -->
+          <div class="rcard" data-bus="patan" data-live="https://tinyurl.com/4s6f94z8">
+            <div class="stubcard">
+              <div class="rc-main" data-expander role="button" tabindex="0">
+                <div class="rc-route" data-route>IITH → Patancheru</div>
+                <div class="rc-next"><span class="rc-at">at</span><span class="rc-time" data-time>–</span><span class="rc-rel" data-rel></span></div>
+                <div class="rc-actions">
+                  <span class="rc-expand">Schedule<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></span>
+                  <a class="rc-live" data-livelink target="_blank" rel="noopener noreferrer" aria-label="View live bus location"><span class="pulse"></span>Live<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></a>
+                </div>
+              </div>
+              <div class="rc-vp"></div>
+              <div class="rc-stub"><div class="rc-farel">Fare</div><div class="rc-fare">₹30</div><button class="rc-buy">Buy</button></div>
+            </div>
+            <div class="rc-detail"><div class="rc-detail-in">
+              <div class="rc-sec">Upcoming departures</div>
+              <div class="slist" data-upcoming></div>
+              <div data-extra></div>
+            </div></div>
+          </div>
+
+          <!-- MIYAPUR -->
+          <div class="rcard" data-bus="miya" data-weekdays="1" data-live="https://app.fleetx.io/live/share/v2/eJwFwcERADAEBMCKzJwgKMfjlJHas6uBuC9S4TSVga341EgfK2HX%2BnCTjg%24drArI">
+            <div class="stubcard">
+              <div class="rc-main" data-expander role="button" tabindex="0">
+                <div class="rc-route" data-route>IITH → Miyapur</div>
+                <div class="rc-next"><span class="rc-at">at</span><span class="rc-time" data-time>–</span><span class="rc-rel" data-rel></span></div>
+                <div class="rc-actions">
+                  <span class="rc-expand">Schedule<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></span>
+                  <a class="rc-live" data-livelink target="_blank" rel="noopener noreferrer" aria-label="View live bus location"><span class="pulse"></span>Live<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></a>
+                </div>
+              </div>
+              <div class="rc-vp"></div>
+              <div class="rc-stub"><div class="rc-farel">Fare</div><div class="rc-fare">₹100</div><button class="rc-buy">Buy</button></div>
+            </div>
+            <div class="rc-detail"><div class="rc-detail-in">
+              <div class="rc-sec">Upcoming departures</div>
+              <div class="slist" data-upcoming></div>
+              <div data-extra></div>
+            </div></div>
+          </div>
+        </div>
+
+      </div>
+      <div class="nav">
+        <div class="navi on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</div>
+        <div class="navi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M6 17V9l2-4h8l2 4v8M8 21v-2M16 21v-2"/></svg>Cabs</div>
+        <div class="navi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 11h18"/></svg>Tickets</div>
+        <div class="navi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>Me</div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<script>
+(function(){
+  const now = () => new Date();
+  const startOfDay = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
+
+  // interval shuttle
+  function intervalTimes(phase, interval, count){
+    const s=startOfDay(), n=now();
+    const nowMins=(n - s)/60000;
+    let k=Math.floor((nowMins - phase)/interval)+1;
+    const out=[];
+    for(let i=0;i<count;i++) out.push(new Date(s.getTime() + (phase+(k+i)*interval)*60000));
+    return out;
+  }
+  const SHUTTLE = { ab:{phase:0}, ba:{phase:8} };
+
+  // fixed schedules
+  const PATAN = { from:['09:00','11:00','17:00','19:00','21:00','23:00'],
+                  to:  ['08:00','10:00','16:00','18:00','20:00','22:00'] };
+  const MIYA  = { from:['17:45'], to:['07:40'] };
+  const MIYA_STOPS = [
+    ['Miyapur Metro','Pillar No. 623','7:40 AM'],['Madinaguda','Opp. Green Bawarchi Hotel','7:54 AM'],
+    ['Chanda Nagar','Opp. Swagath Restaurant','7:59 AM'],['BHEL Circle','BHEL Main Gate','8:05 AM'],
+    ['Ashok Nagar','Near Indian Oil petrol bunk','8:07 AM'],['Beeramguda','Opp. Vijetha Super Market','8:10 AM'],
+    ['D Mart','Near D Mart','8:11 AM'],['RC Puram','Near Ambedkar statue bus stop','8:13 AM'],
+    ['Patancheru','Near bus stop','8:24 AM'],['Muthangi','Bus stop','8:30 AM'],['Isnapur','Isnapur X Road bus stop','8:35 AM']
+  ];
+  const MIYA_TERMS = ['Carry your Institute ID — checked by driver / security','Report at the boarding point 10 min before departure','Flat ₹100 per one-way, any stop · non-refundable'];
+  const BUS = { patan:{data:PATAN,name:'Patancheru',weekdays:false}, miya:{data:MIYA,name:'Miyapur',weekdays:true} };
+
+  function parseHM(str, off){ const [h,m]=str.split(':').map(Number); const d=startOfDay(); d.setDate(d.getDate()+(off||0)); d.setHours(h,m,0,0); return d; }
+  function nextFixed(list, count, weekdaysOnly){
+    const n=now(); const out=[];
+    for(let off=0; off<9 && out.length<count; off++){
+      const probe=startOfDay(); probe.setDate(probe.getDate()+off);
+      const dow=probe.getDay(); if(weekdaysOnly && (dow===0||dow===6)) continue;
+      for(const s of list){ const d=parseHM(s,off); if(d>n){ out.push(d); if(out.length>=count) break; } }
+    }
+    return out;
+  }
+  const minsUntil = d => Math.round((d - now())/60000);
+  const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  function fmtClock(d){ let h=d.getHours(),m=d.getMinutes(); const ap=h<12?'AM':'PM'; h=h%12||12; return h+':'+String(m).padStart(2,'0')+' '+ap; }
+  function fmtWhen(d){ const n=now(); if(d.toDateString()===n.toDateString()) return fmtClock(d);
+    const tm=new Date(n); tm.setDate(n.getDate()+1); if(d.toDateString()===tm.toDateString()) return 'Tom '+fmtClock(d);
+    return DOW[d.getDay()]+' '+fmtClock(d); }
+  function fmtRel(mins){ if(mins<=0) return 'now'; if(mins<60) return '~'+mins+' min'; const h=Math.floor(mins/60), mm=mins%60; return '~'+h+' hr'+(mm?' '+mm+' min':''); }
+  const sameDay = d => d.toDateString()===now().toDateString();
+
+  let schedDir='ab';
+  let specialDir='from';
+
+  function extraHTML(bus, dir){
+    if(bus!=='miya') return '';
+    let html='';
+    if(dir==='to'){
+      html += '<div class="rc-sec" style="margin-top:15px">Stops · Miyapur → IITH</div><div class="stops">'+
+        MIYA_STOPS.map(s=>`<div class="stop"><div class="rail"><span class="d"></span><span class="ln"></span></div><div class="si"><div><div class="nm2">${s[0]}</div><div class="lm">${s[1]}</div></div><div class="tm">${s[2]}</div></div></div>`).join('')+'</div>';
+    } else {
+      html += '<div class="rc-sec" style="margin-top:15px">Return · IITH → Miyapur</div><div class="retnote">Departs <b>5:45 PM</b> from <b>C-Block back-side parking</b>, through all major stops inside the Institute, then back to Miyapur.</div>';
+    }
+    html += '<div class="note-days">Runs Mon–Fri only · not on institute holidays.</div>';
+    html += '<div class="terms"><div class="th">Good to know</div><ul>'+MIYA_TERMS.map(t=>'<li>'+t+'</li>').join('')+'</ul></div>';
+    return html;
+  }
+
+  function render(){
+    document.getElementById('clk').textContent = fmtClock(now()).replace(/ (AM|PM)/,'');
+    const h=now().getHours();
+    document.getElementById('daypart').textContent = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+
+    // shuttle
+    ['ab','ba'].forEach(dir=>{
+      const t=intervalTimes(SHUTTLE[dir].phase,15,1)[0]; const mins=minsUntil(t);
+      document.getElementById('eta-'+dir).innerHTML = mins<=0?'now':(mins+"<span style='font-size:10px;font-weight:800'> min</span>");
+    });
+    const list=intervalTimes(SHUTTLE[schedDir].phase,15,6);
+    document.getElementById('slist').innerHTML = list.map((d,i)=>{
+      const mins=minsUntil(d);
+      return `<div class="srow ${i===0?'next':''}"><span class="ct">${fmtClock(d)}</span><span class="rel">${i===0?'next · ':''}${fmtRel(mins)}</span></div>`;
+    }).join('');
+
+    // special route cards
+    document.querySelectorAll('.rcard').forEach(card=>{
+      const bus=card.dataset.bus, cfg=BUS[bus], dir=specialDir;
+      card.querySelector('[data-route]').textContent = dir==='from' ? ('IITH → '+cfg.name) : (cfg.name+' → IITH');
+      const up=nextFixed(cfg.data[dir], 6, cfg.weekdays);
+      const first=up[0];
+      const tEl=card.querySelector('[data-time]'), rEl=card.querySelector('[data-rel]');
+      if(first){ const mins=minsUntil(first); tEl.textContent=fmtWhen(first); rEl.textContent = sameDay(first) ? fmtRel(mins) : ''; }
+      // upcoming list
+      card.querySelector('[data-upcoming]').innerHTML = up.map((d,i)=>{
+        const mins=minsUntil(d);
+        let rel = sameDay(d) ? fmtRel(mins) : '';
+        if(i===0) rel = rel ? 'next · '+rel : 'next';
+        return `<div class="srow ${i===0?'next':''}"><span class="ct">${fmtWhen(d)}</span><span class="rel">${rel}</span></div>`;
+      }).join('');
+      // live link href
+      card.querySelector('[data-livelink]').setAttribute('href', card.dataset.live);
+      // extra (miya)
+      card.querySelector('[data-extra]').innerHTML = extraHTML(bus, dir);
+    });
+  }
+
+  // shuttle interactions
+  document.querySelectorAll('.dir').forEach(row=>{
+    row.addEventListener('click',()=>{
+      document.querySelectorAll('.dir').forEach(r=>r.classList.remove('sel'));
+      row.classList.add('sel'); schedDir=row.dataset.dir;
+      document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('on',p.dataset.sdir===schedDir));
+      render();
+    });
+  });
+  const sb=document.getElementById('schedBtn'), sp=document.getElementById('schedPanel');
+  sb.addEventListener('click',()=>{ sb.classList.toggle('open'); sp.classList.toggle('open'); });
+  document.querySelectorAll('.pill').forEach(p=>{
+    p.addEventListener('click',()=>{
+      document.querySelectorAll('.pill').forEach(x=>x.classList.remove('on')); p.classList.add('on'); schedDir=p.dataset.sdir;
+      document.querySelectorAll('.dir').forEach(r=>r.classList.toggle('sel',r.dataset.dir===schedDir)); render();
+    });
+  });
+
+  // route card expand
+  document.querySelectorAll('.rcard [data-expander]').forEach(el=>{
+    el.addEventListener('click',()=> el.closest('.rcard').classList.toggle('open'));
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.closest('.rcard').classList.toggle('open'); }});
+  });
+  // Live pill opens the map directly (don't toggle the card)
+  document.querySelectorAll('.rc-live').forEach(a=> a.addEventListener('click',e=> e.stopPropagation()));
+  // buy (demo)
+  document.querySelectorAll('.rc-buy').forEach(b=> b.addEventListener('click',e=> e.stopPropagation()));
+
+  // direction toggle
+  document.querySelectorAll('#specialToggle button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#specialToggle button').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on'); specialDir=btn.dataset.tdir; render();
+    });
+  });
+
+  render();
+  setInterval(render, 15000);
+})();
+</script>
