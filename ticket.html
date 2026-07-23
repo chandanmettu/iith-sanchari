@@ -14,7 +14,7 @@
   .tk-top a svg{width:16px;height:16px}
   .tk-top .ttl{font-size:16px;font-weight:800;letter-spacing:-.01em}
 
-  .ticket{background:var(--paper);border:1px solid var(--pline);border-radius:22px;overflow:hidden;
+  .ticket{background:var(--paper);border:1px solid var(--pline);border-radius:22px;overflow:hidden;position:relative;
     box-shadow:0 20px 44px -22px var(--sh)}
   .tk-band{background:var(--grad-ox);color:#fff;padding:18px 20px 17px;position:relative}
   .tk-band::before{content:"";position:absolute;inset:0;pointer-events:none;
@@ -24,11 +24,17 @@
   .tk-route{font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.25}
   .tk-bp{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.85;text-align:right;line-height:1.4;white-space:nowrap}
 
+  .tk-stamp{position:absolute;top:6px;right:10px;width:62px;height:62px;transform:rotate(-12deg);
+    background:rgba(255,255,255,.95);border-radius:50%;color:var(--ox);z-index:3;
+    box-shadow:0 8px 16px -6px rgba(0,0,0,.4)}
+  .tk-stamp svg{width:100%;height:100%;display:block}
+
   .tk-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;padding:18px 20px 4px}
   .tk-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--m2)}
   .tk-val{font-size:14px;font-weight:700;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums}
+  .tk-star{color:var(--goldt);font-weight:900}
 
-  .tk-qrwrap{display:flex;flex-direction:column;align-items:center;padding:18px 20px 6px}
+  .tk-qrwrap{display:flex;flex-direction:column;align-items:center;padding:18px 20px 6px;position:relative}
   .tk-qr{width:min(200px,60vw);aspect-ratio:1;background:#fff;border-radius:16px;padding:12px;
     box-shadow:0 2px 8px var(--sh),0 0 0 1px var(--pline);display:flex;align-items:center;justify-content:center}
   .tk-qr svg{width:100%;height:100%;display:block}
@@ -100,21 +106,33 @@
       '<div class="tk-meta">' +
         '<div><div class="tk-lbl">Date</div><div class="tk-val"></div></div>' +
         '<div><div class="tk-lbl">Departs</div><div class="tk-val"></div></div>' +
+        '<div><div class="tk-lbl">Journey</div><div class="tk-val"></div></div>' +
+        '<div><div class="tk-lbl">Est. arrival</div><div class="tk-val"></div></div>' +
         '<div><div class="tk-lbl">Contact</div><div class="tk-val"></div></div>' +
         '<div><div class="tk-lbl">Fare</div><div class="tk-val"></div></div>' +
       '</div>' +
-      '<div class="tk-qrwrap"><div class="tk-qr" id="tk-qr-holder"></div><div class="tk-hint">Show this to the driver to board</div></div>' +
+      '<div class="tk-qrwrap">' +
+        '<div class="tk-stamp"><svg viewBox="0 0 100 100">' +
+          '<circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="3"/>' +
+          '<circle cx="50" cy="50" r="37" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.5 3"/>' +
+          '<path d="M30 50l13 13 27-28" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<text x="50" y="76" text-anchor="middle" font-size="10.5" font-weight="800" letter-spacing="1" fill="currentColor">VERIFIED</text>' +
+        '</svg></div>' +
+        '<div class="tk-qr" id="tk-qr-holder"></div><div class="tk-hint">Show this to the driver to board</div>' +
+      '</div>' +
       '<div class="tk-perf"></div>' +
       '<div class="tk-stub"><span class="tk-serial"></span><span class="tk-valid"><i></i>Valid</span></div>' +
     '</div>' +
-    '<div class="tk-note">Single-use verification isn’t wired up yet — this ticket is cryptographically signed and genuine, but the driver-scan check-in flow is coming in a later phase.</div>';
+    '<div class="tk-note"><span class="tk-star">*</span> Estimated arrival, based on typical journey time — actual time may vary with traffic and campus entry. Single-use check-in by drivers isn’t wired up yet; this ticket is cryptographically signed and genuine, but that verification loop is coming in a later phase.</div>';
 
   el.querySelector('.tk-route').textContent = ticket.route_display || ticket.route_name || 'Route';
   const vals = el.querySelectorAll('.tk-val');
   vals[0].textContent = fmtDate(ticket.issued_at);
   vals[1].textContent = ticket.departure_display || '—';
-  vals[2].textContent = ticket.contact || '—';
-  vals[3].textContent = '₹' + ticket.fare + ' · Paid';
+  vals[2].textContent = ticket.journey_display || '—';
+  vals[3].textContent = (ticket.arrival_display || '—') + (ticket.arrival_display ? ' *' : '');
+  vals[4].textContent = ticket.contact || '—';
+  vals[5].textContent = '₹' + ticket.fare + ' · Paid';
   el.querySelector('.tk-serial').textContent = serial;
 
   const qr = qrcode(0, 'M');

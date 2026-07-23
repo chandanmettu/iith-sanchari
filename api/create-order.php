@@ -19,6 +19,8 @@ if ($amountPaise < 100) {
 $direction = substr((string)($input['direction'] ?? ''), 0, 10);
 $routeDisplay = substr((string)($input['route_display'] ?? ''), 0, 60);
 $departureDisplay = substr((string)($input['departure_display'] ?? ''), 0, 40);
+$arrivalDisplay = substr((string)($input['arrival_display'] ?? ''), 0, 40);
+$journeyDisplay = substr((string)($input['journey_display'] ?? ''), 0, 20);
 
 [$status, $order] = rzp_curl('POST', 'orders', [
     'amount'   => $amountPaise,
@@ -27,6 +29,7 @@ $departureDisplay = substr((string)($input['departure_display'] ?? ''), 0, 40);
     'notes'    => [
         'route' => $route, 'route_name' => $fares[$route]['name'],
         'direction' => $direction, 'route_display' => $routeDisplay, 'departure_display' => $departureDisplay,
+        'arrival_display' => $arrivalDisplay, 'journey_display' => $journeyDisplay,
     ],
 ]);
 

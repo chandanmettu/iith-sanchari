@@ -26,8 +26,8 @@
   ];
   const MIYA_TERMS = ['Carry your Institute ID — checked by driver / security','Report at the boarding point 10 min before departure','Flat ₹100 per one-way, any stop · non-refundable'];
   const BUS = {
-    patan:{data:PATAN,name:'Patancheru',weekdays:false,live:'https://tinyurl.com/4s6f94z8',fareFrom:30,fareTo:30},
-    miya:{data:MIYA,name:'Miyapur',weekdays:true,live:'https://app.fleetx.io/live/share/v2/eJwFwcERADAEBMCKzJwgKMfjlJHas6uBuC9S4TSVga341EgfK2HX%2BnCTjg%24drArI',fareFrom:100,fareTo:100}
+    patan:{data:PATAN,name:'Patancheru',weekdays:false,live:'https://tinyurl.com/4s6f94z8',fareFrom:30,fareTo:30,journeyMins:60},
+    miya:{data:MIYA,name:'Miyapur',weekdays:true,live:'https://app.fleetx.io/live/share/v2/eJwFwcERADAEBMCKzJwgKMfjlJHas6uBuC9S4TSVga341EgfK2HX%2BnCTjg%24drArI',fareFrom:100,fareTo:100,journeyMins:100}
   };
 
   function parseHM(str, off){ const [h,m]=str.split(':').map(Number); const d=startOfDay(); d.setDate(d.getDate()+(off||0)); d.setHours(h,m,0,0); return d; }
@@ -49,6 +49,7 @@
   function fmtWhenShort(d){ const n=now(); if(d.toDateString()===n.toDateString()) return fmtClock(d);
     const tm=new Date(n); tm.setDate(n.getDate()+1); if(d.toDateString()===tm.toDateString()) return 'Tom '+fmtClock(d);
     return DOW[d.getDay()]+' '+fmtClock(d); }
+  function fmtDuration(mins){ if(mins<60) return mins+' min'; const h=Math.floor(mins/60), m=mins%60; return h+' hr'+(m?' '+m+' min':''); }
   function fmtRel(mins){ if(mins<=0) return 'now'; if(mins<60) return '~'+mins+' min'; const h=Math.floor(mins/60), mm=mins%60; return '~'+h+' hr'+(mm?' '+mm+' min':''); }
   const sameDay = d => d.toDateString()===now().toDateString();
 
@@ -96,8 +97,8 @@
       const up=nextFixed(cfg.data[dir], 6, cfg.weekdays);
       const first=up[0];
       const tEl=card.querySelector('[data-time]'), rEl=card.querySelector('[data-rel]');
-      if(first){ const mins=minsUntil(first); tEl.textContent=fmtWhenShort(first); rEl.textContent = sameDay(first) ? fmtRel(mins) : ''; }
-      else { tEl.textContent='—'; rEl.textContent=''; }
+      if(first){ const mins=minsUntil(first); tEl.textContent=fmtWhenShort(first); rEl.textContent = sameDay(first) ? fmtRel(mins) : ''; card.dataset.nextDeparture=first.getTime(); }
+      else { tEl.textContent='—'; rEl.textContent=''; delete card.dataset.nextDeparture; }
       card.querySelector('[data-upcoming]').innerHTML = up.map((d,i)=>{
         const mins=minsUntil(d);
         let rel = sameDay(d) ? fmtRel(mins) : '';
@@ -114,16 +115,22 @@
   async function startCheckout(buyBtn){
     const card = buyBtn.closest('.rcard');
     const route = card.dataset.bus;
+    const cfg = BUS[route];
     const routeDisplay = card.querySelector('[data-route]').textContent;
-    const timeText = card.querySelector('[data-time]').textContent;
-    const relText = card.querySelector('[data-rel]').textContent;
-    const departureDisplay = relText ? timeText + ' · ' + relText : timeText;
+    const departureDisplay = card.querySelector('[data-time]').textContent;
+    let arrivalDisplay = '';
+    if(card.dataset.nextDeparture){
+      const depTs = Number(card.dataset.nextDeparture);
+      const arrival = new Date(depTs + cfg.journeyMins*60000);
+      arrivalDisplay = fmtWhenShort(arrival);
+    }
+    const journeyDisplay = fmtDuration(cfg.journeyMins);
     const orig = buyBtn.textContent;
     buyBtn.disabled = true; buyBtn.textContent = '…';
     try {
       const orderRes = await fetch('/api/create-order.php', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({route, direction: specialDir, route_display: routeDisplay, departure_display: departureDisplay})
+        body: JSON.stringify({route, direction: specialDir, route_display: routeDisplay, departure_display: departureDisplay, arrival_display: arrivalDisplay, journey_display: journeyDisplay})
       });
       const order = await orderRes.json();
       if(!orderRes.ok) throw new Error(order.error || 'Could not start payment');
