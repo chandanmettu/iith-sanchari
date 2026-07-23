@@ -2,7 +2,7 @@
   const now = () => new Date();
   const startOfDay = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
 
-  // interval shuttle — placeholder 15-min cadence, awaiting real transport-office timings (see BUILD_SPEC §10)
+  // interval shuttle — placeholder 15-min cadence, awaiting real transport-office timings (see docs/BUILD_SPEC.md §10)
   function intervalTimes(phase, interval, count){
     const s=startOfDay(), n=now();
     const nowMins=(n - s)/60000;
@@ -13,7 +13,7 @@
   }
   const SHUTTLE = { ab:{phase:0}, ba:{phase:8} };
 
-  // fixed schedules — real data (BUILD_SPEC §3)
+  // fixed schedules — real data (docs/BUILD_SPEC.md §3)
   const PATAN = { from:['09:00','11:00','17:00','19:00','21:00','23:00'],
                   to:  ['08:00','10:00','16:00','18:00','20:00','22:00'] };
   const MIYA  = { from:['17:45'], to:['07:40'] };
