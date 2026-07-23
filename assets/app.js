@@ -112,13 +112,18 @@
   }
 
   async function startCheckout(buyBtn){
-    const route = buyBtn.closest('.rcard').dataset.bus;
+    const card = buyBtn.closest('.rcard');
+    const route = card.dataset.bus;
+    const routeDisplay = card.querySelector('[data-route]').textContent;
+    const timeText = card.querySelector('[data-time]').textContent;
+    const relText = card.querySelector('[data-rel]').textContent;
+    const departureDisplay = relText ? timeText + ' · ' + relText : timeText;
     const orig = buyBtn.textContent;
     buyBtn.disabled = true; buyBtn.textContent = '…';
     try {
       const orderRes = await fetch('/api/create-order.php', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({route})
+        body: JSON.stringify({route, direction: specialDir, route_display: routeDisplay, departure_display: departureDisplay})
       });
       const order = await orderRes.json();
       if(!orderRes.ok) throw new Error(order.error || 'Could not start payment');
@@ -138,9 +143,13 @@
               })
             });
             const vData = await vRes.json();
-            alert(vData.verified
-              ? 'Payment successful! Ticket issuance is coming next — payment ID '+vData.payment_id+'.'
-              : 'Payment could not be verified. If money was deducted, contact support.');
+            if(vData.verified && vData.token){
+              window.location.href = 'ticket.html?t=' + encodeURIComponent(vData.token);
+            } else if(vData.verified){
+              alert('Payment succeeded (ID '+vData.payment_id+') but the ticket couldn’t be generated. Contact support.');
+            } else {
+              alert('Payment could not be verified. If money was deducted, contact support.');
+            }
           } catch(err){
             alert('Payment went through but verification couldn’t reach the server. Contact support with payment ID '+resp.razorpay_payment_id+'.');
           }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your Ticket — IITH Sanchari</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/app.css?v=5">
+<style>
+  .tk-wrap{max-width:420px;margin:0 auto;padding:0 16px 40px}
+  .tk-top{display:flex;align-items:center;gap:12px;padding:16px 2px 10px}
+  .tk-top a{width:34px;height:34px;border-radius:50%;background:var(--paper);border:1px solid var(--pline);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);flex-shrink:0;box-shadow:0 6px 14px -8px var(--sh)}
+  .tk-top a svg{width:16px;height:16px}
+  .tk-top .ttl{font-size:16px;font-weight:800;letter-spacing:-.01em}
+
+  .ticket{background:var(--paper);border:1px solid var(--pline);border-radius:22px;overflow:hidden;
+    box-shadow:0 20px 44px -22px var(--sh)}
+  .tk-band{background:var(--grad-ox);color:#fff;padding:18px 20px 17px;position:relative}
+  .tk-band::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(120% 90% at 10% -15%,rgba(255,255,255,.35),transparent 55%)}
+  .tk-band-in{position:relative}
+  .tk-band .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .tk-route{font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.25}
+  .tk-bp{font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.85;text-align:right;line-height:1.4;white-space:nowrap}
+
+  .tk-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;padding:18px 20px 4px}
+  .tk-lbl{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--m2)}
+  .tk-val{font-size:14px;font-weight:700;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums}
+
+  .tk-qrwrap{display:flex;flex-direction:column;align-items:center;padding:18px 20px 6px}
+  .tk-qr{width:min(200px,60vw);aspect-ratio:1;background:#fff;border-radius:16px;padding:12px;
+    box-shadow:0 2px 8px var(--sh),0 0 0 1px var(--pline);display:flex;align-items:center;justify-content:center}
+  .tk-qr svg{width:100%;height:100%;display:block}
+  .tk-hint{font-size:11px;font-weight:700;color:var(--m2);margin-top:11px;letter-spacing:.02em}
+
+  .tk-perf{border-top:2px dashed var(--pline);position:relative;margin:14px 16px 0}
+  .tk-perf::before,.tk-perf::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:var(--stage)}
+  .tk-perf::before{left:-25px}.tk-perf::after{right:-25px}
+  .tk-stub{display:flex;justify-content:space-between;align-items:center;padding:13px 20px 18px}
+  .tk-serial{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.08em;color:var(--m2)}
+  .tk-valid{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--live)}
+  .tk-valid i{width:7px;height:7px;border-radius:50%;background:var(--live);display:block;box-shadow:0 0 0 3px rgba(31,138,76,.18)}
+
+  .tk-note{margin-top:16px;background:var(--paper2);border-radius:14px;padding:13px 15px;font-size:11.5px;line-height:1.55;color:var(--m2);text-align:center}
+  .tk-err{text-align:center;padding:60px 20px;color:var(--m2)}
+  .tk-err h2{color:var(--ink);font-size:17px;margin:10px 0 6px}
+</style>
+</head>
+<body>
+<div class="tk-wrap">
+  <div class="tk-top">
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></a>
+    <div class="ttl">Your ticket</div>
+  </div>
+
+  <div id="tk-content"></div>
+</div>
+
+<script src="assets/qrcode.js"></script>
+<script>
+(function(){
+  function b64urlDecode(s){
+    s = s.replace(/-/g,'+').replace(/_/g,'/');
+    while (s.length % 4) s += '=';
+    return decodeURIComponent(escape(atob(s)));
+  }
+  function fmtDate(ts){
+    const d = new Date(ts*1000);
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('t');
+  const el = document.getElementById('tk-content');
+
+  if(!token || token.indexOf('.') === -1){
+    el.innerHTML = '<div class="tk-err"><h2>No ticket found</h2><p>This link doesn\'t contain a valid ticket. Go back and buy a ticket first.</p></div>';
+    return;
+  }
+
+  let ticket;
+  try {
+    const payloadB64 = token.split('.')[0];
+    ticket = JSON.parse(b64urlDecode(payloadB64));
+  } catch(e){
+    el.innerHTML = '<div class="tk-err"><h2>Couldn\'t read this ticket</h2><p>The link looks corrupted. Try buying again.</p></div>';
+    return;
+  }
+
+  const serial = (ticket.payment_id || '').replace('pay_','').toUpperCase();
+  const isMiya = ticket.direction === 'to' ? (ticket.route_name||'').indexOf('Miyapur')>-1 : false;
+
+  el.innerHTML =
+    '<div class="ticket">' +
+      '<div class="tk-band"><div class="tk-band-in">' +
+        '<div class="row1"><div class="tk-route"></div><div class="tk-bp">Boarding<br>Pass</div></div>' +
+      '</div></div>' +
+      '<div class="tk-meta">' +
+        '<div><div class="tk-lbl">Date</div><div class="tk-val"></div></div>' +
+        '<div><div class="tk-lbl">Departs</div><div class="tk-val"></div></div>' +
+        '<div><div class="tk-lbl">Contact</div><div class="tk-val"></div></div>' +
+        '<div><div class="tk-lbl">Fare</div><div class="tk-val"></div></div>' +
+      '</div>' +
+      '<div class="tk-qrwrap"><div class="tk-qr" id="tk-qr-holder"></div><div class="tk-hint">Show this to the driver to board</div></div>' +
+      '<div class="tk-perf"></div>' +
+      '<div class="tk-stub"><span class="tk-serial"></span><span class="tk-valid"><i></i>Valid</span></div>' +
+    '</div>' +
+    '<div class="tk-note">Single-use verification isn’t wired up yet — this ticket is cryptographically signed and genuine, but the driver-scan check-in flow is coming in a later phase.</div>';
+
+  el.querySelector('.tk-route').textContent = ticket.route_display || ticket.route_name || 'Route';
+  const vals = el.querySelectorAll('.tk-val');
+  vals[0].textContent = fmtDate(ticket.issued_at);
+  vals[1].textContent = ticket.departure_display || '—';
+  vals[2].textContent = ticket.contact || '—';
+  vals[3].textContent = '₹' + ticket.fare + ' · Paid';
+  el.querySelector('.tk-serial').textContent = serial;
+
+  const qr = qrcode(0, 'M');
+  qr.addData(token);
+  qr.make();
+  document.getElementById('tk-qr-holder').innerHTML = qr.createSvgTag({cellSize:4, margin:0});
+})();
+</script>
+</body>
+</html>

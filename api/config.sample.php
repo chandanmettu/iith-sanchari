@@ -4,4 +4,7 @@
 return [
     'RAZORPAY_KEY_ID'     => '',
     'RAZORPAY_KEY_SECRET' => '',
+    // Random 64-char string, only used to sign/verify ticket QR tokens — unrelated to Razorpay.
+    // Generate one with: openssl rand -hex 32
+    'TICKET_HMAC_SECRET'  => '',
 ];
