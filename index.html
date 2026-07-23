@@ -6,7 +6,7 @@
 <title>IITH Sanchari</title>
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/app.css?v=5">
+<link rel="stylesheet" href="assets/app.css?v=6">
 </head>
 <body>
 <div class="app">
@@ -28,8 +28,8 @@
       </div>
     </div>
 
-    <!-- INTERNAL SHUTTLE -->
-    <div class="card">
+    <!-- INTERNAL SHUTTLE — bento tiles -->
+    <div class="bento-shuttle">
       <div class="dir sel" data-dir="ab">
         <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5M20 20v-5h-5"/></svg></div>
         <div class="route"><div class="rt">Main Gate → Hostel Circle<small>Every 15 min</small></div></div>
@@ -40,6 +40,9 @@
         <div class="route"><div class="rt">Hostel Circle → Main Gate<small>Every 15 min</small></div></div>
         <div class="eta"><div class="m" id="eta-ba">–</div><div class="l">away</div></div>
       </div>
+    </div>
+
+    <div class="sched-tile">
       <button class="sched-btn" id="schedBtn">
         <svg class="clk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
         See full schedule
@@ -157,6 +160,6 @@
 
 </div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="assets/app.js?v=5"></script>
+<script src="assets/app.js?v=6"></script>
 </body>
 </html>
