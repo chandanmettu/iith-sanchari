@@ -137,6 +137,8 @@
       e.stopPropagation();
       alert('Ticketing is coming in Phase 2 — payments aren’t live yet.');
     }));
+    const bell=document.querySelector('.bell');
+    if(bell) bell.addEventListener('click',()=> alert('Notifications & alerts are coming soon.'));
     document.querySelectorAll('#specialToggle button').forEach(btn=>{
       btn.addEventListener('click',()=>{
         document.querySelectorAll('#specialToggle button').forEach(b=>b.classList.remove('on'));
