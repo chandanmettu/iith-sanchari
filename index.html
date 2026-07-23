@@ -4,29 +4,46 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IITH Transit</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
 <div class="app">
-  <div class="appbar"><span class="brand">IITH TRANSIT</span></div>
+  <div class="appbar">
+    <div class="brandblock">
+      <img class="applogo" src="assets/logo.svg" alt="">
+      <div class="brand"><span class="hl">IITH</span> SANCHARI</div>
+    </div>
+    <div class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+  </div>
 
   <!-- HOME -->
   <div id="view-home" class="scroll">
-    <div class="greet"><div class="hi" id="daypart">Good morning</div><div class="big">Where to today?</div></div>
+    <div class="hero">
+      <img class="hero-art" src="assets/hero.png" alt="">
+      <div class="hero-txt">
+        <div class="hi" id="daypart">Good afternoon,</div>
+        <div class="big"><span class="hl">Where</span> to today?</div>
+      </div>
+    </div>
 
     <!-- INTERNAL SHUTTLE -->
     <div class="card">
-      <div class="card-h"><span class="t">Internal Shuttle</span><span class="tag-free">Free</span></div>
       <div class="dir sel" data-dir="ab">
-        <div class="route"><span class="dot"></span><span class="rt">Main Gate → Hostel Circle</span></div>
-        <div class="eta"><div class="m" id="eta-ab">–</div><div class="l">arriving</div></div>
+        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5M20 20v-5h-5"/></svg></div>
+        <div class="route"><div class="rt">Main Gate → Hostel Circle<small>Every 15 min</small></div></div>
+        <div class="eta"><div class="m" id="eta-ab">–</div><div class="l">away</div></div>
       </div>
       <div class="dir" data-dir="ba">
-        <div class="route"><span class="dot"></span><span class="rt">Hostel Circle → Main Gate</span></div>
-        <div class="eta"><div class="m" id="eta-ba">–</div><div class="l">arriving</div></div>
+        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5M20 20v-5h-5"/></svg></div>
+        <div class="route"><div class="rt">Hostel Circle → Main Gate<small>Every 15 min</small></div></div>
+        <div class="eta"><div class="m" id="eta-ba">–</div><div class="l">away</div></div>
       </div>
-      <button class="sched-btn" id="schedBtn">See full schedule
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+      <button class="sched-btn" id="schedBtn">
+        <svg class="clk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
+        See full schedule
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <div class="sched-panel" id="schedPanel"><div class="sched-inner">
         <div class="pills">
@@ -39,7 +56,7 @@
 
     <!-- SPECIAL BUSES -->
     <div class="special-head">
-      <div class="sect">Special buses</div>
+      <div class="sect">Special Buses</div>
       <div class="toggle" id="specialToggle">
         <button class="on" data-tdir="from">From IITH</button>
         <button data-tdir="to">To IITH</button>
@@ -52,10 +69,10 @@
         <div class="stubcard">
           <div class="rc-main" data-expander role="button" tabindex="0">
             <div class="rc-route" data-route>IITH → Patancheru</div>
-            <div class="rc-next"><span class="rc-at">at</span><span class="rc-time" data-time>–</span><span class="rc-rel" data-rel></span></div>
+            <div class="rc-when"><span class="rc-at">at</span> <span class="tm" data-time>–</span><span class="rc-rel" data-rel></span></div>
             <div class="rc-actions">
               <span class="rc-expand">Schedule<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></span>
-              <a class="rc-live" data-livelink target="_blank" rel="noopener noreferrer" aria-label="View live bus location"><span class="pulse"></span>Live<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></a>
+              <a class="rc-live" data-livelink target="_blank" rel="noopener noreferrer" aria-label="View live bus location"><span class="pulse"></span>Live</a>
             </div>
           </div>
           <div class="rc-vp"></div>
@@ -73,10 +90,10 @@
         <div class="stubcard">
           <div class="rc-main" data-expander role="button" tabindex="0">
             <div class="rc-route" data-route>IITH → Miyapur</div>
-            <div class="rc-next"><span class="rc-at">at</span><span class="rc-time" data-time>–</span><span class="rc-rel" data-rel></span></div>
+            <div class="rc-when"><span class="rc-at">at</span> <span class="tm" data-time>–</span><span class="rc-rel" data-rel></span></div>
             <div class="rc-actions">
               <span class="rc-expand">Schedule<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></span>
-              <a class="rc-live" data-livelink target="_blank" rel="noopener noreferrer" aria-label="View live bus location"><span class="pulse"></span>Live<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></a>
+              <a class="rc-live" data-livelink target="_blank" rel="noopener noreferrer" aria-label="View live bus location"><span class="pulse"></span>Live</a>
             </div>
           </div>
           <div class="rc-vp"></div>
@@ -89,41 +106,51 @@
         </div></div>
       </div>
     </div>
-  </div>
 
-  <!-- CABS -->
-  <div id="view-cabs" class="scroll" style="display:none">
-    <div class="placeholder">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M6 17V9l2-4h8l2 4v8M8 21v-2M16 21v-2"/></svg></div>
-      <h2>Cab sharing</h2>
-      <p>Post or join a shared cab with other students. Coming in a later phase.</p>
+    <!-- COMING NEXT -->
+    <div class="comingnext">
+      <div class="sect">Coming Next</div>
+      <div class="cn-grid">
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17V9l2-4h8l2 4v8M8 21v-2M16 21v-2"/></svg></div>
+          <div class="lbl">Cab Sharing</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6-6"/></svg></div>
+          <div class="lbl">Lost &amp; Found</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l6-11 4 6 3-4 5 9z"/><circle cx="8" cy="6" r="2"/></svg></div>
+          <div class="lbl">Tourist Places</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="13" rx="3"/><path d="M6 12h12M9 21l-1.5-2M15 21l1.5-2"/><circle cx="9" cy="8" r="1"/><circle cx="15" cy="8" r="1"/></svg></div>
+          <div class="lbl">Railway Station</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5L12 17l-6.5-2.5L3 16l1 1 2.5-.5 1.5 1.5-.5 2.5 1 1 1.5-3.5L13 19zM12.5 14.5L18 4l2 2-10.5 5.5z"/></svg></div>
+          <div class="lbl">Airport</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"/><path d="M12 8v4"/><circle cx="12" cy="14.5" r=".6" fill="currentColor" stroke="none"/></svg></div>
+          <div class="lbl">Complaints</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11v9H4v-9zM7 11l3-7 1 1v5h6a2 2 0 0 1 2 2l-1.5 6a2 2 0 0 1-2 1.5H7"/></svg></div>
+          <div class="lbl">Request a Trip</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 9l-4.5 4 1 6L12 16l-4.5 3 1-6L4 9l5.5-.5z"/></svg></div>
+          <div class="lbl">Rewards</div>
+        </div>
+        <div class="cn-tile">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+          <div class="lbl">Account Management</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- TICKETS -->
-  <div id="view-tickets" class="scroll" style="display:none">
-    <div class="placeholder">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 11h18"/></svg></div>
-      <h2>My tickets</h2>
-      <p>Buy a ticket on a route above and it'll show up here as a QR boarding pass. Payments launch in Phase 2.</p>
-    </div>
-  </div>
-
-  <!-- ME -->
-  <div id="view-me" class="scroll" style="display:none">
-    <div class="placeholder">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
-      <h2>Sign in</h2>
-      <p>Guest + email login is coming in Phase 2, with @iith.ac.in Google sign-in later.</p>
-    </div>
-  </div>
-
-  <div class="nav">
-    <button class="navi on" data-view="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
-    <button class="navi" data-view="cabs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M6 17V9l2-4h8l2 4v8M8 21v-2M16 21v-2"/></svg>Cabs</button>
-    <button class="navi" data-view="tickets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 11h18"/></svg>Tickets</button>
-    <button class="navi" data-view="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>Me</button>
-  </div>
 </div>
 <script src="assets/app.js"></script>
 </body>

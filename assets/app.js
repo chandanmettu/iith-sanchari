@@ -43,7 +43,10 @@
   const minsUntil = d => Math.round((d - now())/60000);
   const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   function fmtClock(d){ let h=d.getHours(),m=d.getMinutes(); const ap=h<12?'AM':'PM'; h=h%12||12; return h+':'+String(m).padStart(2,'0')+' '+ap; }
-  function fmtWhen(d){ const n=now(); if(d.toDateString()===n.toDateString()) return fmtClock(d);
+  function fmtWhen(d){ const n=now(); if(d.toDateString()===n.toDateString()) return 'Today, '+fmtClock(d);
+    const tm=new Date(n); tm.setDate(n.getDate()+1); if(d.toDateString()===tm.toDateString()) return 'Tomorrow, '+fmtClock(d);
+    return DOW[d.getDay()]+', '+fmtClock(d); }
+  function fmtWhenShort(d){ const n=now(); if(d.toDateString()===n.toDateString()) return fmtClock(d);
     const tm=new Date(n); tm.setDate(n.getDate()+1); if(d.toDateString()===tm.toDateString()) return 'Tom '+fmtClock(d);
     return DOW[d.getDay()]+' '+fmtClock(d); }
   function fmtRel(mins){ if(mins<=0) return 'now'; if(mins<60) return '~'+mins+' min'; const h=Math.floor(mins/60), mm=mins%60; return '~'+h+' hr'+(mm?' '+mm+' min':''); }
@@ -69,7 +72,7 @@
   function renderHome(){
     const h=now().getHours();
     const daypartEl = document.getElementById('daypart');
-    if(daypartEl) daypartEl.textContent = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+    if(daypartEl) daypartEl.textContent = (h<12?'Good morning':h<17?'Good afternoon':'Good evening')+',';
 
     // shuttle
     ['ab','ba'].forEach(dir=>{
@@ -93,7 +96,7 @@
       const up=nextFixed(cfg.data[dir], 6, cfg.weekdays);
       const first=up[0];
       const tEl=card.querySelector('[data-time]'), rEl=card.querySelector('[data-rel]');
-      if(first){ const mins=minsUntil(first); tEl.textContent=fmtWhen(first); rEl.textContent = sameDay(first) ? fmtRel(mins) : ''; }
+      if(first){ const mins=minsUntil(first); tEl.textContent=fmtWhenShort(first); rEl.textContent = sameDay(first) ? fmtRel(mins) : ''; }
       else { tEl.textContent='—'; rEl.textContent=''; }
       card.querySelector('[data-upcoming]').innerHTML = up.map((d,i)=>{
         const mins=minsUntil(d);
@@ -143,20 +146,6 @@
     renderHome();
   }
 
-  // ---- nav / view switching ----
-  const views = ['home','cabs','tickets','me'];
-  function showView(name){
-    views.forEach(v=>{
-      const el=document.getElementById('view-'+v);
-      if(el) el.style.display = (v===name) ? '' : 'none';
-    });
-    document.querySelectorAll('.navi').forEach(n=> n.classList.toggle('on', n.dataset.view===name));
-  }
-  document.querySelectorAll('.navi').forEach(btn=>{
-    btn.addEventListener('click',()=> showView(btn.dataset.view));
-  });
-
   wireHome();
-  showView('home');
-  setInterval(()=>{ if(document.getElementById('view-home').style.display!=='none') renderHome(); }, 15000);
+  setInterval(renderHome, 15000);
 })();
