@@ -85,8 +85,8 @@
     return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
   }
   function fmtContact(c){
-    const m = /^(\+91)(\d{5})(\d{5})$/.exec(c || '');
-    return m ? m[1]+' '+m[2]+' '+m[3] : (c || '—');
+    const m = /^\+91(\d{5})(\d{5})$/.exec(c || '');
+    return m ? m[1]+' '+m[2] : (c || '—');
   }
 
   const params = new URLSearchParams(window.location.search);
