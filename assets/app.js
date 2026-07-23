@@ -26,7 +26,7 @@
   ];
   const MIYA_TERMS = ['Carry your Institute ID — checked by driver / security','Report at the boarding point 10 min before departure','Flat ₹100 per one-way, any stop · non-refundable'];
   const BUS = {
-    patan:{data:PATAN,name:'Patancheru',weekdays:false,live:'https://tinyurl.com/4s6f94z8',fareFrom:30,fareTo:30},
+    patan:{data:PATAN,name:'Patancheru',weekdays:false,live:'https://tinyurl.com/4s6f94z8',fareFrom:5,fareTo:5},
     miya:{data:MIYA,name:'Miyapur',weekdays:true,live:'https://app.fleetx.io/live/share/v2/eJwFwcERADAEBMCKzJwgKMfjlJHas6uBuC9S4TSVga341EgfK2HX%2BnCTjg%24drArI',fareFrom:100,fareTo:100}
   };
 
