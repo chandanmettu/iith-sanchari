@@ -111,6 +111,52 @@
     });
   }
 
+  async function startCheckout(buyBtn){
+    const route = buyBtn.closest('.rcard').dataset.bus;
+    const orig = buyBtn.textContent;
+    buyBtn.disabled = true; buyBtn.textContent = '…';
+    try {
+      const orderRes = await fetch('/api/create-order.php', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({route})
+      });
+      const order = await orderRes.json();
+      if(!orderRes.ok) throw new Error(order.error || 'Could not start payment');
+
+      const rzp = new Razorpay({
+        key: order.key_id, amount: order.amount, currency: order.currency, order_id: order.order_id,
+        name: 'IITH Sanchari', description: order.route_name + ' bus ticket',
+        theme: {color: '#e8491f'},
+        handler: async function(resp){
+          try {
+            const vRes = await fetch('/api/verify-payment.php', {
+              method: 'POST', headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                razorpay_order_id: resp.razorpay_order_id,
+                razorpay_payment_id: resp.razorpay_payment_id,
+                razorpay_signature: resp.razorpay_signature
+              })
+            });
+            const vData = await vRes.json();
+            alert(vData.verified
+              ? 'Payment successful! Ticket issuance is coming next — payment ID '+vData.payment_id+'.'
+              : 'Payment could not be verified. If money was deducted, contact support.');
+          } catch(err){
+            alert('Payment went through but verification couldn’t reach the server. Contact support with payment ID '+resp.razorpay_payment_id+'.');
+          }
+        }
+      });
+      rzp.on('payment.failed', resp=>{
+        alert('Payment failed: '+(resp.error && resp.error.description ? resp.error.description : 'please try again.'));
+      });
+      rzp.open();
+    } catch(err){
+      alert(err.message || 'Could not start payment. Please try again.');
+    } finally {
+      buyBtn.disabled = false; buyBtn.textContent = orig;
+    }
+  }
+
   function wireHome(){
     document.querySelectorAll('.dir').forEach(row=>{
       row.addEventListener('click',()=>{
@@ -135,7 +181,7 @@
     document.querySelectorAll('.rc-live').forEach(a=> a.addEventListener('click',e=> e.stopPropagation()));
     document.querySelectorAll('.rc-buy').forEach(b=> b.addEventListener('click',e=>{
       e.stopPropagation();
-      alert('Ticketing is coming in Phase 2 — payments aren’t live yet.');
+      startCheckout(b);
     }));
     const bell=document.querySelector('.bell');
     if(bell) bell.addEventListener('click',()=> alert('Notifications & alerts are coming soon.'));

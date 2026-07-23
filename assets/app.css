@@ -135,6 +135,7 @@ svg{display:block}
 .rc-buy{margin-top:7px;border:none;background:#fff;color:var(--ox);font-weight:800;font-size:13px;padding:10px 20px;border-radius:var(--r-btn);cursor:pointer;white-space:nowrap;
   box-shadow:0 4px 10px -2px rgba(0,0,0,.25)}
 .rcard[data-bus="miya"] .rc-buy{color:var(--goldt)}
+.rc-buy:disabled{opacity:.6;cursor:default}
 
 .rc-detail{max-height:0;overflow:hidden;transition:max-height .34s ease}
 .rcard.open .rc-detail{max-height:1400px}
