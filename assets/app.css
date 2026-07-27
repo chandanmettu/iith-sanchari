@@ -74,7 +74,7 @@ svg{display:block}
 .sched-btn svg.clk{width:15px;height:15px}
 .sched-btn svg.chev{width:14px;height:14px;transition:transform .25s}
 .sched-btn.open svg.chev{transform:rotate(180deg)}
-.sched-panel{max-height:0;overflow:hidden;transition:max-height .3s ease;background:#f3e6d5;box-shadow:inset 0 1px 0 var(--pline)}
+.sched-panel{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--paper2);box-shadow:inset 0 1px 0 var(--pline)}
 .sched-panel.open{max-height:460px}
 .sched-inner{padding:12px 15px 15px}
 .pills{display:flex;gap:4px;margin-bottom:12px;background:rgba(232,73,31,.08);border-radius:var(--r-btn);padding:4px}
