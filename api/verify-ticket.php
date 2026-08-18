@@ -29,7 +29,12 @@ if (!hash_equals($expected, $sig)) {
     json_out(['valid' => false, 'reason' => 'bad_signature'], 400);
 }
 
-$json = base64_decode(strtr($payloadB64, '-_', '+/'), true);
+// verify-payment.php strips '=' padding when it issues the token, so put it back
+// before decoding — strict base64_decode is not guaranteed to tolerate its absence,
+// and a false 'undecodable' here would reject a ticket whose signature just passed.
+$b64 = strtr($payloadB64, '-_', '+/');
+$b64 .= str_repeat('=', (4 - strlen($b64) % 4) % 4);
+$json = base64_decode($b64, true);
 $ticket = $json === false ? null : json_decode($json, true);
 if (!is_array($ticket)) {
     json_out(['valid' => false, 'reason' => 'undecodable'], 400);
