@@ -14,13 +14,12 @@ breaks and who it affects, not just what the code does.
 
 ## Open
 
-### SAN-001 — A genuine ticket can be used more than once
+### SAN-001 — Ticket lifecycle is incomplete
 **Severity:** High · **Affects:** fare revenue · **Since:** ticketing was built
 
-Nothing records that a ticket has been used to board, and nothing expires one.
-A real, paid, correctly signed ticket stays valid indefinitely and can be shown
-on any number of trips. Forged tickets are now rejected (see SAN-100), so this
-is specifically about replay of legitimate ones.
+A ticket has no use-tracking and no validity window. Forged tickets are rejected
+(SAN-100); what remains is the lifecycle gap. Specifics are in the private
+tracker rather than here, since this repository may be public.
 
 Blocked on the database and the driver-scan screen — a ticket can't be marked
 used until there's somewhere to record that it was. `api/verify-ticket.php` is
