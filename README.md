@@ -12,7 +12,9 @@ If you're an AI agent (Claude, Gemini, Codex, or otherwise) or a new contributor
 
 1. Read [`docs/PROGRESS.md`](docs/PROGRESS.md) first — project state, what's done, what's broken, and every decision with its reasoning. Don't assume you have context from a prior conversation; this file is the actual continuity mechanism.
 2. Read [`docs/DESIGN.md`](docs/DESIGN.md) before touching anything visual — colours, type, radii and component patterns are locked and documented there.
-3. **After you make changes, append a dated entry to `docs/PROGRESS.md`.** Not optional — it's how the next person avoids re-discovering the same bugs.
+3. Check [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) — what's already known to be
+   broken or unfinished, and what's been fixed. Update it when either changes.
+4. **After you make changes, append a dated entry to `docs/PROGRESS.md`.** Not optional — it's how the next person avoids re-discovering the same bugs.
 
 ## Stack
 
