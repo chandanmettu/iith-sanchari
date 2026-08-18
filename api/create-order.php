@@ -14,13 +14,27 @@ if ($amountPaise < 100) {
     json_out(['error' => 'Amount below Razorpay minimum'], 400);
 }
 
-// Display-only strings for the ticket — not trusted for pricing, just carried
-// through Razorpay's own order notes so we don't need a database yet.
-$direction = substr((string)($input['direction'] ?? ''), 0, 10);
-$routeDisplay = substr((string)($input['route_display'] ?? ''), 0, 60);
+// Direction is a genuine user choice, but only these two values exist.
+$direction = ($input['direction'] ?? '') === 'to' ? 'to' : 'from';
+
+// Route name and duration are derived here, never taken from the browser —
+// otherwise someone could pay the ₹30 fare while making the ticket print the
+// ₹100 route. Everything the ticket asserts about *what was bought* is decided
+// server-side; the client only picks a route id and a direction.
+$name = $fares[$route]['name'];
+$routeDisplay = $direction === 'from' ? "IITH → {$name}" : "{$name} → IITH";
+$mins = $fares[$route]['journey_mins'];
+$journeyDisplay = $mins < 60
+    ? $mins . ' min'
+    : intdiv($mins, 60) . ' hr' . ($mins % 60 ? ' ' . ($mins % 60) . ' min' : '');
+
+// Departure/arrival are schedule-derived clock strings from the client. They're
+// informational only (the fare and route above are what's enforced), so they're
+// length-capped rather than recomputed — moving them server-side would mean
+// duplicating the whole timetable out of assets/app.js. Worth doing once the DB
+// lands and schedules live in a table instead of a JS constant.
 $departureDisplay = substr((string)($input['departure_display'] ?? ''), 0, 40);
 $arrivalDisplay = substr((string)($input['arrival_display'] ?? ''), 0, 40);
-$journeyDisplay = substr((string)($input['journey_display'] ?? ''), 0, 20);
 
 [$status, $order] = rzp_curl('POST', 'orders', [
     'amount'   => $amountPaise,
@@ -33,11 +47,16 @@ $journeyDisplay = substr((string)($input['journey_display'] ?? ''), 0, 20);
     ],
 ]);
 
+// Error text stays generic on purpose: the gateway's raw response can carry
+// account/config detail that shouldn't reach a browser. Log server-side, tell
+// the user only what they can act on.
 if ($status === 401) {
-    json_out(['error' => 'Razorpay auth failed — check api/config.php key/secret'], 401);
+    error_log('sanchari: gateway auth rejected on order create');
+    json_out(['error' => 'Payments are temporarily unavailable. Please try again later.'], 503);
 }
 if ($status !== 200 || empty($order['id'])) {
-    json_out(['error' => 'Could not create order', 'detail' => $order], 500);
+    error_log('sanchari: order create failed (http ' . $status . ') ' . json_encode($order));
+    json_out(['error' => 'Could not start payment. Please try again.'], 502);
 }
 
 $cfg = rzp_config();

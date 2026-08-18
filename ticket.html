@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Your Ticket — IITH Sanchari</title>
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-<link rel="stylesheet" href="assets/app.css?v=8">
+<link rel="stylesheet" href="assets/app.css?v=9">
 <style>
   .tk-wrap{max-width:420px;margin:0 auto;padding:0 16px 40px}
   .tk-top{display:flex;align-items:center;gap:12px;padding:16px 2px 10px}
@@ -40,7 +40,6 @@
   .tk-paid{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;
     color:var(--live);background:rgba(31,138,76,.12);border-radius:999px;padding:3px 8px}
   .tk-paid i{width:5px;height:5px;border-radius:50%;background:var(--live);display:block}
-  .tk-star{color:var(--goldt);font-weight:900}
 
   .tk-qrwrap{display:flex;flex-direction:column;align-items:center;padding:18px 20px 6px;position:relative}
   .tk-qr{width:min(200px,60vw);aspect-ratio:1;background:#fff;border-radius:16px;padding:12px;
@@ -53,12 +52,30 @@
   .tk-perf::before{left:-25px}.tk-perf::after{right:-25px}
   .tk-stub{display:flex;justify-content:space-between;align-items:center;padding:13px 20px 18px}
   .tk-serial{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.08em;color:var(--m2)}
-  .tk-valid{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--live)}
-  .tk-valid i{width:7px;height:7px;border-radius:50%;background:var(--live);display:block;box-shadow:0 0 0 3px rgba(31,138,76,.18)}
 
   .tk-note{margin-top:16px;background:var(--paper2);border-radius:14px;padding:13px 15px;font-size:11.5px;line-height:1.55;color:var(--m2);text-align:center}
   .tk-err{text-align:center;padding:60px 20px;color:var(--m2)}
   .tk-err h2{color:var(--ink);font-size:17px;margin:10px 0 6px}
+
+  /* Trust markers stay hidden until the server confirms the token's signature —
+     the page can decode a payload but can't check the HMAC, so an unverified
+     ticket must never present itself as genuine. */
+  .tk-stamp,.tk-paid{display:none}
+  .is-verified .tk-stamp{display:block}
+  .is-verified .tk-paid{display:inline-flex}
+  .tk-status{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+  .tk-status i{width:7px;height:7px;border-radius:50%;display:block}
+  .tk-status.checking{color:var(--m2)}
+  .tk-status.checking i{background:var(--m2)}
+  .tk-status.ok{color:var(--live)}
+  .tk-status.ok i{background:var(--live);box-shadow:0 0 0 3px rgba(31,138,76,.18)}
+  .tk-status.bad{color:#c62828}
+  .tk-status.bad i{background:#c62828;box-shadow:0 0 0 3px rgba(198,40,40,.18)}
+  .tk-status.warn{color:var(--goldt)}
+  .tk-status.warn i{background:var(--goldt)}
+  .tk-banner{margin-top:16px;border-radius:14px;padding:13px 15px;font-size:11.5px;line-height:1.55;text-align:center}
+  .tk-banner.bad{background:rgba(198,40,40,.09);color:#8e1f1f;font-weight:600}
+  .tk-banner.warn{background:rgba(198,138,31,.12);color:#7a5310;font-weight:600}
 </style>
 </head>
 <body>
@@ -108,7 +125,6 @@
   }
 
   const serial = (ticket.payment_id || '').replace('pay_','').toUpperCase();
-  const isMiya = ticket.direction === 'to' ? (ticket.route_name||'').indexOf('Miyapur')>-1 : false;
 
   el.innerHTML =
     '<div class="ticket">' +
@@ -139,9 +155,10 @@
         '<div class="tk-qr" id="tk-qr-holder"></div><div class="tk-hint">Show this to the driver to board</div>' +
       '</div>' +
       '<div class="tk-perf"></div>' +
-      '<div class="tk-stub"><span class="tk-serial"></span><span class="tk-valid"><i></i>Valid</span></div>' +
+      '<div class="tk-stub"><span class="tk-serial"></span><span class="tk-status checking" id="tk-status"><i></i>Checking…</span></div>' +
     '</div>' +
-    '<div class="tk-note">Single-use check-in by drivers isn’t wired up yet — this ticket is cryptographically signed and genuine, but that verification loop is coming in a later phase.</div>';
+    '<div id="tk-banner"></div>' +
+    '<div class="tk-note">Single-use check-in by drivers isn’t wired up yet — a genuine ticket can still be shown more than once. That verification loop is coming in a later phase.</div>';
 
   el.querySelector('.tk-route').textContent = ticket.route_display || ticket.route_name || 'Route';
   const vals = el.querySelectorAll('.tk-val');
@@ -162,6 +179,42 @@
   qr.addData(token);
   qr.make();
   document.getElementById('tk-qr-holder').innerHTML = qr.createSvgTag({cellSize:4, margin:0});
+
+  // The details above render straight from the token so the ticket still opens
+  // with no signal at the bus stop. The trust markers are a separate question:
+  // only the server holds TICKET_HMAC_SECRET, so only the server can say whether
+  // this token is one we actually issued. Until it does, no Verified/Paid/Valid.
+  const statusEl = document.getElementById('tk-status');
+  const bannerEl = document.getElementById('tk-banner');
+  const ticketEl = el.querySelector('.ticket');
+
+  function setStatus(cls, text){
+    statusEl.className = 'tk-status ' + cls;
+    statusEl.innerHTML = '<i></i>' + text;
+  }
+
+  fetch('/api/verify-ticket.php', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({token})
+  })
+    .then(r => r.json().then(d => ({ok: r.ok, d})))
+    .then(({d}) => {
+      if (d && d.valid) {
+        ticketEl.classList.add('is-verified');
+        setStatus('ok', 'Valid');
+      } else {
+        setStatus('bad', 'Not valid');
+        bannerEl.className = 'tk-banner bad';
+        bannerEl.textContent = 'This ticket could not be verified — it was not issued by IITH Sanchari. It is not valid for boarding.';
+      }
+    })
+    .catch(() => {
+      // Network failure, not a forgery signal — don't accuse a paying rider of
+      // holding a fake ticket just because the bus stop has no signal.
+      setStatus('warn', 'Unverified');
+      bannerEl.className = 'tk-banner warn';
+      bannerEl.textContent = 'Couldn’t reach the server to verify this ticket. Reconnect and reload to confirm it.';
+    });
 })();
 </script>
 </body>

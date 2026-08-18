@@ -7,7 +7,10 @@ function rzp_config() {
     if ($cfg === null) {
         $path = __DIR__ . '/config.php';
         if (!file_exists($path)) {
-            json_out(['error' => 'Server not configured: copy api/config.sample.php to api/config.php'], 500);
+            // Setup hint goes to the server log, not to the browser — no need to
+            // tell a visitor which files exist on disk.
+            error_log('sanchari: api/config.php missing — copy api/config.sample.php and fill it in');
+            json_out(['error' => 'Server is not configured.'], 500);
         }
         $cfg = require $path;
     }

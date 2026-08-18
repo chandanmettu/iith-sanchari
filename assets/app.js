@@ -49,7 +49,6 @@
   function fmtWhenShort(d){ const n=now(); if(d.toDateString()===n.toDateString()) return fmtClock(d);
     const tm=new Date(n); tm.setDate(n.getDate()+1); if(d.toDateString()===tm.toDateString()) return 'Tom '+fmtClock(d);
     return DOW[d.getDay()]+' '+fmtClock(d); }
-  function fmtDuration(mins){ if(mins<60) return mins+' min'; const h=Math.floor(mins/60), m=mins%60; return h+' hr'+(m?' '+m+' min':''); }
   function fmtRel(mins){ if(mins<=0) return 'now'; if(mins<60) return '~'+mins+' min'; const h=Math.floor(mins/60), mm=mins%60; return '~'+h+' hr'+(mm?' '+mm+' min':''); }
   const sameDay = d => d.toDateString()===now().toDateString();
 
@@ -116,7 +115,9 @@
     const card = buyBtn.closest('.rcard');
     const route = card.dataset.bus;
     const cfg = BUS[route];
-    const routeDisplay = card.querySelector('[data-route]').textContent;
+    // Route name and journey duration are deliberately NOT sent — api/fares.php
+    // derives both from the route id so the ticket can't be made to print a
+    // route the rider didn't pay for. Only the schedule-derived clock times go up.
     const departureDisplay = card.querySelector('[data-time]').textContent;
     let arrivalDisplay = '';
     if(card.dataset.nextDeparture){
@@ -124,13 +125,12 @@
       const arrival = new Date(depTs + cfg.journeyMins*60000);
       arrivalDisplay = fmtWhenShort(arrival);
     }
-    const journeyDisplay = fmtDuration(cfg.journeyMins);
     const orig = buyBtn.textContent;
     buyBtn.disabled = true; buyBtn.textContent = '…';
     try {
       const orderRes = await fetch('/api/create-order.php', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({route, direction: specialDir, route_display: routeDisplay, departure_display: departureDisplay, arrival_display: arrivalDisplay, journey_display: journeyDisplay})
+        body: JSON.stringify({route, direction: specialDir, departure_display: departureDisplay, arrival_display: arrivalDisplay})
       });
       const order = await orderRes.json();
       if(!orderRes.ok) throw new Error(order.error || 'Could not start payment');
