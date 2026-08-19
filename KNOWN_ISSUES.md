@@ -1,4 +1,4 @@
-# Known issues — IITH Sanchari
+# Known issues — Sanchari
 
 Things we know are wrong or unfinished. Listed here deliberately: an issue
 recorded and accepted is a decision, an issue nobody wrote down is a surprise

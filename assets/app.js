@@ -137,7 +137,7 @@
 
       const rzp = new Razorpay({
         key: order.key_id, amount: order.amount, currency: order.currency, order_id: order.order_id,
-        name: 'IITH Sanchari', description: order.route_name + ' bus ticket',
+        name: 'Sanchari', description: order.route_name + ' bus ticket',
         theme: {color: '#e8491f'},
         handler: async function(resp){
           try {

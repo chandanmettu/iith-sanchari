@@ -1,8 +1,8 @@
-# IITH Sanchari — Design System
+# Sanchari — Design System
 
-<img src="../assets/logo.svg" alt="IITH Sanchari logo" width="96">
+<img src="../assets/logo.svg" alt="Sanchari logo" width="96">
 
-**IITH Sanchari** — campus bus ticketing for the IIT Hyderabad community. The mark is a fan of stripes echoing the institute crest, reinterpreted as a road with a bus grounded on it; the sun above stands in for the crest's circle.
+**Sanchari** — campus bus ticketing for the IIT Hyderabad community. The mark is a fan of stripes echoing the institute crest, reinterpreted as a road with a bus grounded on it; the sun above stands in for the crest's circle.
 
 This is the single source of truth for the app's visual language. If you're building a new screen, match this exactly — don't invent new colors, fonts, or radii. If something here is wrong or the code has drifted from it, fix whichever one is stale and note it in `docs/PROGRESS.md`.
 

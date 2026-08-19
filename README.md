@@ -1,4 +1,4 @@
-# IITH Sanchari
+# Sanchari
 
 Bus ticket booking and live schedules for the IIT Hyderabad community — the free campus shuttle plus the paid outstation routes to Patancheru and Miyapur. Pick a route, pay in-app, get a QR boarding pass, instead of paying the driver cash and writing your UTR in a paper register.
 

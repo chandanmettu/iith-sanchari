@@ -1,4 +1,4 @@
-/* IITH Sanchari — design tokens + component styles
+/* Sanchari — design tokens + component styles
    Palette: "Sunrise IITH" — matches the institute crest (red-orange spine, gold edge). */
 
 *{box-sizing:border-box}
@@ -33,7 +33,10 @@ body{
 }
 .appbar .brandblock{min-width:0;display:flex;align-items:center;gap:10px}
 .appbar .applogo{width:38px;height:38px;border-radius:11px;flex-shrink:0;box-shadow:0 4px 10px -5px var(--sh)}
-.appbar .brand{font-size:19px;font-weight:800;letter-spacing:-.01em}
+.appbar .brand{font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+/* Institution sits under the brand, not in front of it — same lockup as Nivas. */
+.appbar .brand small{display:block;margin-top:2px;font-size:8.5px;font-weight:700;
+  letter-spacing:.14em;color:var(--m2)}
 .appbar .brand .hl{color:var(--ox)}
 .bell{width:40px;height:40px;border-radius:50%;background:var(--paper);border:1px solid var(--pline);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;cursor:pointer;
