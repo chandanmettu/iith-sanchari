@@ -1,3 +1,8 @@
 /api/config.php
 .DS_Store
 inspirations/raw-drops/
+
+# Private handover doc: account ownership, KYC status, institutional standing.
+# Never commit. It reached local history once via `git add -A` and was purged
+# before any push — this entry is what stops that happening again.
+IITH_SANCHARI_CONTEXT.md
