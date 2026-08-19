@@ -19,7 +19,7 @@ If you're a human reading this and an agent just finished work without logging i
 ## Project at a glance
 
 - **What:** ticket booking + live schedule app for campus shuttle and outstation buses (Patancheru, Miyapur) serving the IIT Hyderabad community. Developed in coordination with the IIT Hyderabad Transport Department.
-- **Live at:** [transport.iith.online](https://transport.iith.online)
+- **Live at:** [sanchari.iith.online](https://sanchari.iith.online)
 - **Repo:** [github.com/saichandanmettu/iith-transport](https://github.com/saichandanmettu/iith-transport) → Hostinger Git auto-deploy (push to `main` = live within seconds, but see the CDN caching gotcha below)
 - **Local path:** `~/My Project Builds/iith-transport`
 - **Design system:** [`docs/DESIGN.md`](./DESIGN.md) — read before touching any UI

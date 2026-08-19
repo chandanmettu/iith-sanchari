@@ -4,7 +4,7 @@ Bus ticket booking and live schedules for the IIT Hyderabad community — the fr
 
 Built by a student, for the IIT Hyderabad community, in coordination with the IITH Transport Department. **Not** official institute infrastructure and not an institute-endorsed platform — see [`legal.html`](legal.html).
 
-**Live:** [transport.iith.online](https://transport.iith.online)
+**Live:** [sanchari.iith.online](https://sanchari.iith.online)
 
 ## Start here
 
