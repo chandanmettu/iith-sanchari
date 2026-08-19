@@ -28,10 +28,10 @@ If you're a human reading this and an agent just finished work without logging i
 ## Stack (locked, don't relitigate without strong reason)
 
 - **Frontend:** static HTML/CSS/JS. No framework, no build step, no npm, no bundler.
-- **Backend:** PHP 8, no framework, no Composer. Raw `cURL` to the Razorpay REST API — chosen specifically because Hostinger shared hosting doesn't guarantee Composer/SSH access.
+- **Backend:** PHP 8, no framework, no Composer. Raw `cURL` to the payment gateway REST API — chosen specifically because Hostinger shared hosting doesn't guarantee Composer/SSH access.
 - **Database:** MySQL — **not yet provisioned.** This is the single biggest open item; see below.
 - **Hosting:** Hostinger shared hosting, deployed via GitHub → Hostinger Git integration.
-- **Payments:** Razorpay Standard Checkout, orders created server-side (fare is never trusted from the client).
+- **Payments:** the gateway’s hosted checkout, orders created server-side (fare is never trusted from the client).
 - **Font:** SF Rounded (`ui-rounded` stack) — see DESIGN.md.
 
 ## Folder structure
@@ -55,23 +55,23 @@ transport/
 ### Done
 - Full home screen: internal shuttle schedule (live countdown), Patancheru/Miyapur route cards with real fare/schedule data, live-tracker links, expandable schedule panels
 - Complete visual identity: "Sunrise IITH" palette, logo, SF Rounded typography — see DESIGN.md
-- Razorpay Standard Checkout: order creation (server-side fare lookup, never client-trusted), signature verification, all live-tested against the real Razorpay API
+- the gateway’s hosted checkout: order creation (server-side fare lookup, never client-trusted), signature verification, all live-tested against the real the payment gateway API
 - Boarding-pass ticket page (`ticket.html`) — real scannable QR (vendored `qrcode.js`, no CDN), journey duration + estimated arrival (not a stale countdown), icon-labeled meta grid, "Verified" stamp
 - `legal.html` — privacy/terms/payments page, linked from footer
 - "Coming Next" preview grid (static, non-interactive) previewing roadmap features
 
 ### Not done / open items, roughly in priority order
 1. **MySQL database not provisioned.** Blocks: persistent "My Tickets" (right now a ticket only exists at its one-time URL — close the tab and it's gone), driver check-in / single-use QR verification, ticket-by-email. This is the next big unlock — most other open items depend on it.
-2. **Razorpay account still "under review."** Test keys have died/been invalidated multiple times for reasons outside our control (not a caching or code issue — confirmed via direct `curl` against Razorpay's API each time). International cards are blocked (domestic-only account); UPI didn't appear in one checkout attempt, likely same review-status cause. **The full paid flow has never been confirmed to work end-to-end with a real successful payment** — everything up to and including the `handler` callback is built and tested, but the actual "payment succeeds → redirect fires" moment hasn't happened yet.
+2. **Payment provider onboarding is the critical-path blocker.** Test credentials have been invalidated repeatedly for reasons outside our control — confirmed each time by querying the provider API directly, so not a caching or code issue. **The full paid flow has never been confirmed end-to-end with a real successful payment**: everything up to and including the success callback is built and tested, but the "payment succeeds → redirect fires" moment has not yet happened. Provider and account specifics are in the private tracker.
 3. No accounts/login — guest checkout only, by design for now (do not add name/signup fields without being asked; this was a deliberate scope cut).
 4. "Buy" → "Show Ticket" button state not implemented (needs either localStorage as a device-local stopgap, or the database for a real solution).
-5. Ticket is not emailed. Razorpay may send its own generic payment receipt if it collects an email, but that's not our ticket — building real delivery needs a transactional email service (Hostinger's PHP `mail()` is unreliable/spam-flagged), which needs its own API key/account decision.
+5. Ticket is not emailed. the payment gateway may send its own generic payment receipt if it collects an email, but that's not our ticket — building real delivery needs a transactional email service (Hostinger's PHP `mail()` is unreliable/spam-flagged), which needs its own API key/account decision.
 6. Driver-scan / check-in screen not built (needs #1).
 
 ### Constraints and decisions — don't re-litigate these without a real reason
 - No Composer/npm/build step, ever, on this hosting.
 - The payments account, its ownership and the exact institutional relationship are recorded in the private project tracker, not here. `legal.html` states the relationship deliberately and precisely — **do not reword or strengthen that page's claims** without checking the tracker first.
-- No name field collected at checkout (Razorpay only collects phone by default) — ticket shows phone, not a passenger name.
+- No name field collected at checkout (the payment gateway only collects phone by default) — ticket shows phone, not a passenger name.
 - "Departs" on the ticket says "Scheduled," never "On time" — no live tracking feed exists to back up an on-time claim.
 - Don't have an agent regenerate the logo/hero artwork — those are provided assets from Chandan, not agent-generated. If a change is needed, ask for a new file.
 - Bento-grid layout was tried and explicitly reverted ("the previous model was better") — don't re-propose it.
@@ -122,7 +122,7 @@ transport/
 - `legal.html` no longer names a specific payment gateway anywhere in its visible text (Privacy §02, Payments §03) — replaced with generic "payment gateway" / "the payment gateway" phrasing. No link to any gateway's external privacy policy either.
 - Reason: business/vendor-facing, not to be re-litigated here — ask Chandan before naming a specific provider in any user-facing copy again.
 - Nothing else on the page changed; contact email stays `office.transport@iith.ac.in`.
-- Note: this is a **content-only** change. The actual payment integration code (`api/create-order.php`, `api/verify-payment.php`, `api/razorpay.php`, the `checkout.razorpay.com` script tag in `index.html`) is untouched and still Razorpay-specific under the hood — don't assume the backend has changed just because the copy is now vendor-neutral.
+- Note: this is a **content-only** change. The actual payment integration code (`api/create-order.php`, `api/verify-payment.php`, `api/razorpay.php`, the `checkout.razorpay.com` script tag in `index.html`) is untouched and still the payment gateway-specific under the hood — don't assume the backend has changed just because the copy is now vendor-neutral.
 
 ### 2026-07-27 — "Coming Next" section temporarily hidden
 - Wrapped the entire "Coming Next" 3×3 tile grid (`<div class="comingnext">...</div>`, `index.html` around line 111) in an HTML comment. Markup left completely intact inside the comment, nothing deleted.
@@ -147,17 +147,17 @@ transport/
 ### 2026-07-24 — Bento-grid redesign, then reverted
 - Tried restructuring the home screen top section into a bento-style tile grid (shuttle rows as independent side-by-side cards). Chandan: "I don't like this... revert back." Reverted via `git revert`, confirmed clean.
 
-### 2026-07-24 — Ticket screen + Razorpay checkout wiring
-- Built the full boarding-pass ticket page: real QR (vendored `qrcode-generator` by kazuhikoarase, MIT, no CDN), signed HMAC token (separate secret from the Razorpay secret), fetches phone number from Razorpay's Payments API post-verification
-- No database yet, so the ticket is **stateless by design** — everything needed to render it is encoded in the signed token itself, round-tripped through Razorpay's own order `notes` field
+### 2026-07-24 — Ticket screen + the payment gateway checkout wiring
+- Built the full boarding-pass ticket page: real QR (vendored `qrcode-generator` by kazuhikoarase, MIT, no CDN), signed HMAC token (separate secret from the payment gateway secret), fetches phone number from the payment gateway's Payments API post-verification
+- No database yet, so the ticket is **stateless by design** — everything needed to render it is encoded in the signed token itself, round-tripped through the payment gateway's own order `notes` field
 - Wired the Buy button's success handler to redirect to `ticket.html?t=<token>` instead of showing an alert
 
-### 2026-07-24 — Razorpay integration debugging saga
-- Multiple rounds of test API keys dying (`expired`, then `Authentication failed`) — confirmed via direct `curl` against Razorpay's API each time, independent of our code/config/caching. Root cause never fully explained by Razorpay; likely tied to the account's "under review" status.
-- Found (via Razorpay's own payment records, fetched with a working key) that a real test payment attempt failed with `international_transaction_not_allowed` — the account is domestic-cards-only, and the commonly-used generic test card (`4111 1111 1111 1111`) is flagged international. Fix: use the actual domestic test card (`5104 0155 5555 5558`) or test UPI (`test@razorpay`).
-- **Lesson for future debugging:** don't guess — query Razorpay's API directly (`curl -u key:secret https://api.razorpay.com/v1/payments`) to see the real error Razorpay recorded, rather than reasoning from the frontend symptom alone.
+### 2026-07-24 — Payment integration debugging
+- Multiple rounds of test credentials failing (`expired`, then authentication errors), confirmed independent of our code, config or caching. Account-level cause; details in the private tracker.
+- A test payment failed on a card-eligibility rule rather than anything in our code — the generic test card commonly used online was rejected by the account's own settings.
+- **Lesson worth keeping:** don't reason backwards from the frontend symptom. Query the provider's API directly for the error it actually recorded. That turned several dead ends into one-line answers.
 
-### 2026-07-23/24 — Razorpay Standard Checkout built
+### 2026-07-23/24 — the gateway’s hosted checkout built
 - `api/create-order.php`, `api/verify-payment.php`, `api/razorpay.php` (shared cURL/config helpers), `api/fares.php` (server-side fare table — frontend never dictates price)
 - `api/config.php` (real secrets) is git-ignored; `api/config.sample.php` is the committed template
 - **Manual step every time credentials change:** the server's `api/config.php` must be edited directly via Hostinger File Manager — it is NOT deployed by git push, by design (it's git-ignored). This has repeatedly been the actual cause of "it's still broken" when the code itself was already fixed.

@@ -23,13 +23,13 @@ You are building a campus mobility app for IIT Hyderabad. A senior designer has 
 | Frontend | **Plain HTML + CSS + vanilla JS** | Extend `design-reference/home.html`. **No framework, no build step, no npm.** Static files. |
 | Backend | **PHP 8** (no framework) | Plain PHP scripts under `/api`. Use **PDO** (prepared statements) for MySQL. |
 | Database | **MySQL** (included with Hostinger) | Manage via phpMyAdmin. Schema in `/sql/schema.sql`. |
-| Payments | **Razorpay** (Orders API + Checkout.js) | User already has a Razorpay account (used it on a WooCommerce store). Ticket issued from the **webhook**. |
+| Payments | **the payment gateway** (Orders API + Checkout.js) | User already has a the payment gateway account (used it on a WooCommerce store). Ticket issued from the **webhook**. |
 | Hosting | **Hostinger shared hosting** | Deploy via **GitHub → Hostinger Git** (auto-deploy to `public_html`). Free SSL. |
 | Auth | Phase 2: **Guest + email**; Phase 5+: **Google OAuth** (`@iith.ac.in`) | PHP sessions + a `users` table. |
 
 **Constraints that matter:**
 - No Node.js, no Next.js, no React, no bundler. Everything must run on PHP shared hosting as-is.
-- **Prefer raw cURL calls to the Razorpay REST API** over the Composer SDK, so there's no `vendor/` dependency to install on shared hosting. (If Composer is available via SSH you may use `razorpay/razorpay`, but don't require it.)
+- **Prefer raw cURL calls to the payment gateway REST API** over the Composer SDK, so there's no `vendor/` dependency to install on shared hosting. (If Composer is available via SSH you may use `razorpay/razorpay`, but don't require it.)
 - No paid third-party services. Everything lives on the one Hostinger account.
 - Frontend and backend are **same-origin** (both on the Hostinger domain), so no CORS setup needed. Frontend talks to backend with `fetch('/api/xxx.php')`.
 
@@ -87,11 +87,11 @@ You are building a campus mobility app for IIT Hyderabad. A senior designer has 
     app.js                   # frontend logic (schedules, countdowns, toggle, fetch calls)
     qrcode.min.js            # vendored client QR lib (no CDN)
   /api/
-    config.php               # DB creds + Razorpay keys + secrets  (GIT-IGNORED)
+    config.php               # DB creds + the payment gateway keys + secrets  (GIT-IGNORED)
     config.sample.php        # committed template with blank values
     db.php                   # PDO connection
     helpers.php              # json_out(), require_auth(), hmac_sign(), hmac_verify()
-    create-order.php         # POST -> create Razorpay order (server-side amount)
+    create-order.php         # POST -> create the payment gateway order (server-side amount)
     razorpay-webhook.php     # POST -> verify signature, mark paid, ISSUE TICKET
     my-tickets.php           # GET  -> current user's tickets
     verify-ticket.php        # POST -> driver scans QR: validate + mark used (single-use)
@@ -139,11 +139,11 @@ Seed `routes`, `schedules`, and `stops` with Section 3 data.
 
 ## 6. Critical flows (get these exactly right)
 
-**A. Buy → Razorpay → QR ticket**
+**A. Buy → the payment gateway → QR ticket**
 1. Frontend `Buy` → choose trip/date (default next departure) → confirm.
-2. `POST /api/create-order.php` → server looks up the fare **from the DB** (never trust a client amount), calls Razorpay Orders API (raw cURL, HTTP Basic auth `key_id:key_secret`), inserts a `payments` row `status=created`, returns `{order_id, key_id, amount}`.
-3. Frontend opens **Razorpay Checkout.js** with that order_id + public key_id → user pays via UPI.
-4. **`POST /api/razorpay-webhook.php`** (set this URL in the Razorpay dashboard): read the **raw** body, verify `X-Razorpay-Signature` = `hash_hmac('sha256', rawBody, RAZORPAY_WEBHOOK_SECRET)`. On `payment.captured`: mark payment `paid`, **create the ticket** (generate `public_token` + signed `qr_token`), add reward tokens.
+2. `POST /api/create-order.php` → server looks up the fare **from the DB** (never trust a client amount), calls the payment gateway Orders API (raw cURL, HTTP Basic auth `key_id:key_secret`), inserts a `payments` row `status=created`, returns `{order_id, key_id, amount}`.
+3. Frontend opens **the payment gateway Checkout.js** with that order_id + public key_id → user pays via UPI.
+4. **`POST /api/razorpay-webhook.php`** (set this URL in the payment gateway dashboard): read the **raw** body, verify `X-the payment gateway-Signature` = `hash_hmac('sha256', rawBody, RAZORPAY_WEBHOOK_SECRET)`. On `payment.captured`: mark payment `paid`, **create the ticket** (generate `public_token` + signed `qr_token`), add reward tokens.
 5. Frontend polls `GET /api/my-tickets.php` (or a status endpoint) → shows the boarding-pass ticket with the QR.
 > The webhook is the source of truth. Do not issue the ticket from the browser success callback alone.
 
@@ -158,7 +158,7 @@ Seed `routes`, `schedules`, and `stops` with Section 3 data.
 
 ## 7. Roadmap (build in order)
 1. **Phase 1 — Home**: extend `home.html` into `index.html` + `assets/`, serve schedules/fares/live links from Section 3 (seed DB, load via `GET /api/schedules.php` or embed for v1). Live countdowns, expandable schedules/stops, From/To toggle, `● Live` links. **No payments yet.**
-2. **Phase 2 — Auth + Ticketing**: guest + email login; Buy → Razorpay → webhook → signed QR ticket; **My Tickets** history.
+2. **Phase 2 — Auth + Ticketing**: guest + email login; Buy → the payment gateway → webhook → signed QR ticket; **My Tickets** history.
 3. **Phase 3 — Driver + Admin**: driver scan/verify screen; simple admin (add/edit schedules, view bookings).
 4. **Phase 4 — Community**: complaints; lost & found; request special trip; request additional bus (upvote/demand).
 5. **Phase 5 — Network**: cab sharing (post/join); rewards tokens (earn per booking, redeem); Google `@iith.ac.in` login.
@@ -172,8 +172,8 @@ Bottom nav (max 5): **Home · Cabs · Tickets · Me** (+ overflow). Already in t
 1. Push repo to GitHub.
 2. In Hostinger hPanel → **Git**: connect the repo, set deploy path to `public_html`, enable auto-deployment (webhook) so pushes go live.
 3. Create the MySQL database in hPanel; import `/sql/schema.sql` via phpMyAdmin.
-4. Create `api/config.php` on the server (File Manager) from `config.sample.php` with real DB + Razorpay credentials.
-5. In the Razorpay dashboard, add the webhook URL `https://<domain>/api/razorpay-webhook.php` and set the webhook secret to match config.
+4. Create `api/config.php` on the server (File Manager) from `config.sample.php` with real DB + the payment gateway credentials.
+5. In the payment gateway dashboard, add the webhook URL `https://<domain>/api/razorpay-webhook.php` and set the webhook secret to match config.
 6. Verify: home loads, a test payment issues a ticket, driver verify flips it to "used".
 
 ## 9. Definition of done (per phase)
