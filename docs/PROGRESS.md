@@ -20,7 +20,7 @@ If you're a human reading this and an agent just finished work without logging i
 
 - **What:** ticket booking + live schedule app for campus shuttle and outstation buses (Patancheru, Miyapur) serving the IIT Hyderabad community. Developed in coordination with the IIT Hyderabad Transport Department.
 - **Live at:** [sanchari.iith.online](https://sanchari.iith.online)
-- **Repo:** [github.com/saichandanmettu/iith-transport](https://github.com/saichandanmettu/iith-transport) → Hostinger Git auto-deploy (push to `main` = live within seconds, but see the CDN caching gotcha below)
+- **Repo:** [github.com/chandanmettu/iith-sanchari](https://github.com/chandanmettu/iith-sanchari) → Hostinger Git auto-deploy (push to `main` = live within seconds, but see the CDN caching gotcha below)
 - **Local path:** `~/My Project Builds/iith-transport`
 - **Design system:** [`docs/DESIGN.md`](./DESIGN.md) — read before touching any UI
 - **Original full spec:** [`docs/BUILD_SPEC.md`](./BUILD_SPEC.md) — historical, partially superseded (palette changed entirely, nav/accounts scope changed — this log is more current than that doc for anything it disagrees with)
@@ -97,7 +97,7 @@ transport/
 
 **Performance.** `assets/logo.svg` was 4.9 MB — an SVG wrapper around two base64-embedded PNGs, one of them 7071×7071 — and it is the favicon on all three pages plus the 38×38 header mark. Re-embedded at 512px: **4.86 MB → 0.16 MB (-97%)**. `logo.png` (apple-touch-icon) 1024px/355 KB → 180px/23 KB. Artwork visually unchanged, verified in-browser. Cache-bust bumped (`app.css?v=9`, `app.js?v=6`) per the CDN gotcha below.
 
-**Housekeeping.** Removed tracked-adjacent `.DS_Store` files; dropped dead code (`.tk-valid`/`.tk-star` CSS, unused `isMiya`, `fmtDuration`). Repo moved locally to `~/My Project Builds/iith-transport` and the git remote repointed to `saichandanmettu/iith-transport` after the GitHub username change.
+**Housekeeping.** Removed tracked-adjacent `.DS_Store` files; dropped dead code (`.tk-valid`/`.tk-star` CSS, unused `isMiya`, `fmtDuration`). Repo moved locally to `~/My Project Builds/iith-transport` and the git remote repointed to `chandanmettu/iith-sanchari` after the GitHub username change.
 
 **Note for whoever deploys this:** PHP is not installed on the dev Mac, so `api/verify-ticket.php` was validated against a Python mock replicating its exact logic (genuine token → 200 valid, forged → 400 bad_signature) and the client flow was tested end-to-end against that mock. **The PHP file itself has not executed on a real PHP runtime yet — smoke-test it on Hostinger before trusting it.** Quickest check: open a real ticket URL and confirm the stamp appears; then change one character of the signature in the URL and confirm it flips to "Not valid".
 
@@ -173,7 +173,7 @@ transport/
 ### 2026-07-23 — Phase 1: initial build
 - Static HTML/CSS/JS home screen built from a locked design reference (`inspirations/design-reference/`): internal shuttle schedule, Patancheru/Miyapur route cards with real fare/schedule data (fares: ₹30 / ₹100), live-tracker links
 - Original palette "Ivory & Oxblood" (since fully replaced, see above)
-- Pushed to GitHub (`saichandanmettu/iith-transport`) via a repo-scoped SSH deploy key; connected to Hostinger Git auto-deploy
+- Pushed to GitHub (`chandanmettu/iith-sanchari`) via a repo-scoped SSH deploy key; connected to Hostinger Git auto-deploy
 
 ---
 
