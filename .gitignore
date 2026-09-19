@@ -6,3 +6,6 @@ inspirations/raw-drops/
 # Never commit. It reached local history once via `git add -A` and was purged
 # before any push — this entry is what stops that happening again.
 IITH_SANCHARI_CONTEXT.md
+
+# Local editor/agent config
+.claude/
