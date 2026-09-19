@@ -9,8 +9,8 @@ Transport Department. It is **not** official institute infrastructure; see
 | | |
 |---|---|
 | **Live** | [sanchari.iith.online](https://sanchari.iith.online) |
-| **Repository** | `github.com/chandanmettu/iith-sanchari` (public). The local folder is still called `iith-transport`. |
-| **Push via** | SSH host alias `github-iith-transport` (remote `git@github-iith-transport:chandanmettu/iith-sanchari.git`) |
+| **Repository** | `github.com/chandanmettu/iith-sanchari` (public). |
+| **Push via** | SSH host alias `github-iith-transport` (remote `git@github-iith-transport:chandanmettu/iith-sanchari.git`). The alias name predates the rename, so leave it. |
 | **Deploy** | Hostinger Git auto-deploy from `main`. **A push is a production release.** |
 | **Status** | Live. The payment path is built but has never completed one real payment, so ticketing is unproven. |
 
