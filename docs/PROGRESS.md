@@ -80,6 +80,14 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-19 — Workspace cleanup and docs handover pass
+
+- README rewritten as a handover document. It covers the live URL, the real repo slug (`chandanmettu/iith-sanchari`; the local folder is still `iith-transport`), the SSH alias, the deploy path, the reading order, the release checklist and the rules.
+- Verified the live `index.html` is byte-identical to `main` HEAD, so nothing is unshipped.
+- `.claude/` (local preview config) is now git-ignored, because the repo root is `public_html`.
+- No code changes. The "Current state (as of 2026-07-24)" section above predates the 2026-08-31 policy pages and the gateway pivot. `KNOWN_ISSUES.md` (SAN-001…011) is the current punch-list.
+
+
 ### 2026-08-19 — Security audit: forged tickets were rendering as genuine
 
 **The bug.** `ticket.html` rendered a ticket's contents without verifying its signature, so the trust markers could appear on a ticket the server never issued. With no driver scanner yet, tickets are checked by eye, which made that a real fare-evasion route. Details of the method are in the private tracker, not here.
