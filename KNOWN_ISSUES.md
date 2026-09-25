@@ -66,7 +66,9 @@ Confirm fares, precise boarding points, holidays, timetable, exact-departure
 validity, admission capacity, cancellation/refund handling and connectivity
 fallback. Timetable data is deliberately marked unconfirmed and payment
 activation requires explicit operational confirmation. If admission must reserve
-a seat, inventory enforcement is required before launch.
+a seat, inventory enforcement is required before launch. The owner supplied the
+Miyapur weekend departure directions and times, but the holiday calendar,
+weekend pickup point and intermediate stop timings have not been supplied.
 
 ### SAN-013 — Host and real-device acceptance
 **Severity:** High · **Affects:** rollout

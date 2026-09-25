@@ -67,7 +67,7 @@ You are building a campus mobility app for IIT Hyderabad. A senior designer has 
 - From IITH (IITH→PTC): `09:00 11:00 17:00 19:00 21:00 23:00`
 - To IITH (PTC→IITH): `08:00 10:00 16:00 18:00 20:00 22:00`
 
-**Miyapur** — fare **₹100/seat flat (any stop)**, **weekdays only (Mon–Fri, not on institute holidays)**, **one trip each way**. Live tracker: `https://app.fleetx.io/live/share/v2/eJwFwcERADAEBMCKzJwgKMfjlJHas6uBuC9S4TSVga341EgfK2HX%2BnCTjg%24drArI` (Miyapur→IITH).
+**Miyapur** — fare **₹100/seat flat (any stop)**. This original spec listed **weekdays only (Mon–Fri, not on institute holidays)** and **one trip each way**; the current timetable in `assets/routes.json` also includes Saturday/Sunday service confirmed by the owner on 2026-09-25: **8:30 AM IITH→Miyapur** and **5:45 PM Miyapur→IITH**. Live tracker: `https://app.fleetx.io/live/share/v2/eJwFwcERADAEBMCKzJwgKMfjlJHas6uBuC9S4TSVga341EgfK2HX%2BnCTjg%24drArI` (Miyapur→IITH).
 - To IITH (onward) — 7:40 AM from Miyapur Metro, timed stops:
   `Miyapur Metro (Pillar 623) 7:40 · Madinaguda (Opp. Green Bawarchi Hotel) 7:54 · Chanda Nagar (Opp. Swagath Restaurant) 7:59 · BHEL Circle (BHEL Main Gate) 8:05 · Ashok Nagar (Near Indian Oil petrol bunk) 8:07 · Beeramguda (Opp. Vijetha Super Market) 8:10 · D Mart 8:11 · RC Puram (Near Ambedkar statue) 8:13 · Patancheru (Near bus stop) 8:24 · Muthangi 8:30 · Isnapur (X Road) 8:35`
 - From IITH (return): departs **5:45 PM** from **C-Block back-side parking**, through all major institute stops, then to Miyapur.

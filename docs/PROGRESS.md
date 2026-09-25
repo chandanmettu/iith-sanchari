@@ -96,6 +96,22 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Add Miyapur weekend timetable (local)
+
+- Added the owner-supplied Saturday/Sunday 8:30 AM IITH → Miyapur and 5:45 PM
+  Miyapur → IITH trips; retained weekday 7:40 AM Miyapur → IITH and 5:45 PM
+  IITH → Miyapur. Both browser departures and order validation now select the
+  same weekday/weekend times and skip listed institute holidays.
+- Labeled the 7:40 AM intermediate stops as weekday-only. Weekend intermediate
+  stop times and pickup point were not supplied, so the site does not present
+  weekday stop times or Pillar 623 as the weekend ticket's boarding point. The
+  supplied external tracker is shown only for its Miyapur → IITH direction.
+- Bumped timetable and script cache keys. Booking remains disabled, the holiday
+  list is empty, and operational timetable confirmation is still pending.
+  Browser checks covered both weekend card directions, tracker visibility,
+  boarding copy, holiday skipping and staff scanner choices; PHP schedule cases
+  and syntax checks passed. Production has not changed.
+
 ### 2026-09-25 — Remove homepage booking-status paragraph (local)
 
 - Removed the explanatory paragraph above the special-bus cards at the
