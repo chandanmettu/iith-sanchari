@@ -12,7 +12,159 @@ breaks and who it affects, not just what the code does.
 
 ---
 
-## Open
+## Open — production and acceptance gates
+
+### SAN-001 — Production ticket lifecycle acceptance
+**Severity:** High · **Affects:** boarding · **Local implementation:** 2026-09-25
+
+Persistent bookings, validity windows and authenticated atomic single-use check-in
+are implemented locally. Production database provisioning, confirmed boarding
+rules and driver-device acceptance remain open. Until those pass, ticketing
+must stay disabled. No numbered seats or capacity inventory are implemented.
+
+### SAN-003 — No real payment has completed the new flow
+**Severity:** High · **Affects:** launch
+
+A local provider simulator validates application behavior, but the selected
+account's sandbox, hosted return, webhook delivery, real paid trip, refund and
+bank settlement must be observed. See `docs/LAUNCH.md`.
+
+### SAN-004 — Payment account and adapter activation
+**Severity:** High · **Affects:** launch
+
+A provisional OAuth hosted-checkout adapter is ready for account-specific UAT.
+Other protocols need their own adapter. Production keys/URLs, redirect hosts,
+notification authentication and acceptance are not configured. Booking defaults
+closed. Legacy helpers remain unreferenced and blocked from direct web access.
+
+### SAN-006 — Public operator disclosures await confirmation
+**Severity:** Medium · **Affects:** public policies
+
+The existing operator/institution relationship statements have been preserved.
+Confirm accurate merchant, contact and support disclosures before accepting fares.
+Do not remove or strengthen these claims without the authorised details.
+
+### SAN-008 — Production alerting and operational ownership
+**Severity:** Medium · **Affects:** support and payments
+
+Generic error references and a nonzero cron failure exit are implemented. Actual
+alert delivery, hosting cron, webhook monitoring, backups and a named responder
+must be configured and demonstrated. This does not authorise visitor analytics.
+
+### SAN-009 — Recovery depends on retaining a private link
+**Severity:** Medium · **Affects:** passengers
+
+Bookings now persist server-side; My tickets saves recovery links in the browser,
+and webhook/cron processing can recover a closed-tab payment. Losing browser
+storage AND the recovery link still requires support. Email/SMS delivery and
+identity-based recovery are not implemented. Host acceptance remains pending.
+
+### SAN-012 — Operational data and capacity agreement
+**Severity:** High · **Affects:** paid launch
+
+Confirm fares, precise boarding points, holidays, timetable, exact-departure
+validity, admission capacity, cancellation/refund handling and connectivity
+fallback. Timetable data is deliberately marked unconfirmed and payment
+activation requires explicit operational confirmation. If admission must reserve
+a seat, inventory enforcement is required before launch.
+
+### SAN-013 — Host and real-device acceptance
+**Severity:** High · **Affects:** rollout
+
+Local PHP tests use SQLite and simulated provider responses. Run the supplied
+schema on the host's MySQL/MariaDB, verify access rules, test real camera scans
+and prove the full acceptance checklist before opening bookings. Confirm the
+transition plan for any outstanding legacy passes.
+
+## Locally addressed — awaiting deployment
+
+### SAN-002 — Placeholder shuttle countdown removed
+**Local change:** 2026-09-25
+
+No fabricated arrival countdown or cadence remains. The campus card clearly says
+timings require confirmation. Actual shuttle timings are still needed.
+
+### SAN-005 — Responsive layout
+**Local change:** 2026-09-25
+
+1120px desktop shell, responsive route board and mobile layout replace the
+480px-only screen. Browser checks cover 320–1440px widths.
+
+### SAN-007 — Order rate limiting
+**Local change:** 2026-09-25
+
+Short-lived database-backed request limits and idempotent booking references
+protect order creation. Production database/hosting activation remains required.
+
+### SAN-010 — Server-authoritative departure and arrival
+**Local change:** 2026-09-25
+
+Browser and server share one timetable. The server checks the route, direction,
+exact departure, weekday and holiday, and derives ticket time/arrival details.
+
+### SAN-011 — Initial accessibility audit
+**Local change:** 2026-09-25
+
+Semantic buttons, expanded/pressed states, visible focus, reduced motion and
+readable colors added. Automated WCAG A/AA checks and keyboard interaction pass
+on the reviewed screens; full assistive-technology testing remains useful.
+
+---
+
+## Fixed
+
+### SAN-100 — Forged tickets displayed as genuine
+**Fixed:** 2026-08-19 · `805b01f`
+
+The ticket page decoded the token's payload and threw the signature away without
+ever checking it. Any hand-written payload with an arbitrary suffix rendered a
+complete boarding pass showing the Verified stamp, the Paid badge and a green
+Valid status. With no driver scanner in place, tickets are checked by eye — so
+this was free travel for anyone able to open developer tools. Confirmed by
+actually forging one, not by reading the code.
+
+`api/verify-ticket.php` now recomputes the HMAC with a constant-time comparison,
+and the trust markers only appear once it responds. Ticket details still render
+straight from the token so the pass opens without signal; only the markers wait
+on the server, and a network failure shows "Unverified" rather than accusing a
+paying rider of forgery. Verified closed on the live site.
+
+### SAN-101 — The route on a ticket was chosen by the browser
+**Fixed:** 2026-08-19 · `805b01f`
+
+Route name and journey duration were sent up from the client and printed on the
+ticket, so paying the ₹30 Patancheru fare could produce a ticket that read
+"IITH → Miyapur". Both are now derived server-side from the route id.
+
+### SAN-102 — Error responses leaked internals
+**Fixed:** 2026-08-19 · `805b01f`
+
+The order endpoint returned the gateway's raw response body to the browser and
+named `api/config.php` in an error string. Both now log server-side and return
+generic text, with corrected status codes.
+
+### SAN-103 — The logo was 4.9 MB
+**Fixed:** 2026-08-19 · `805b01f`
+
+`assets/logo.svg` was an SVG wrapper around two embedded PNGs, one of them
+7071×7071, and it is the favicon on every page plus a 38×38 header mark.
+Re-embedded at 512px: 4.86 MB → 0.16 MB. `logo.png` went 355 KB → 23 KB. The
+artwork is unchanged.
+
+### SAN-104 — Ticket payload could fail to decode
+**Fixed:** 2026-08-19 · `e032be4`
+
+The issuing endpoint strips base64 padding, and strict decoding is not
+guaranteed to tolerate its absence — a genuine ticket whose signature had just
+passed could have been rejected as undecodable. Padding is now restored before
+decoding.
+
+
+## Historical open-issue descriptions (before 2026-09-25)
+
+Retained for provenance; the current status sections above supersede these.
+
+### Original backlog
 
 ### SAN-001 — Ticket lifecycle is incomplete
 **Severity:** High · **Affects:** fare revenue · **Since:** ticketing was built
@@ -120,51 +272,3 @@ Expandable cards are keyboard-operable, which is a good sign, but contrast
 ratios, focus visibility and screen-reader labelling have never been checked.
 
 ---
-
-## Fixed
-
-### SAN-100 — Forged tickets displayed as genuine
-**Fixed:** 2026-08-19 · `805b01f`
-
-The ticket page decoded the token's payload and threw the signature away without
-ever checking it. Any hand-written payload with an arbitrary suffix rendered a
-complete boarding pass showing the Verified stamp, the Paid badge and a green
-Valid status. With no driver scanner in place, tickets are checked by eye — so
-this was free travel for anyone able to open developer tools. Confirmed by
-actually forging one, not by reading the code.
-
-`api/verify-ticket.php` now recomputes the HMAC with a constant-time comparison,
-and the trust markers only appear once it responds. Ticket details still render
-straight from the token so the pass opens without signal; only the markers wait
-on the server, and a network failure shows "Unverified" rather than accusing a
-paying rider of forgery. Verified closed on the live site.
-
-### SAN-101 — The route on a ticket was chosen by the browser
-**Fixed:** 2026-08-19 · `805b01f`
-
-Route name and journey duration were sent up from the client and printed on the
-ticket, so paying the ₹30 Patancheru fare could produce a ticket that read
-"IITH → Miyapur". Both are now derived server-side from the route id.
-
-### SAN-102 — Error responses leaked internals
-**Fixed:** 2026-08-19 · `805b01f`
-
-The order endpoint returned the gateway's raw response body to the browser and
-named `api/config.php` in an error string. Both now log server-side and return
-generic text, with corrected status codes.
-
-### SAN-103 — The logo was 4.9 MB
-**Fixed:** 2026-08-19 · `805b01f`
-
-`assets/logo.svg` was an SVG wrapper around two embedded PNGs, one of them
-7071×7071, and it is the favicon on every page plus a 38×38 header mark.
-Re-embedded at 512px: 4.86 MB → 0.16 MB. `logo.png` went 355 KB → 23 KB. The
-artwork is unchanged.
-
-### SAN-104 — Ticket payload could fail to decode
-**Fixed:** 2026-08-19 · `e032be4`
-
-The issuing endpoint strips base64 padding, and strict decoding is not
-guaranteed to tolerate its absence — a genuine ticket whose signature had just
-passed could have been rejected as undecodable. Padding is now restored before
-decoding.

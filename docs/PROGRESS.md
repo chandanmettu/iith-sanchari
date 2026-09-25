@@ -21,7 +21,7 @@ If you're a human reading this and an agent just finished work without logging i
 - **What:** ticket booking + live schedule app for campus shuttle and outstation buses (Patancheru, Miyapur) serving the IIT Hyderabad community. Developed in coordination with the IIT Hyderabad Transport Department.
 - **Live at:** [sanchari.iith.online](https://sanchari.iith.online)
 - **Repo:** [github.com/chandanmettu/iith-sanchari](https://github.com/chandanmettu/iith-sanchari) → Hostinger Git auto-deploy (push to `main` = live within seconds, but see the CDN caching gotcha below)
-- **Local path:** `~/My Project Builds/iith-transport`
+- **Local path:** `~/My Projects/IITH/Sanchari`
 - **Design system:** [`docs/DESIGN.md`](./DESIGN.md) — read before touching any UI
 - **Original full spec:** [`docs/BUILD_SPEC.md`](./BUILD_SPEC.md) — historical, partially superseded (palette changed entirely, nav/accounts scope changed — this log is more current than that doc for anything it disagrees with)
 
@@ -32,7 +32,7 @@ If you're a human reading this and an agent just finished work without logging i
 - **Database:** MySQL — **not yet provisioned.** This is the single biggest open item; see below.
 - **Hosting:** Hostinger shared hosting, deployed via GitHub → Hostinger Git integration.
 - **Payments:** the gateway’s hosted checkout, orders created server-side (fare is never trusted from the client).
-- **Font:** SF Rounded (`ui-rounded` stack) — see DESIGN.md.
+- **Font:** native system stack in the September 25 refinement — see DESIGN.md.
 
 ## Folder structure
 
@@ -50,7 +50,22 @@ transport/
 
 **Do not move `index.html`/`ticket.html`/`legal.html`/`assets/`/`api/` out of repo root** — Hostinger's Git deploy serves the repo root as `public_html` directly. Moving them requires a manual hPanel deploy-path change first, or the live site goes down.
 
-## Current state (as of 2026-07-24)
+## Current state (2026-09-25, local preparation)
+
+- Redesigned responsive home, clearer schedules and journey review; original
+  artwork retained. Placeholder campus cadence removed.
+- Shared IST timetable/fare source, persistent bookings, hosted redirect adapter,
+  recovery links, server-verified short QR tickets, authenticated atomic boarding,
+  staff operations, authenticated webhooks and CLI reconciliation prepared.
+- Online booking defaults off; configuration and operational confirmation are
+  required. Production database, provider sandbox/live acceptance and real-device
+  scans remain unverified. There are no email tickets or capacity reservations.
+- Local PHP integration tests pass with a private SQLite fixture and simulated
+  provider. These are not MySQL/Hostinger/provider acceptance tests.
+- No production deployment or financial operation performed.
+- See `docs/LAUNCH.md` for activation, operational constraints and acceptance.
+
+## Historical baseline (2026-07-24)
 
 ### Done
 - Full home screen: internal shuttle schedule (live countdown), Patancheru/Miyapur route cards with real fare/schedule data, live-tracker links, expandable schedule panels
@@ -79,6 +94,30 @@ transport/
 ---
 
 ## Log (newest first)
+
+### 2026-09-25 — Responsive design and ticket lifecycle preparation (local)
+
+- Warm glass surfaces, softer route gradients and readable dark text; desktop
+  layout and mobile journey review, semantic controls, focus and reduced motion.
+- Removed the invented campus countdown. Timetable/fare data moved to one shared
+  source in Asia/Kolkata; route/day/time are validated on the server.
+- Built persistent orders and private recovery capabilities; hosted payment
+  redirect with server status verification. Repeated requests reuse a booking;
+  ambiguous creates are recovered instead of silently charging again.
+- Short signed QR links resolve through server records. Driver authentication,
+  exact-journey/window validation and atomic check-in prevent repeated admission.
+- Added staff operations, authenticated notifications, bounded CLI reconciliation,
+  request limits, protected hosting files, and explicit disabled-booking defaults.
+- Corrected privacy disclosures for booking storage, server records and staff
+  check-ins. Institutional/operator claims await the existing approval process.
+- Validation: 13 PHP files parsed; 20 backend integration tests passed on real
+  PHP with SQLite/provider fixtures; 26 responsive/browser checks; no page
+  errors or automated WCAG A/AA violations across ten pages, review dialog and
+  populated ticket. Browser flow and QR decoding/check-in/reuse rejection pass.
+  Dialog focus and internal links checked. Physical camera and host UAT remain.
+- Added activation checklist. No public release, real payment, merchant onboarding
+  or production data change. Remaining acceptance gates stay open below.
+
 
 ### 2026-09-19 — Workspace cleanup and docs handover pass
 

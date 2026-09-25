@@ -10,6 +10,18 @@ The live implementation of every token below is `assets/app.css`. This document 
 
 ---
 
+## September 25 refinement
+
+The owner requested Ruchi-inspired polish. The current local implementation
+retains the original logo, artwork, sunrise route distinction and ticket
+perforation. It now uses soft peach/gold gradients with dark text, warm glass
+surfaces, native system typography, consistent controls and a responsive
+route-board layout. This supersedes the older token catalogue below wherever
+it differs. `assets/app.css` remains canonical. The desktop shell is 1120px;
+mobile prioritises route cards before campus information. All motion respects
+reduced-motion preferences, controls have visible focus, and schedule disclosure
+uses real buttons with expanded states. No fabricated shuttle countdown.
+
 ## Palette — "Sunrise IITH"
 
 Named for the gradient in the hero illustration (`assets/hero.png`): a vivid orange sun fading to gold. The whole app's color language is sampled from that image.

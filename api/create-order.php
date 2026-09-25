@@ -1,69 +1,21 @@
 <?php
-require __DIR__ . '/razorpay.php';
-
-$input = json_in();
-$route = $input['route'] ?? '';
-$fares = require __DIR__ . '/fares.php';
-
-if (!isset($fares[$route])) {
-    json_out(['error' => 'Unknown route'], 400);
+require __DIR__.'/hosted.php';
+$in=input();if(!ready())respond(['error'=>'Online booking is not open yet.'],503);
+limit_requests('create',max(1,(int)(config()['ORDER_RATE_PER_MIN']??60)),60);
+$id=field($in,'id','/^s_[a-f0-9]{32}$/D');$key=field($in,'recovery_key','/^[a-f0-9]{48}$/D');
+$route=field($in,'route','/^(patan|miya)$/D');$direction=field($in,'direction','/^(from|to)$/D');
+$departure=$in['departure']??null;
+if(!is_int($departure))respond(['error'=>'Select a scheduled departure.'],400);
+if($existing=booking($id)){
+    if(!hash_equals($existing['recovery_hash'],hash('sha256',$key))||$existing['route']!==$route||$existing['direction']!==$direction||(int)$existing['departure']!==$departure)respond(['error'=>'Booking details do not match.'],409);
+    if(in_array($existing['status'],['paid','used']))respond(booking_response($existing));
+    if($existing['status']==='pending'&&$existing['checkout_url']&&$departure>time()+360)respond(['id'=>$id,'checkout_url'=>$existing['checkout_url']]);
+    // Never create another provider order after an ambiguous timeout.
+    respond(['error'=>'This booking already exists. Open payment recovery to check its status.'],409);
 }
-
-$amountPaise = $fares[$route]['fare'] * 100;
-if ($amountPaise < 100) {
-    json_out(['error' => 'Amount below Razorpay minimum'], 400);
-}
-
-// Direction is a genuine user choice, but only these two values exist.
-$direction = ($input['direction'] ?? '') === 'to' ? 'to' : 'from';
-
-// Route name and duration are derived here, never taken from the browser —
-// otherwise someone could pay the ₹30 fare while making the ticket print the
-// ₹100 route. Everything the ticket asserts about *what was bought* is decided
-// server-side; the client only picks a route id and a direction.
-$name = $fares[$route]['name'];
-$routeDisplay = $direction === 'from' ? "IITH → {$name}" : "{$name} → IITH";
-$mins = $fares[$route]['journey_mins'];
-$journeyDisplay = $mins < 60
-    ? $mins . ' min'
-    : intdiv($mins, 60) . ' hr' . ($mins % 60 ? ' ' . ($mins % 60) . ' min' : '');
-
-// Departure/arrival are schedule-derived clock strings from the client. They're
-// informational only (the fare and route above are what's enforced), so they're
-// length-capped rather than recomputed — moving them server-side would mean
-// duplicating the whole timetable out of assets/app.js. Worth doing once the DB
-// lands and schedules live in a table instead of a JS constant.
-$departureDisplay = substr((string)($input['departure_display'] ?? ''), 0, 40);
-$arrivalDisplay = substr((string)($input['arrival_display'] ?? ''), 0, 40);
-
-[$status, $order] = rzp_curl('POST', 'orders', [
-    'amount'   => $amountPaise,
-    'currency' => 'INR',
-    'receipt'  => 'sanchari_' . $route . '_' . time(),
-    'notes'    => [
-        'route' => $route, 'route_name' => $fares[$route]['name'],
-        'direction' => $direction, 'route_display' => $routeDisplay, 'departure_display' => $departureDisplay,
-        'arrival_display' => $arrivalDisplay, 'journey_display' => $journeyDisplay,
-    ],
-]);
-
-// Error text stays generic on purpose: the gateway's raw response can carry
-// account/config detail that shouldn't reach a browser. Log server-side, tell
-// the user only what they can act on.
-if ($status === 401) {
-    error_log('sanchari: gateway auth rejected on order create');
-    json_out(['error' => 'Payments are temporarily unavailable. Please try again later.'], 503);
-}
-if ($status !== 200 || empty($order['id'])) {
-    error_log('sanchari: order create failed (http ' . $status . ') ' . json_encode($order));
-    json_out(['error' => 'Could not start payment. Please try again.'], 502);
-}
-
-$cfg = rzp_config();
-json_out([
-    'order_id'   => $order['id'],
-    'amount'     => $order['amount'],
-    'currency'   => $order['currency'],
-    'key_id'     => $cfg['RAZORPAY_KEY_ID'],
-    'route_name' => $fares[$route]['name'],
-]);
+$data=route_data();$cfg=$data['routes'][$route];$d=(new DateTimeImmutable('@'.$departure))->setTimezone(new DateTimeZone('Asia/Kolkata'));
+if($departure<time()+360||$departure>time()+14*86400||!in_array($d->format('H:i'),$cfg[$direction],true)||$d->format('s')!=='00'||($cfg['weekdays']&&(int)$d->format('N')>5)||in_array($d->format('Y-m-d'),$data['holidays'],true))respond(['error'=>'That departure is not available. Please select another journey.'],400);
+$c=config();
+try{query('INSERT INTO bookings (id,recovery_hash,route,direction,departure,valid_from,valid_until,amount,status,created_at,updated_at,last_checked) VALUES (?,?,?,?,?,?,?,?,?,?,?,0)',[$id,hash('sha256',$key),$route,$direction,$departure,$departure-$c['BOARDING_BEFORE_MIN']*60,$departure+$c['BOARDING_AFTER_MIN']*60,$cfg['fare']*100,'creating',time(),time()]);}
+catch(PDOException $e){if(in_array((string)$e->getCode(),['23000','23505']))respond(['error'=>'Booking is already being created. Open payment recovery.'],409);throw $e;}
+$row=gateway_create(booking($id),$key);respond(['id'=>$id,'checkout_url'=>$row['checkout_url']]);
