@@ -97,6 +97,15 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Publish compact date and “Tom” label
+
+- Pushed the compact campus-heading date and one-line next-day label through
+  `16e18f4` after the owner approved the release and requested capital “Tom.”
+- Confirmed the live homepage, stylesheet and script match local files byte
+  for byte. Live browser checks at 320px, 390px and 560px found no horizontal
+  overflow, and “Tom · 8:30 AM” stays on one line.
+- Timetables, tracker links and disabled paid-booking state are unchanged.
+
 ### 2026-09-25 — Compact date and next-day labels (local)
 
 - Replaced the separate full-date/IST row and 15-minute service chip with a
