@@ -58,7 +58,6 @@ svg{display:block}
 .dir .badge svg{width:18px;height:18px}
 .dir .route{flex:1;min-width:0}
 .dir .rt{font-size:14px;font-weight:700;color:var(--ink);line-height:1.25}
-.dir .rt small{display:block;font-size:11px;color:var(--m2);font-weight:600;margin-top:2px}
 .dir .eta{text-align:right;flex-shrink:0}
 .dir .eta .m{font-size:16px;font-weight:900;color:var(--ox);font-variant-numeric:tabular-nums;line-height:1.1}
 .dir .eta .l{font-size:9px;color:var(--m2);font-weight:700;margin-top:1px;text-transform:uppercase;letter-spacing:.04em}
@@ -313,7 +312,6 @@ a{color:var(--ox)}
 .dir.sel{background:linear-gradient(100deg,#fff6ed,#fffdfa 72%)}
 .dir .badge{width:40px;height:40px;background:linear-gradient(145deg,#e96b3b,#b63a22);box-shadow:0 4px 11px #bb4c2724}
 .dir .rt{font-size:15px;font-weight:630;letter-spacing:-.012em}
-.dir .rt small{font-size:11px;font-weight:450;margin-top:3px}
 .dir .eta .m{font-size:19px;font-weight:700;letter-spacing:-.025em;color:#a9341b}
 .dir .eta .l{font-size:10px;font-weight:550;letter-spacing:.06em;margin-top:2px}
 .sched-btn{background:#fff1e5;min-height:47px;font-size:13px;font-weight:650;color:#a9341b}
@@ -402,4 +400,39 @@ input,select,textarea{background:#fffdfa;border-color:#d9c6b7}
 @media(prefers-reduced-motion:reduce){
   .ticket-nav,.rc-expand,.rc-live,.rc-buy{transition:none}
 }
-.dir .eta .m span{margin-left:3px}
+/* Shuttle-first information hierarchy and a second-by-second timetable countdown. */
+.today-line{display:flex;align-items:center;gap:8px;margin:12px 1px 15px;font-size:12px;font-weight:590;color:#6d574a}
+.today-line svg{width:16px;height:16px;flex-shrink:0;color:#a74225}
+.campus-label{align-items:center;gap:10px;margin:0 1px 11px}
+.campus-label .sect{font-size:21px;font-weight:670;line-height:1.1;letter-spacing:-.035em;text-transform:none;color:var(--ink)}
+.campus-label .service-chip{display:inline-flex;align-items:center;min-height:29px;padding:5px 10px;border:1px solid #efd7ba;border-radius:999px;background:#fff1dc;color:#794a20;font-size:10px;font-weight:650;line-height:1.1;white-space:nowrap}
+.card{margin-top:0;border-color:#edd6c3;box-shadow:0 11px 28px -23px #85482b42}
+.dir{min-height:82px;gap:13px;padding:18px 16px}
+.dir.sel{background:linear-gradient(110deg,#fff5ee,#fffdfa 78%)}
+.dir[data-dir="ba"].sel{background:linear-gradient(110deg,#fff8eb,#fffdfa 78%)}
+.dir .badge{width:39px;height:39px;background:linear-gradient(145deg,#e46a3c,#b63d24);color:#fff;box-shadow:0 4px 10px #ac44271e}
+.dir[data-dir="ba"] .badge{background:linear-gradient(145deg,#c7872e,#8f581c);box-shadow:0 4px 10px #9964251c}
+.dir .badge svg{width:20px;height:20px}
+.dir .rt{font-size:14.5px;font-weight:660;line-height:1.22}
+.dir .eta{min-width:78px;padding:7px 8px 6px;border:1px solid #eed5c2;border-radius:13px;background:#fff0e4}
+.dir[data-dir="ba"] .eta{border-color:#ead6ad;background:#fff5df}
+.dir .eta .m{font-size:21px;font-weight:740;line-height:1;letter-spacing:-.055em;color:#8d2e1b;white-space:nowrap}
+.dir[data-dir="ba"] .eta .m{color:#795019}
+.dir .eta .l{font-size:9px;font-weight:700;letter-spacing:.07em;line-height:1;margin-top:5px;color:#785548}
+.dir[data-dir="ba"] .eta .l{color:#756140}
+.sched-btn{min-height:51px;border-top:0;background:linear-gradient(110deg,#b43b22,#8b2a1b);color:#fff;font-size:13.5px;font-weight:680;letter-spacing:.005em}
+.sched-btn:hover{background:linear-gradient(110deg,#c44929,#96301e)}
+.sched-btn:focus-visible{outline:3px solid #ffd59c;outline-offset:-5px}
+.sched-btn svg.clk{width:16px;height:16px}
+.sched-btn svg.chev{width:15px;height:15px}
+@media(max-width:360px){
+  .today-line{font-size:11.5px}
+  .campus-label .sect{font-size:19px}
+  .campus-label .service-chip{font-size:9.5px;padding:5px 8px}
+  .dir{gap:9px;padding:15px 12px}
+  .dir .badge{width:37px;height:37px}
+  .dir .rt{font-size:13.5px}
+  .dir .eta{min-width:71px;padding:6px 6px 5px}
+  .dir .eta .m{font-size:19px}
+}
+@media(prefers-reduced-motion:reduce){.sched-btn:hover{transition:none}}

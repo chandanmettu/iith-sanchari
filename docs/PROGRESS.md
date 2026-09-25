@@ -96,6 +96,21 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Clarify the campus shuttle timer and controls (local)
+
+- Restyled the date with a calendar mark, renamed the section Campus shuttle,
+  and grouped the free 15-minute cadence in one chip instead of repeating it
+  under both directions. Replaced identical badges with right/left arrows and
+  terracotta/amber accents. The full-schedule control is now a dark high-
+  contrast bar.
+- The countdown now displays `mm:ss`, updates each second from the same IST
+  0/8-minute schedule phases, and refreshes on tab return. The expanded six-
+  time list updates separately; no GPS/live-arrival claim was added. Date text
+  also refreshes for a page left open past midnight.
+- Checked a 10:14:59 → 10:15:00 rollover, responsive widths, timetable
+  interactions, and WCAG A/AA automated scans. Payment and ticket behavior are
+  untouched; production remains unchanged.
+
 ### 2026-09-25 — Remove the welcome hero (local)
 
 - Removed the welcome banner from the homepage at the owner’s request. The

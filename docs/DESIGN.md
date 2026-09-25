@@ -22,8 +22,13 @@ features, so the layout stays a compact centered app rather than a dashboard.
 its Open Font License, warm ivory `#faf5ee`, dark espresso `#30231e`, muted
 brown `#66554b`, and stronger sunset orange and saffron card gradients. Cards
 have 23px corners, careful white space and warm low-opacity borders/shadows.
-The primary route times, fares and shuttle countdown are the most prominent
-numbers. Later departures show a short day label; today’s time appears without
+The date has a small calendar icon and the free 15-minute service is a
+compact chip beside the campus heading. The two directions use opposite arrows
+and distinct terracotta/amber accents. Each scheduled countdown displays
+`mm:ss`, derived from the same IST 0/8-minute phases as the expanded timetable;
+seconds are a clock display, not a location feed. The full-schedule control is a
+high-contrast dark-orange bar. The primary route times, fares and shuttle
+countdown are the most prominent numbers. Later departures show a short day label; today’s time appears without
 repeating the date. Buttons keep a visible focus ring and reduced-motion
 behavior. The palette/type catalogue below records the earlier sunrise system;
 use the CSS tokens for exact current values.
