@@ -26,7 +26,8 @@
       ],
       "live": "https://tinyurl.com/4s6f94z8",
       "boarding_from": "Confirm the campus boarding point with Transport",
-      "boarding_to": "Confirm the Patancheru boarding point with Transport"
+      "boarding_to": "Patancheru pickup stop",
+      "boarding_to_url": "https://maps.app.goo.gl/7eRgzfkcrNCpqJUN7"
     },
     "miya": {
       "name": "Miyapur",

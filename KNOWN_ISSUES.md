@@ -69,6 +69,8 @@ activation requires explicit operational confirmation. If admission must reserve
 a seat, inventory enforcement is required before launch. The owner supplied the
 Miyapur weekend departure directions and times, but the holiday calendar,
 weekend pickup point and intermediate stop timings have not been supplied.
+The owner has supplied a map for the Patancheru → IITH pickup stop; the
+IITH → Patancheru campus boarding point is still unconfirmed.
 
 ### SAN-013 — Host and real-device acceptance
 **Severity:** High · **Affects:** rollout
