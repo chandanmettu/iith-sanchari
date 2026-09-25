@@ -8,8 +8,8 @@
   const istMidnight = () => new Date(today()+'T00:00:00+05:30').getTime();
   const shortClock = ts => S.clock(ts).replace(/\s*(am|pm)$/i, x => x.toUpperCase());
   const tomorrow = () => S.dayKey(istMidnight()+86400000);
-  const shortWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'tom · '+shortClock(ts) : S.date(ts,{weekday:'short'})+' · '+shortClock(ts);
-  const longerWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'tom · '+shortClock(ts) : S.when(ts);
+  const shortWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tom · '+shortClock(ts) : S.date(ts,{weekday:'short'})+' · '+shortClock(ts);
+  const longerWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tom · '+shortClock(ts) : S.when(ts);
   const minutesAway = ts => Math.max(1, Math.ceil((ts-Date.now())/60000));
   const shuttleTimes = (dir,count=6) => {
     const start=istMidnight()+phases[dir]*60000, gap=15*60000;
