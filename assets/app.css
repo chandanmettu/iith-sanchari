@@ -317,13 +317,13 @@ a{color:var(--ox)}
 .ticket-nav{font-size:12px;font-weight:650;color:var(--ox);background:#fffdfa;border-color:#eedfd1;padding:10px 15px;box-shadow:0 3px 10px #783b1808}
 .scroll{padding:7px 20px 34px}
 .today-line{margin:9px 2px 10px;font-size:12px;font-weight:550;letter-spacing:.01em}
-.hero{min-height:164px;margin:0;border:1px solid rgba(255,255,255,.95);border-radius:25px;background:linear-gradient(115deg,#fffdf9 10%,#fff4e5 100%);box-shadow:0 10px 30px -22px #8e522b38}
-.hero-art{max-width:74%;-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 24%);mask-image:linear-gradient(to right,transparent 0%,#000 24%)}
-.hero-txt{padding:22px 20px;max-width:61%}
-.hero-txt .hi{font-size:13px;font-weight:500;color:var(--m2)}
-.hero-txt .big{font-size:30px;font-weight:660;letter-spacing:-.045em;line-height:1.06;margin-top:7px}
+.hero{min-height:122px;margin:23px 0 0;border:1px solid rgba(255,255,255,.95);border-radius:25px;background:linear-gradient(115deg,#fffdf9 10%,#fff4e5 100%);box-shadow:0 10px 30px -22px #8e522b38}
+.hero-art{max-width:70%;-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 24%);mask-image:linear-gradient(to right,transparent 0%,#000 24%)}
+.hero-txt{padding:17px 20px;max-width:58%}
+.hero-txt .hi{font-size:11.5px;font-weight:500;color:var(--m2)}
+.hero-txt .big{font-size:23px;font-weight:660;letter-spacing:-.045em;line-height:1.06;margin-top:7px}
 .hero-txt .big .hl{color:var(--ox)}
-.campus-label{margin:27px 2px 0}
+.campus-label{margin:12px 2px 0}
 .campus-label .sect,.special-head .sect{font-size:12px;font-weight:750;letter-spacing:.105em;color:#a9341b}
 .campus-label span{font-size:11px;font-weight:500;color:var(--m2)}
 .card{margin-top:11px;border-color:#edddce;box-shadow:0 12px 30px -24px #8c513528}
@@ -344,9 +344,9 @@ a{color:var(--ox)}
 .srow .ct{font-size:13px;font-weight:640}
 .srow .rel{font-size:11px;font-weight:500}
 .srow.next .ct{color:#a9341b}
-.special-head{margin-top:32px;margin-bottom:10px}
+.special-head{margin-top:25px;margin-bottom:10px}
 .toggle{background:#f3e5d7;padding:4px}
-.toggle button{font-size:12px;font-weight:600;padding:8px 15px}
+.toggle button{font-size:12px;font-weight:600;padding:8px 15px;transition:box-shadow .18s ease,transform .18s ease}
 .toggle button:not(.on),.pill:not(.on){color:#645044}
 .toggle button.on{background:linear-gradient(135deg,#c94927,#a62f1b);box-shadow:0 3px 8px #ad402322}
 .route-notice{font-size:12px;line-height:1.5;color:var(--m2);margin:0 2px 15px}
@@ -397,7 +397,7 @@ input,select,textarea{background:#fffdfa;border-color:#d9c6b7}
   .appbar{padding-left:16px;padding-right:16px}
   .scroll{padding-left:16px;padding-right:16px}
   .hero-txt{padding:18px 16px}
-  .hero-txt .big{font-size:27px}
+  .hero-txt .big{font-size:21px}
   .dir{padding:15px 13px;gap:10px}
   .dir .rt{font-size:13px}
   .dir .eta .m{font-size:17px}
@@ -410,8 +410,8 @@ input,select,textarea{background:#fffdfa;border-color:#d9c6b7}
 }
 @media(min-width:700px){
   .app{max-width:560px}
-  .hero{min-height:180px}
-  .hero-txt .big{font-size:33px}
+  .hero{min-height:134px}
+  .hero-txt .big{font-size:25px}
 }
 @media(hover:hover){
   .ticket-nav:hover,.rc-expand:hover,.rc-live:hover{transform:translateY(-1px);box-shadow:0 7px 16px #743c1922}

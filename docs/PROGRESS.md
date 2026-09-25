@@ -96,6 +96,18 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Put the shuttle first and condense the hero (local)
+
+- Moved the campus timetable immediately below the date. Kept the original
+  artwork and greeting as a 122px welcome banner between the shuttle and
+  special buses, with smaller type and tighter spacing. The existing countdown,
+  schedule controls, route cards, trackers and Buy behavior are unchanged.
+- Made the campus heading the page `h1` and the moved hero heading an `h2` so
+  document order stays meaningful. Bumped the shared CSS cache key to `v=15`.
+- Visually checked 320px, 390px and desktop widths, exercised the
+  existing controls, and passed the WCAG A/AA browser scan. Removed a brief
+  low-contrast transition during direction switching. Production is unchanged.
+
 ### 2026-09-25 — Remove shuttle caption (local)
 
 - Removed the explanatory caption beneath the campus shuttle schedule at the
