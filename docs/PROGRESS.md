@@ -32,7 +32,7 @@ If you're a human reading this and an agent just finished work without logging i
 - **Database:** MySQL — **not yet provisioned.** This is the single biggest open item; see below.
 - **Hosting:** Hostinger shared hosting, deployed via GitHub → Hostinger Git integration.
 - **Payments:** the gateway’s hosted checkout, orders created server-side (fare is never trusted from the client).
-- **Font:** native system stack in the September 25 refinement — see DESIGN.md.
+- **Font:** locally hosted Outfit (OFL), with system fallbacks — see DESIGN.md.
 
 ## Folder structure
 
@@ -95,6 +95,19 @@ transport/
 ---
 
 ## Log (newest first)
+
+### 2026-09-25 — Cleaner sunrise styling with features unchanged (local)
+
+- Kept the campus countdown, both shuttle directions, route timetable panels,
+  external trackers, direct Buy, ticket pages and backend behavior unchanged.
+- Added a locally hosted OFL Outfit variable font with license, refined type
+  scale and spacing, richer orange/saffron gradients, ivory background, clearer
+  surface borders, controls, fare and time hierarchy. The centered app layout
+  and original logo/hero art remain.
+- Bumped the shared CSS cache key to `v=13` on every page. Checked the home at
+  320px, 390px and desktop width, secondary pages, visible interactions and
+  automated WCAG A/AA contrast/semantics. Production deployment is still
+  pending the established push approval.
 
 ### 2026-09-25 — Restore the campus-first home after owner correction (local)
 

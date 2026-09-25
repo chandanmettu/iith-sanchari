@@ -271,8 +271,159 @@ textarea{min-height:90px}
 @media(max-width:360px){.rc-main{padding:16px 12px}.rc-route{font-size:16px}.rc-stub{width:91px;padding:12px 6px}.rc-when .tm{font-size:17px}.rc-expand,.rc-live{font-size:11px;padding:8px 10px}.rc-actions{gap:6px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media print{body{background:white}.tk-top,.ticket-actions,.tk-note{display:none!important}.ticket{box-shadow:none!important}.tk-wrap{max-width:420px!important}.tk-band{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-/* Darker ink on light surfaces keeps the sunrise palette readable. */
-:root{--m2:#69574d}
-.ticket-nav,.sect,.sched-btn,.dir .eta .m,.stop .tm{color:#aa3416}
+/* 2026-09-25 visual refinement: the same campus-first layout with clearer type,
+   more deliberate spacing and a brighter, richer sunrise. */
+@font-face{
+  font-family:Outfit;
+  src:url("fonts/outfit-variable.ttf") format("truetype");
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+}
+:root{
+  --stage:#faf5ee;
+  --paper:#fffefa;
+  --paper2:#fff0e3;
+  --paper3:#fff5e9;
+  --ink:#30231e;
+  --m2:#66554b;
+  --ox:#bd3c1e;
+  --ox2:#932a1b;
+  --gold:#e9a62f;
+  --goldt:#82500f;
+  --pline:rgba(105,59,35,.13);
+  --sh:rgba(115,55,25,.14);
+  --live:#226443;
+  --r-card:23px;
+  --grad-ox:linear-gradient(135deg,#ed6937 0%,#d94724 48%,#a82b20 100%);
+  --grad-gold:linear-gradient(135deg,#ffe19a 0%,#f3b640 51%,#d5891b 100%);
+}
+body{
+  font-family:Outfit,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:14px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(ellipse 440px 370px at calc(50% + 310px) -130px,rgba(248,174,99,.22),transparent 75%),
+    radial-gradient(ellipse 430px 420px at calc(50% - 330px) 680px,rgba(247,201,119,.11),transparent 80%),
+    var(--stage);
+}
+button,input,select,textarea{font-family:inherit}
+a{color:var(--ox)}
+.app{max-width:510px}
+.appbar{padding:calc(env(safe-area-inset-top,0px) + 17px) 20px 9px;background:var(--stage)}
+.appbar .applogo{width:40px;height:40px;border-radius:12px;box-shadow:none}
+.appbar .brand{font-size:21px;font-weight:720;letter-spacing:.005em}
+.appbar .brand small{margin-top:3px;font-size:9px;font-weight:600;letter-spacing:.13em}
+.ticket-nav{font-size:12px;font-weight:650;color:var(--ox);background:#fffdfa;border-color:#eedfd1;padding:10px 15px;box-shadow:0 3px 10px #783b1808}
+.scroll{padding:7px 20px 34px}
+.today-line{margin:9px 2px 10px;font-size:12px;font-weight:550;letter-spacing:.01em}
+.hero{min-height:164px;margin:0;border:1px solid rgba(255,255,255,.95);border-radius:25px;background:linear-gradient(115deg,#fffdf9 10%,#fff4e5 100%);box-shadow:0 10px 30px -22px #8e522b38}
+.hero-art{max-width:74%;-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 24%);mask-image:linear-gradient(to right,transparent 0%,#000 24%)}
+.hero-txt{padding:22px 20px;max-width:61%}
+.hero-txt .hi{font-size:13px;font-weight:500;color:var(--m2)}
+.hero-txt .big{font-size:30px;font-weight:660;letter-spacing:-.045em;line-height:1.06;margin-top:7px}
+.hero-txt .big .hl{color:var(--ox)}
+.campus-label{margin:27px 2px 0}
+.campus-label .sect,.special-head .sect{font-size:12px;font-weight:750;letter-spacing:.105em;color:#a9341b}
+.campus-label span{font-size:11px;font-weight:500;color:var(--m2)}
+.card{margin-top:11px;border-color:#edddce;box-shadow:0 12px 30px -24px #8c513528}
+.dir{min-height:78px;gap:14px;padding:17px 18px}
+.dir.sel{background:linear-gradient(100deg,#fff6ed,#fffdfa 72%)}
+.dir .badge{width:40px;height:40px;background:linear-gradient(145deg,#e96b3b,#b63a22);box-shadow:0 4px 11px #bb4c2724}
+.dir .rt{font-size:15px;font-weight:630;letter-spacing:-.012em}
+.dir .rt small{font-size:11px;font-weight:450;margin-top:3px}
+.dir .eta .m{font-size:19px;font-weight:700;letter-spacing:-.025em;color:#a9341b}
+.dir .eta .l{font-size:10px;font-weight:550;letter-spacing:.06em;margin-top:2px}
+.sched-btn{background:#fff1e5;min-height:47px;font-size:13px;font-weight:650;color:#a9341b}
+.sched-panel{background:var(--paper3);box-shadow:inset 0 3px 7px -5px #8a4a1b32,inset 0 1px 0 #e9d8c6}
+.sched-inner{padding:16px 18px 18px}
+.pills{background:#f7e9d8;margin-bottom:14px}
+.pill{font-size:12px;font-weight:600}
+.pill.on{background:linear-gradient(135deg,#c84827,#9d2e1c)}
+.srow{padding:11px 4px}
+.srow .ct{font-size:13px;font-weight:640}
+.srow .rel{font-size:11px;font-weight:500}
+.srow.next .ct{color:#a9341b}
+.shuttle-caption{padding:11px 18px 14px;font-size:11px;line-height:1.5;border-top:1px solid #f4e6d9}
+.special-head{margin-top:32px;margin-bottom:10px}
+.toggle{background:#f3e5d7;padding:4px}
+.toggle button{font-size:12px;font-weight:600;padding:8px 15px}
 .toggle button:not(.on),.pill:not(.on){color:#645044}
+.toggle button.on{background:linear-gradient(135deg,#c94927,#a62f1b);box-shadow:0 3px 8px #ad402322}
+.route-notice{font-size:12px;line-height:1.5;color:var(--m2);margin:0 2px 15px}
+.rcards{gap:16px;margin-top:0}
+.stubcard{min-height:158px;box-shadow:0 15px 30px -22px #97452566}
+.stubcard::before{background:radial-gradient(130% 95% at 9% -18%,rgba(255,255,255,.24),transparent 53%)}
+.rc-main{padding:20px 18px}
+.rc-route{font-size:20px;font-weight:650;letter-spacing:-.03em;line-height:1.14}
+.rc-when{margin-top:13px;gap:6px}
+.rc-at{font-size:12px;font-weight:500;color:#ffeddf}
+.rc-when .tm{font-size:23px;font-weight:720;letter-spacing:-.03em;color:#fff9e6}
+.rc-rel{font-size:12px;font-weight:550;color:#fff1e7}
+.rc-actions{margin-top:18px;gap:7px}
+.rc-expand,.rc-live{min-height:38px;padding:9px 14px;font-size:12px;font-weight:650;box-shadow:0 2px 9px #6c281716}
+.rc-expand{color:#9c311a}
+.rcard[data-bus="miya"] .rc-expand{color:#7c4a0c}
+.rc-live{color:#1c613f}
+.rc-live .pulse{animation:none}
+.rc-stub{width:111px;padding:17px 10px;gap:7px}
+.rc-farel{font-size:10px;font-weight:600;letter-spacing:.12em;color:#fff6eb}
+.rc-fare{font-size:28px;font-weight:720;letter-spacing:-.045em}
+.rc-buy{margin-top:6px;min-height:44px;padding:10px 21px;font-size:13px;font-weight:700;color:#a9341b;box-shadow:0 4px 10px #6d2b1b30}
+.rc-buy:disabled{opacity:1;background:#ffe7d9;color:#934327;box-shadow:none;cursor:not-allowed}
+.rcard[data-bus="miya"] .rc-buy:disabled{background:#fff3da;color:#80500f}
 .rcard[data-bus="miya"] .rc-route{color:var(--ink)}
+.rcard[data-bus="miya"] .rc-at{color:#5b3e22}
+.rcard[data-bus="miya"] .rc-rel{color:#604425}
+.rcard[data-bus="miya"] .rc-farel{color:#5a3c1d}
+.rc-detail-in{padding:17px 18px 19px;margin-top:8px;border-color:#edddce;box-shadow:0 8px 22px -19px #8c513528}
+.rcard .srow .ct{font-size:13px;font-weight:620}
+.rc-sec{font-size:10px;font-weight:700;letter-spacing:.11em}
+.retnote{background:#fff2e4;border-color:#efdecd;border-radius:12px;font-size:12px;padding:12px 13px}
+.note-days{font-size:11px;line-height:1.5}
+.stop .nm2{font-size:13px;font-weight:620}
+.stop .lm{font-size:11px}
+.stop .tm{font-size:12px;font-weight:650;color:#a9341b}
+.footer{margin-top:31px;padding:19px 0 4px;border-top:1px solid #e7d8c8}
+.footer-links{gap:3px 17px}
+.footer-links a{font-size:11px;font-weight:550;text-decoration:none;border-bottom:1px solid #b7a396}
+.footer-op{font-size:11px;font-weight:450;line-height:1.5;max-width:380px;margin:12px auto 0}
+.page-wrap{font-family:Outfit,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.page-wrap h1{font-weight:650}
+.surface{background:#fffdf9;border:1px solid #edddce;border-radius:23px;box-shadow:0 12px 30px -26px #8c513528}
+.primary-btn{background:#a9351e;font-weight:650}
+input,select,textarea{background:#fffdfa;border-color:#d9c6b7}
+.status-box{background:#fff0e1}
+@media(max-width:360px){
+  .appbar{padding-left:16px;padding-right:16px}
+  .scroll{padding-left:16px;padding-right:16px}
+  .hero-txt{padding:18px 16px}
+  .hero-txt .big{font-size:27px}
+  .dir{padding:15px 13px;gap:10px}
+  .dir .rt{font-size:13px}
+  .dir .eta .m{font-size:17px}
+  .rc-main{padding:18px 13px}
+  .rc-route{font-size:17px}
+  .rc-when .tm{font-size:19px}
+  .rc-stub{width:93px;padding:13px 6px}
+  .rc-fare{font-size:25px}
+  .rc-expand,.rc-live{padding:8px 10px;font-size:11px}
+}
+@media(min-width:700px){
+  .app{max-width:560px}
+  .hero{min-height:180px}
+  .hero-txt .big{font-size:33px}
+}
+@media(hover:hover){
+  .ticket-nav:hover,.rc-expand:hover,.rc-live:hover{transform:translateY(-1px);box-shadow:0 7px 16px #743c1922}
+  .rc-buy:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 6px 14px #743c1940}
+  .dir:hover{background:#fff7ef}
+}
+@media(prefers-reduced-motion:no-preference){
+  .ticket-nav,.rc-expand,.rc-live,.rc-buy{transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s cubic-bezier(.22,1,.36,1),background .2s}
+}
+@media(prefers-reduced-motion:reduce){
+  .ticket-nav,.rc-expand,.rc-live,.rc-buy{transition:none}
+}
+.dir .eta .m span{margin-left:3px}
