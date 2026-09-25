@@ -102,7 +102,7 @@ transport/
 - Replaced the separate full-date/IST row and 15-minute service chip with a
   larger abbreviated date beside the campus shuttle heading. The date remains
   tied to the campus timezone and refreshes when the day changes.
-- Shortened next-day route labels from “Tomorrow” to “tom,” omitted the
+- Shortened next-day route labels from “Tomorrow” to “Tom,” omitted the
   redundant “at” for later dates, and kept route times on one line. The
   underlying shuttle and special-bus timetables are unchanged.
 - Checked 320px, 390px and desktop widths for one-line next-day times and no

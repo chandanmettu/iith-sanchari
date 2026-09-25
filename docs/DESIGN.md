@@ -29,7 +29,7 @@ and distinct terracotta/amber accents. Each scheduled countdown displays
 `mm:ss`, derived from the same IST 0/8-minute phases as the expanded timetable;
 seconds are a clock display, not a location feed. The full-schedule control is a
 high-contrast dark-orange bar. The primary route times, fares and shuttle
-countdown are the most prominent numbers. Tomorrow's departures use `tom` to
+countdown are the most prominent numbers. Tomorrow's departures use `Tom` to
 keep the time on one line; today’s time appears without
 repeating the date. Buttons keep a visible focus ring and reduced-motion
 behavior. The palette/type catalogue below records the earlier sunrise system;
