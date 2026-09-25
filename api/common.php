@@ -49,6 +49,15 @@ function db() {
 }
 function query($sql,$values=[]) { $q=db()->prepare($sql);$q->execute($values);return $q; }
 function route_data() { static $data;return $data??=json_decode(file_get_contents(__DIR__.'/../assets/routes.json'),true,512,JSON_THROW_ON_ERROR); }
+function scheduled_times($cfg,$direction,$departure) {
+    $weekend=(int)$departure->format('N')>5;
+    if(isset($cfg['timetable']))return $cfg['timetable'][$weekend?'weekend':'weekday'][$direction]??[];
+    return $weekend&&($cfg['weekdays']??false)?[]:($cfg[$direction]??[]);
+}
+function scheduled_boarding($cfg,$direction,$departure) {
+    if((int)$departure->format('N')>5&&isset($cfg['boarding_'.$direction.'_weekend']))return $cfg['boarding_'.$direction.'_weekend'];
+    return $cfg['boarding_'.$direction];
+}
 function signing_key() { $key=config()['TICKET_HMAC_SECRET']??'';if(strlen($key)<32)throw new RuntimeException('Signing unavailable');return $key; }
 function limit_requests($scope,$limit=20,$seconds=60) {
     $ip=$_SERVER['REMOTE_ADDR']??'local';
@@ -79,7 +88,7 @@ function ticket_details($row) {
         'departure_display'=>$d->format('g:i A'),'arrival_display'=>$d->modify('+'.$cfg['journey_mins'].' minutes')->format('D, g:i A'),
         'journey_display'=>$cfg['journey_mins'].' min','fare'=>$row['amount']/100,'payment_id'=>$row['payment_id'],
         'issued_at'=>(int)$row['created_at'],'valid_from'=>(int)$row['valid_from'],'valid_until'=>(int)$row['valid_until'],
-        'used_at'=>$row['used_at']?(int)$row['used_at']:null,'boarding'=>$cfg['boarding_'.$row['direction']]];
+        'used_at'=>$row['used_at']?(int)$row['used_at']:null,'boarding'=>scheduled_boarding($cfg,$row['direction'],$d)];
 }
 function ticket_state($row) {
     if(!$row)return 'invalid';
