@@ -153,6 +153,7 @@ svg{display:block}
 .stop .tm{font-size:11.5px;font-weight:800;color:var(--ox);font-variant-numeric:tabular-nums;white-space:nowrap}
 .retnote{background:var(--paper2);border:1px solid var(--pline);border-radius:10px;padding:11px 12px;font-size:11.5px;color:var(--ink);line-height:1.45;margin-top:6px}
 .retnote b{color:var(--ox)}
+.retnote a{display:inline-block;margin-top:4px;color:var(--ox);font-weight:800;text-decoration:underline;text-underline-offset:2px}
 .terms{margin-top:13px;border-top:1px dashed var(--pline);padding-top:11px}
 .terms .th{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--m2);margin-bottom:6px}
 .terms ul{margin:0;padding-left:15px;display:flex;flex-direction:column;gap:4px}

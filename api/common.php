@@ -88,7 +88,8 @@ function ticket_details($row) {
         'departure_display'=>$d->format('g:i A'),'arrival_display'=>$d->modify('+'.$cfg['journey_mins'].' minutes')->format('D, g:i A'),
         'journey_display'=>$cfg['journey_mins'].' min','fare'=>$row['amount']/100,'payment_id'=>$row['payment_id'],
         'issued_at'=>(int)$row['created_at'],'valid_from'=>(int)$row['valid_from'],'valid_until'=>(int)$row['valid_until'],
-        'used_at'=>$row['used_at']?(int)$row['used_at']:null,'boarding'=>scheduled_boarding($cfg,$row['direction'],$d)];
+        'used_at'=>$row['used_at']?(int)$row['used_at']:null,'boarding'=>scheduled_boarding($cfg,$row['direction'],$d),
+        'boarding_url'=>$cfg['boarding_'.$row['direction'].'_url']??null];
 }
 function ticket_state($row) {
     if(!$row)return 'invalid';

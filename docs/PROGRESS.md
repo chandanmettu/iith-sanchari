@@ -96,6 +96,16 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Add Patancheru pickup map (local)
+
+- Added the owner-supplied Maps link for the Patancheru → IITH pickup point to
+  that direction's expanded route card and to its server-issued ticket details.
+  The IITH → Patancheru direction does not show this pickup link.
+- Bumped route data and script/style cache keys. Booking stays disabled;
+  production has not changed. PHP ticket checks and mobile browser checks
+  covered the link and direction filtering. The campus-side Patancheru boarding
+  point still needs confirmation.
+
 ### 2026-09-25 — Add Miyapur weekend timetable (local)
 
 - Added the owner-supplied Saturday/Sunday 8:30 AM IITH → Miyapur and 5:45 PM
