@@ -17,14 +17,22 @@
     const first=Math.floor((Date.now()-start)/gap)+1;
     return Array.from({length:count},(_,i)=>start+(first+i)*gap);
   };
-  function renderShuttle(){
+  function renderShuttleCountdown(){
     for(const dir of ['ab','ba']){
-      const min=minutesAway(shuttleTimes(dir,1)[0]);
-      document.getElementById('eta-'+dir).innerHTML=min+'<span style="font-size:10px;font-weight:800"> min</span>';
+      const next=shuttleTimes(dir,1)[0];
+      const seconds=Math.max(0,Math.ceil((next-Date.now())/1000));
+      const minutes=Math.floor(seconds/60),remainder=seconds%60;
+      const timer=document.getElementById('eta-'+dir);
+      timer.textContent=pad(minutes)+':'+pad(remainder);
+      timer.setAttribute('aria-label','Next shuttle in '+minutes+' minutes '+remainder+' seconds');
     }
+  }
+  function renderShuttleSchedule(){
     document.getElementById('slist').innerHTML=shuttleTimes(shuttleDirection).map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${shortClock(ts)}</span><span class="rel">${i===0?'next · ':''}${minutesAway(ts)} min</span></div>`).join('');
   }
-  document.getElementById('todayLabel').textContent=S.date(Date.now(),{weekday:'long',day:'numeric',month:'long'})+' · IST';
+  function renderShuttle(){renderShuttleCountdown();renderShuttleSchedule();}
+  function renderDate(){document.getElementById('todayLabel').textContent=S.date(Date.now(),{weekday:'long',day:'numeric',month:'long'})+' · IST';}
+  renderDate();
   document.querySelectorAll('.dir').forEach(button=>button.addEventListener('click',()=>{
     shuttleDirection=button.dataset.dir;
     document.querySelectorAll('.dir').forEach(b=>{b.classList.toggle('sel',b===button);b.setAttribute('aria-pressed',String(b===button));});
@@ -36,8 +44,10 @@
     const open=e.currentTarget.getAttribute('aria-expanded')!=='true';
     e.currentTarget.setAttribute('aria-expanded',String(open));e.currentTarget.classList.toggle('open',open);
     document.getElementById('schedPanel').classList.toggle('open',open);
+    if(open)renderShuttleSchedule();
   });
-  renderShuttle();setInterval(renderShuttle,15000);
+  renderShuttle();setInterval(renderShuttleCountdown,1000);setInterval(renderShuttleSchedule,30000);setInterval(renderDate,60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderDate();renderShuttle();}});
   try{const response=await fetch('assets/routes.json?v=11');if(!response.ok)throw Error();data=await response.json();}
   catch{cards.innerHTML='<p class="route-notice">Schedules could not load. Please refresh or contact Transport.</p>';notice.hidden=true;return;}
   try{availability=await S.api('status.php');}catch{}
