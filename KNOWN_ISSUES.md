@@ -78,11 +78,14 @@ transition plan for any outstanding legacy passes.
 
 ## Locally addressed — awaiting deployment
 
-### SAN-002 — Placeholder shuttle countdown removed
+### SAN-002 — Campus shuttle countdown restored
 **Local change:** 2026-09-25
 
-No fabricated arrival countdown or cadence remains. The campus card clearly says
-timings require confirmation. Actual shuttle timings are still needed.
+The owner confirmed the original 15-minute campus shuttle schedule was the
+working service, correcting the earlier placeholder description. The same
+two-direction countdown and full schedule are restored. It is a scheduled
+countdown, not a GPS prediction. Reconfirm any later service changes with
+Transport before updating the timetable.
 
 ### SAN-005 — Responsive layout
 **Local change:** 2026-09-25
@@ -163,6 +166,8 @@ decoding.
 ## Historical open-issue descriptions (before 2026-09-25)
 
 Retained for provenance; the current status sections above supersede these.
+The owner later corrected the old SAN-002 assumption: that schedule reflected
+the working campus shuttle service.
 
 ### Original backlog
 

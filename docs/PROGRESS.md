@@ -52,8 +52,9 @@ transport/
 
 ## Current state (2026-09-25, local preparation)
 
-- Redesigned responsive home, clearer schedules and journey review; original
-  artwork retained. Placeholder campus cadence removed.
+- Original sunrise visual identity, campus shuttle countdown and two-direction
+  schedule restored after owner correction. Route cards show the next bookable
+  departure and a direct Buy action; today’s date appears once at the top.
 - Shared IST timetable/fare source, persistent bookings, hosted redirect adapter,
   recovery links, server-verified short QR tickets, authenticated atomic boarding,
   staff operations, authenticated webhooks and CLI reconciliation prepared.
@@ -94,6 +95,25 @@ transport/
 ---
 
 ## Log (newest first)
+
+### 2026-09-25 — Restore the campus-first home after owner correction (local)
+
+- The owner confirmed the original 15-minute Main Gate–Hostel Circle countdown
+  was a working campus timetable. Restored both direction countdowns, six-entry
+  expandable schedule, and the same 0/8-minute phase offsets. The value is a
+  scheduled countdown, not a GPS location or arrival prediction.
+- Restored the original compact, colorful Sunrise IITH shell, hero, rounded
+  typography and vivid orange/gold perforated ticket cards. Kept accessible
+  controls and the new ticket/payment backend. Desktop remains a centered app
+  instead of the previous broad board.
+- Removed the extra departure selection and journey-review dialog. Each Buy
+  acts on the next departure eligible for backend checkout; today displays its
+  time only, while later trips show tomorrow or a weekday. No checkout is
+  opened while booking is disabled. The same saved booking reference is reused
+  on retry, with a recovery link on error.
+- Rechecked 320px, 390px and desktop layouts, shuttle expansion, schedule
+  disclosure and the direct Buy payload locally. Production payment, timetable
+  changes and real-device boarding remain open as described below.
 
 ### 2026-09-25 — Responsive design and ticket lifecycle preparation (local)
 

@@ -61,7 +61,7 @@ You are building a campus mobility app for IIT Hyderabad. A senior designer has 
 
 ## 3. Real data (seed into MySQL)
 
-**Internal shuttle** (Main Gate ⇄ Hostel Circle) — **free**. *Placeholder: 15-min interval*; real timings pending from the transport office — keep in the DB/config so it's swappable, don't hardcode in JS.
+**Internal shuttle** (Main Gate ⇄ Hostel Circle) — **free**. The original draft below treated the 15-minute cadence as a placeholder. **Owner correction, 2026-09-25:** this was the working campus timetable; its two-direction countdown is restored on the homepage. Reconfirm later service changes with Transport.
 
 **Patancheru** — fare **₹30/seat**, runs **all days**. Live tracker: `https://tinyurl.com/4s6f94z8` (Patancheru→IITH, ~2 min delay).
 - From IITH (IITH→PTC): `09:00 11:00 17:00 19:00 21:00 23:00`
