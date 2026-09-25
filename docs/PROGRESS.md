@@ -96,6 +96,13 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Remove shuttle caption (local)
+
+- Removed the explanatory caption beneath the campus shuttle schedule at the
+  owner's request. The countdown, directions and expandable schedule are
+  unchanged. Removed its unused CSS and bumped the shared stylesheet cache key
+  to `v=14` on all pages. Production remains unchanged pending push approval.
+
 ### 2026-09-25 — Cleaner sunrise styling with features unchanged (local)
 
 - Kept the campus countdown, both shuttle directions, route timetable panels,

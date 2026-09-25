@@ -210,7 +210,6 @@ button{min-height:44px}
 .dir.sel{background:#fff8f2}
 .dir .eta .m,.dir .eta .l{display:block}
 .dir .eta .m{font-variant-numeric:tabular-nums}
-.shuttle-caption{font-size:10px;color:var(--m2);padding:0 15px 12px;margin:0;line-height:1.4}
 .sched-btn{min-height:44px}
 .pill{min-height:36px}
 .special-head{margin-top:27px}
@@ -345,7 +344,6 @@ a{color:var(--ox)}
 .srow .ct{font-size:13px;font-weight:640}
 .srow .rel{font-size:11px;font-weight:500}
 .srow.next .ct{color:#a9341b}
-.shuttle-caption{padding:11px 18px 14px;font-size:11px;line-height:1.5;border-top:1px solid #f4e6d9}
 .special-head{margin-top:32px;margin-bottom:10px}
 .toggle{background:#f3e5d7;padding:4px}
 .toggle button{font-size:12px;font-weight:600;padding:8px 15px}
