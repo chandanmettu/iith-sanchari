@@ -12,8 +12,9 @@ The live implementation of every token below is `assets/app.css`. This document 
 
 ## September 25 visual refinement
 
-The current home is campus-first: date, the working Main Gate–Hostel Circle
-timetable, then direct-Buy Patancheru and Miyapur cards. The decorative hero
+The current home is campus-first: the working Main Gate–Hostel Circle
+timetable with a compact date beside its heading, then direct-Buy Patancheru
+and Miyapur cards. The decorative hero
 was removed at the owner’s request; its artwork remains an unused source asset. The shuttle value follows scheduled 15-minute intervals in IST; it is
 not a GPS prediction. The owner asked for a cleaner design without changing
 features, so the layout stays a compact centered app rather than a dashboard.
@@ -22,13 +23,14 @@ features, so the layout stays a compact centered app rather than a dashboard.
 its Open Font License, warm ivory `#faf5ee`, dark espresso `#30231e`, muted
 brown `#66554b`, and stronger sunset orange and saffron card gradients. Cards
 have 23px corners, careful white space and warm low-opacity borders/shadows.
-The date has a small calendar icon and the free 15-minute service is a
-compact chip beside the campus heading. The two directions use opposite arrows
+The date is a readable `Fri, 25 Sep` chip beside the campus heading. The two
+directions use opposite arrows
 and distinct terracotta/amber accents. Each scheduled countdown displays
 `mm:ss`, derived from the same IST 0/8-minute phases as the expanded timetable;
 seconds are a clock display, not a location feed. The full-schedule control is a
 high-contrast dark-orange bar. The primary route times, fares and shuttle
-countdown are the most prominent numbers. Later departures show a short day label; today’s time appears without
+countdown are the most prominent numbers. Tomorrow's departures use `tom` to
+keep the time on one line; today’s time appears without
 repeating the date. Buttons keep a visible focus ring and reduced-motion
 behavior. The palette/type catalogue below records the earlier sunrise system;
 use the CSS tokens for exact current values.

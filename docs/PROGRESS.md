@@ -97,6 +97,18 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Compact date and next-day labels (local)
+
+- Replaced the separate full-date/IST row and 15-minute service chip with a
+  larger abbreviated date beside the campus shuttle heading. The date remains
+  tied to the campus timezone and refreshes when the day changes.
+- Shortened next-day route labels from “Tomorrow” to “tom,” omitted the
+  redundant “at” for later dates, and kept route times on one line. The
+  underlying shuttle and special-bus timetables are unchanged.
+- Checked 320px, 390px and desktop widths for one-line next-day times and no
+  horizontal overflow. Date rollover, shuttle schedule and route direction
+  controls passed. Production remains unchanged pending a push.
+
 ### 2026-09-25 — Publish campus-first UI and route updates
 
 - Pushed the ten prepared local commits through `e71f900` to `main`; Hostinger
