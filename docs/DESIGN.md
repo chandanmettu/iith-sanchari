@@ -12,9 +12,9 @@ The live implementation of every token below is `assets/app.css`. This document 
 
 ## September 25 visual refinement
 
-The current home remains campus-first: date, original hero art, the working
-Main Gate–Hostel Circle timetable, then direct-Buy Patancheru and Miyapur
-cards. The shuttle value follows scheduled 15-minute intervals in IST; it is
+The current home is campus-first: date, the working Main Gate–Hostel Circle
+timetable, a short original-art welcome banner, then direct-Buy Patancheru
+and Miyapur cards. The shuttle value follows scheduled 15-minute intervals in IST; it is
 not a GPS prediction. The owner asked for a cleaner design without changing
 features, so the layout stays a compact centered app rather than a dashboard.
 
