@@ -8,8 +8,8 @@
   const istMidnight = () => new Date(today()+'T00:00:00+05:30').getTime();
   const shortClock = ts => S.clock(ts).replace(/\s*(am|pm)$/i, x => x.toUpperCase());
   const tomorrow = () => S.dayKey(istMidnight()+86400000);
-  const shortWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tomorrow · '+shortClock(ts) : S.date(ts,{weekday:'short'})+' · '+shortClock(ts);
-  const longerWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tomorrow · '+shortClock(ts) : S.when(ts);
+  const shortWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'tom · '+shortClock(ts) : S.date(ts,{weekday:'short'})+' · '+shortClock(ts);
+  const longerWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'tom · '+shortClock(ts) : S.when(ts);
   const minutesAway = ts => Math.max(1, Math.ceil((ts-Date.now())/60000));
   const shuttleTimes = (dir,count=6) => {
     const start=istMidnight()+phases[dir]*60000, gap=15*60000;
@@ -30,7 +30,12 @@
     document.getElementById('slist').innerHTML=shuttleTimes(shuttleDirection).map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${shortClock(ts)}</span><span class="rel">${i===0?'next · ':''}${minutesAway(ts)} min</span></div>`).join('');
   }
   function renderShuttle(){renderShuttleCountdown();renderShuttleSchedule();}
-  function renderDate(){document.getElementById('todayLabel').textContent=S.date(Date.now(),{weekday:'long',day:'numeric',month:'long'})+' · IST';}
+  function renderDate(){
+    const now=Date.now(),label=document.getElementById('todayLabel');
+    label.textContent=S.date(now,{weekday:'short'})+', '+S.date(now,{day:'numeric'})+' '+S.date(now,{month:'short'}).slice(0,3);
+    label.setAttribute('datetime',S.dayKey(now));
+    label.setAttribute('aria-label',S.date(now,{weekday:'long',day:'numeric',month:'long'}));
+  }
   renderDate();
   document.querySelectorAll('.dir').forEach(button=>button.addEventListener('click',()=>{
     shuttleDirection=button.dataset.dir;
@@ -67,7 +72,7 @@
       const first=up[0];
       const mapLink=direction==='to'&&cfg.boarding_to_url?`<br><a href="${S.escape(cfg.boarding_to_url)}" target="_blank" rel="noopener noreferrer">Open pickup stop in Maps ↗</a>`:'';
       const rows=up.map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${longerWhen(ts)}</span><span class="rel">${i===0?'next · ':''}${S.dayKey(ts)===today()?minutesAway(ts)+' min away':''}</span></div>`).join('');
-      return `<article class="rcard ${expanded.has(id)?'open':''}" data-bus="${id}" data-departure="${first||''}"><div class="stubcard"><div class="rc-main"><div class="rc-route">${S.escape(route)}</div><div class="rc-when"><span class="rc-at">at</span><span class="tm">${first?shortWhen(first):'No trips listed'}</span><span class="rc-rel">${first&&S.dayKey(first)===today()?minutesAway(first)+' min':''}</span></div><div class="rc-actions"><button class="rc-expand" data-expand="${id}" aria-expanded="${expanded.has(id)}" aria-controls="schedule-${id}">Schedule <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>${id==='miya'&&direction==='from'?'':`<a class="rc-live" href="${S.escape(cfg.live)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${S.escape(cfg.name)} external bus tracker"><span class="pulse"></span>Live</a>`}</div></div><div class="rc-vp" aria-hidden="true"></div><div class="rc-stub"><div class="rc-farel">Fare</div><div class="rc-fare">₹${cfg.fare}</div><button class="rc-buy" data-buy="${id}" ${first&&availability.booking_enabled?'':'disabled'}>Buy</button></div></div><p class="card-status" role="status">${statusByCard[id]||''}</p><div class="rc-detail" id="schedule-${id}" ${expanded.has(id)?'':'hidden'}><div class="rc-detail-in"><div class="rc-sec">Upcoming departures</div><div class="slist">${rows}</div><div class="retnote">Board at: ${S.escape(S.boarding(cfg,direction,first))}${mapLink}</div>${extraHTML(id,cfg,first)}<p class="note-days">${data.confirmed?'Check for service updates with Transport.':'Please confirm schedule changes with Transport before travel.'}</p></div></div></article>`;
+      return `<article class="rcard ${expanded.has(id)?'open':''}" data-bus="${id}" data-departure="${first||''}"><div class="stubcard"><div class="rc-main"><div class="rc-route">${S.escape(route)}</div><div class="rc-when">${first&&S.dayKey(first)===today()?'<span class="rc-at">at</span>':''}<span class="tm">${first?shortWhen(first):'No trips listed'}</span><span class="rc-rel">${first&&S.dayKey(first)===today()?minutesAway(first)+' min':''}</span></div><div class="rc-actions"><button class="rc-expand" data-expand="${id}" aria-expanded="${expanded.has(id)}" aria-controls="schedule-${id}">Schedule <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>${id==='miya'&&direction==='from'?'':`<a class="rc-live" href="${S.escape(cfg.live)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${S.escape(cfg.name)} external bus tracker"><span class="pulse"></span>Live</a>`}</div></div><div class="rc-vp" aria-hidden="true"></div><div class="rc-stub"><div class="rc-farel">Fare</div><div class="rc-fare">₹${cfg.fare}</div><button class="rc-buy" data-buy="${id}" ${first&&availability.booking_enabled?'':'disabled'}>Buy</button></div></div><p class="card-status" role="status">${statusByCard[id]||''}</p><div class="rc-detail" id="schedule-${id}" ${expanded.has(id)?'':'hidden'}><div class="rc-detail-in"><div class="rc-sec">Upcoming departures</div><div class="slist">${rows}</div><div class="retnote">Board at: ${S.escape(S.boarding(cfg,direction,first))}${mapLink}</div>${extraHTML(id,cfg,first)}<p class="note-days">${data.confirmed?'Check for service updates with Transport.':'Please confirm schedule changes with Transport before travel.'}</p></div></div></article>`;
     }).join('');
   }
   renderCards();

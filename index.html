@@ -5,13 +5,12 @@
 <meta name="theme-color" content="#faf5ee"><meta name="description" content="Campus shuttle countdown and bus journeys from IIT Hyderabad.">
 <title>Sanchari — IIT Hyderabad bus tickets</title>
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg"><link rel="apple-touch-icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/app.css?v=18">
+<link rel="stylesheet" href="assets/app.css?v=19">
 </head>
 <body><a class="skip-link" href="#campus">Skip to buses</a><div class="app">
 <header class="appbar"><a class="brandblock" href="index.html" aria-label="Sanchari home"><img class="applogo" src="assets/logo.svg" alt=""><span class="brand">SANCHARI<small>IIT HYDERABAD</small></span></a><a class="ticket-nav" href="tickets.html">My tickets ↗</a></header>
 <main class="scroll">
-<p class="today-line"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><span id="todayLabel">All times in IST</span></p>
-<div class="campus-label" id="campus"><h1 class="sect">Campus shuttle</h1><span class="service-chip">Free · every 15 min</span></div>
+<div class="campus-label" id="campus"><h1 class="sect">Campus shuttle</h1><time class="date-chip" id="todayLabel">Today</time></div>
 <section class="card" aria-label="Campus shuttle timetable">
 <button class="dir sel" data-dir="ab" aria-pressed="true"><span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></span><span class="route"><span class="rt">Main Gate → Hostel Circle</span></span><span class="eta"><span class="m" id="eta-ab" role="timer" aria-live="off" aria-label="Next shuttle countdown">--:--</span><span class="l" aria-hidden="true">MIN : SEC</span></span></button>
 <button class="dir" data-dir="ba" aria-pressed="false"><span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5m6-6-6 6 6 6"/></svg></span><span class="route"><span class="rt">Hostel Circle → Main Gate</span></span><span class="eta"><span class="m" id="eta-ba" role="timer" aria-live="off" aria-label="Next shuttle countdown">--:--</span><span class="l" aria-hidden="true">MIN : SEC</span></span></button>
@@ -20,4 +19,4 @@
 </section>
 <section id="routes" aria-labelledby="routesTitle"><div class="special-head"><h2 class="sect" id="routesTitle">Special Buses</h2><div class="toggle" id="specialToggle" role="group" aria-label="Journey direction"><button class="on" data-tdir="from" aria-pressed="true">From IITH</button><button data-tdir="to" aria-pressed="false">To IITH</button></div></div><div class="rcards" id="routeCards"><p>Loading schedules…</p></div><noscript><p>Turn on JavaScript to see schedules. Contact <a href="mailto:office.transport@iith.ac.in">Transport</a> for bus information.</p></noscript></section>
 <footer class="footer"><div class="footer-links"><a href="legal.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refund.html">Refunds</a><a href="mailto:office.transport@iith.ac.in">Contact</a></div><p class="footer-op">Sanchari is operated by Saichandan Mettu, in coordination with the IIT Hyderabad Transport Department.</p></footer>
-</main></div><script src="assets/shared.js?v=12"></script><script src="assets/app.js?v=17"></script></body></html>
+</main></div><script src="assets/shared.js?v=12"></script><script src="assets/app.js?v=18"></script></body></html>
