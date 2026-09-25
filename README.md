@@ -12,7 +12,7 @@ Transport Department. It is **not** official institute infrastructure; see
 | **Repository** | `github.com/chandanmettu/iith-sanchari` (public). |
 | **Push via** | SSH host alias `github-iith-transport` (remote `git@github-iith-transport:chandanmettu/iith-sanchari.git`). The alias name predates the rename, so leave it. |
 | **Deploy** | Hostinger Git auto-deploy from `main`. **A push is a production release.** |
-| **Status** | Live. The payment path is built but has never completed one real payment, so ticketing is unproven. |
+| **Status** | Live schedule site; a redesigned UI and persistent ticketing flow are prepared locally. Booking remains disabled until activation and acceptance tests. |
 
 ## Start here
 
@@ -27,33 +27,38 @@ Transport Department. It is **not** official institute infrastructure; see
 |---|---|
 | Frontend | Plain HTML, CSS and vanilla JS. No framework, no npm, **no build step**. |
 | Backend | PHP 8 with no framework or Composer. It talks to the payment provider's REST API through raw cURL. |
-| Database | MySQL. **Not provisioned yet.** A ticket lives only in its URL. |
-| Payments | Hosted checkout. Fares are server-authoritative and tickets are HMAC-signed. |
-| QR | Vendored `qrcode-generator` (MIT) in `assets/qrcode.js`, so no CDN is needed. |
+| Database | MySQL schema prepared in `api/schema.sql`; production database setup is pending. |
+| Payments | Hosted redirect checkout adapter; server-authoritative fares, persistent orders and signed ticket links. |
+| QR | Vendored `qrcode-generator` (MIT) for tickets and `jsQR` 1.4.0 (Apache-2.0) for camera decoding; licence retained in assets. |
 
 ```text
-index.html            home: shuttle countdown, route cards, schedules, checkout
-ticket.html           boarding pass (verifies its token against the server)
-legal.html privacy.html terms.html refund.html   policy pages
-assets/               app.css, app.js (timetables live here), logo, hero, qrcode.js
-api/fares.php         route table, the single source of truth for fare and duration
-api/create-order.php  server-side fare lookup, then creates the provider order
-api/verify-payment.php  checks the payment signature, then issues the signed ticket token
-api/verify-ticket.php   HMAC check used by ticket.html (and later the driver scanner)
-api/razorpay.php      shared helpers: config, cURL, JSON (filename predates the policy, see below)
-api/config.sample.php template for the server-only api/config.php
-docs/                 PROGRESS, DESIGN, BUILD_SPEC, AGENT_PROMPT
-inspirations/         design references (raw-drops/ is git-ignored)
+index.html               route schedules and journey review
+payment.html             payment recovery after redirect or interruption
+tickets.html             this browser's saved bookings
+ticket.html              server-verified QR travel pass
+scanner.html             authenticated driver check-in
+operations.html          administrator recheck/revocation
+assets/routes.json       shared fares, timetable and boarding data
+api/common.php           database, ticket signing and access helpers
+api/hosted.php           hosted-checkout protocol adapter
+api/create-order.php     validate journey, persist order, create checkout
+api/verify-payment.php   recover booking and check provider status
+api/verify-ticket.php    read-only ticket state
+api/check-in.php         atomic authenticated single-use boarding
+api/webhook.php          authenticated payment/refund notifications
+api/reconcile.php        CLI-only scheduled recovery
+api/schema.sql           production MySQL/MariaDB tables
+api/config.sample.php    safe template; real config is server-only
 ```
 
 ## Run locally
 
-```bash
-python3 -m http.server 8138
-```
+Serve the directory with PHP 8.1+ and PDO/cURL to exercise API paths, or use
+`python3 -m http.server 8138` for the disabled-booking visual preview. The current
+local preview uses a temporary PHP runtime at `http://127.0.0.1:8138`.
 
-The pages, schedules and ticket rendering all work statically. PHP is **not**
-installed on the dev Mac, so `api/*.php` can only be exercised on Hostinger.
+Booking is deliberately disabled with the existing configuration. Do not copy
+production secrets into local test fixtures. See [activation and acceptance](docs/LAUNCH.md).
 
 ## Release
 
@@ -76,7 +81,8 @@ missing or stale `config.php`.
 
 ## Next
 
-1. SAN-004: swap the payment gateway, then run one real checkout-to-ticket test (SAN-003).
-2. SAN-002: replace the placeholder campus-shuttle cadence with real timings, or label it as indicative.
-3. Provision MySQL to unlock single-use tickets, "My Tickets", the driver scanner and email delivery (SAN-001, SAN-009).
-4. Rate-limit order creation (SAN-007) and add error alerting (SAN-008).
+Complete [activation and acceptance](docs/LAUNCH.md), including the production
+database, approved payment account, confirmed operational data, staff access,
+webhooks/cron/alerting and supervised payment-to-boarding/refund/settlement tests.
+Local tests do not establish production readiness. No deployment has been made
+as part of the September 25 preparation.

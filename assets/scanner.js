@@ -1,0 +1,22 @@
+(()=>{
+ const S=Sanchari,$=id=>document.getElementById(id);let staff=null,data,stream,frame,busy=false,preview=null;
+ const status=$('scanStatus');
+ async function request(confirm=false){
+  const raw=$('scanToken').value.trim();let token=raw;
+  try{if(raw.startsWith('http')){const url=new URL(raw);token=new URLSearchParams(url.hash.slice(1)).get('t')||url.searchParams.get('t')||raw}}catch{}
+  const body={token,route:$('scanRoute').value,direction:$('scanDirection').value,departure:Number($('scanDeparture').value),confirm};
+  const r=await fetch('/api/check-in.php',{method:'POST',headers:{'Content-Type':'application/json','X-Staff-ID':staff.id,'X-Staff-Key':staff.key},body:JSON.stringify(body),signal:AbortSignal.timeout(20000)});
+  const result=await r.json();if(!r.ok)throw Error(result.error||'Ticket could not be checked.');return result;
+ }
+ function stop(){if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;cancelAnimationFrame(frame);$('scanVideo').hidden=true;$('stopCamera').hidden=true;$('startCamera').hidden=false;}
+ function invalidate(){$('scanPreview').hidden=true;preview=null;}
+ function journeys(){invalidate();const cfg=data.routes[$('scanRoute').value],dir=$('scanDirection').value;const times=S.departures(cfg,dir,10,Date.now()-3*3600000,data.holidays);$('scanDeparture').innerHTML=times.map(t=>`<option value="${t/1000}">${S.when(t)} IST</option>`).join('')}
+ $('staffLogin').addEventListener('submit',async e=>{e.preventDefault();staff={id:$('staffId').value.trim(),key:$('staffKey').value};try{data=await(await fetch('assets/routes.json?v=11')).json();$('staffKey').value='';$('staffLogin').hidden=true;$('scanWorkspace').hidden=false;status.textContent='Choose the correct journey. Your access key is checked when you scan.';journeys()}catch{status.textContent='Could not load schedules. Try again.';staff=null}});
+ function logout(){stop();staff=null;invalidate();$('scanWorkspace').hidden=true;$('staffLogin').hidden=false;$('scanToken').value='';status.textContent='Signed out.'}
+ $('staffLogout').addEventListener('click',logout);$('scanRoute').addEventListener('change',journeys);$('scanDirection').addEventListener('change',journeys);$('scanDeparture').addEventListener('change',invalidate);$('scanToken').addEventListener('input',invalidate);
+ async function check(){if(busy)return;busy=true;invalidate();$('previewTicket').disabled=true;status.textContent='Checking pass…';try{const r=await request();preview=r.ticket;const t=r.ticket;$('scanDetails').textContent=t.route_display+'\n'+S.when(t.departure*1000)+' IST\n₹'+t.fare+' · one passenger';$('scanPreview').hidden=false;status.textContent='Pass is valid for this journey. Confirm when the passenger boards.'}catch(e){status.textContent=e.message}finally{busy=false;$('previewTicket').disabled=false}}
+ $('previewTicket').addEventListener('click',check);
+ $('confirmBoard').addEventListener('click',async()=>{if(!preview||busy)return;busy=true;$('confirmBoard').disabled=true;try{await request(true);status.textContent='✓ Boarding confirmed. This pass cannot be used again.';invalidate();$('scanToken').value=''}catch(e){status.textContent=e.message;invalidate()}finally{busy=false;$('confirmBoard').disabled=false}});
+ $('startCamera').addEventListener('click',async()=>{stop();invalidate();try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});const v=$('scanVideo');v.srcObject=stream;v.hidden=false;await v.play();$('stopCamera').hidden=false;$('startCamera').hidden=true;status.textContent='Point the camera at the ticket QR.';let last=0;function scan(t){if(!stream)return;if(t-last>200&&v.readyState>=2){last=t;const canvas=$('scanCanvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});const scale=Math.min(1,720/v.videoWidth);canvas.width=v.videoWidth*scale;canvas.height=v.videoHeight*scale;ctx.drawImage(v,0,0,canvas.width,canvas.height);const image=ctx.getImageData(0,0,canvas.width,canvas.height),code=jsQR(image.data,image.width,image.height);if(code){$('scanToken').value=code.data;stop();check();return}}frame=requestAnimationFrame(scan)}frame=requestAnimationFrame(scan)}catch{stop();status.textContent='Camera unavailable. Allow camera access over HTTPS, or paste the ticket link below.'}});
+ $('stopCamera').addEventListener('click',stop);window.addEventListener('pagehide',logout);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop()});
+})();

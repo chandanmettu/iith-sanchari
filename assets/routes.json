@@ -1,0 +1,104 @@
+{
+  "timezone": "Asia/Kolkata",
+  "confirmed": false,
+  "holidays": [],
+  "routes": {
+    "patan": {
+      "name": "Patancheru",
+      "fare": 30,
+      "journey_mins": 60,
+      "weekdays": false,
+      "from": [
+        "09:00",
+        "11:00",
+        "17:00",
+        "19:00",
+        "21:00",
+        "23:00"
+      ],
+      "to": [
+        "08:00",
+        "10:00",
+        "16:00",
+        "18:00",
+        "20:00",
+        "22:00"
+      ],
+      "live": "https://tinyurl.com/4s6f94z8",
+      "boarding_from": "Confirm the campus boarding point with Transport",
+      "boarding_to": "Confirm the Patancheru boarding point with Transport"
+    },
+    "miya": {
+      "name": "Miyapur",
+      "fare": 100,
+      "journey_mins": 100,
+      "weekdays": true,
+      "from": [
+        "17:45"
+      ],
+      "to": [
+        "07:40"
+      ],
+      "live": "https://app.fleetx.io/live/share/v2/eJwFwcERADAEBMCKzJwgKMfjlJHas6uBuC9S4TSVga341EgfK2HX%2BnCTjg%24drArI",
+      "boarding_from": "C-Block back-side parking",
+      "boarding_to": "Miyapur Metro \u00b7 Pillar No. 623",
+      "stops": [
+        [
+          "Miyapur Metro",
+          "Pillar No. 623",
+          "7:40 AM"
+        ],
+        [
+          "Madinaguda",
+          "Opp. Green Bawarchi Hotel",
+          "7:54 AM"
+        ],
+        [
+          "Chanda Nagar",
+          "Opp. Swagath Restaurant",
+          "7:59 AM"
+        ],
+        [
+          "BHEL Circle",
+          "BHEL Main Gate",
+          "8:05 AM"
+        ],
+        [
+          "Ashok Nagar",
+          "Near Indian Oil petrol bunk",
+          "8:07 AM"
+        ],
+        [
+          "Beeramguda",
+          "Opp. Vijetha Super Market",
+          "8:10 AM"
+        ],
+        [
+          "D Mart",
+          "Near D Mart",
+          "8:11 AM"
+        ],
+        [
+          "RC Puram",
+          "Near Ambedkar statue bus stop",
+          "8:13 AM"
+        ],
+        [
+          "Patancheru",
+          "Near bus stop",
+          "8:24 AM"
+        ],
+        [
+          "Muthangi",
+          "Bus stop",
+          "8:30 AM"
+        ],
+        [
+          "Isnapur",
+          "Isnapur X Road bus stop",
+          "8:35 AM"
+        ]
+      ]
+    }
+  }
+}
