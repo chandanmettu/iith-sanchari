@@ -96,6 +96,13 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Remove homepage booking-status paragraph (local)
+
+- Removed the explanatory paragraph above the special-bus cards at the
+  owner's request. The status API still controls whether Buy is available;
+  schedule-loading errors still render in the card area. No payment or ticket
+  behavior changed. Bumped homepage script cache key to `v=15`.
+
 ### 2026-09-25 — Clarify the campus shuttle timer and controls (local)
 
 - Restyled the date with a calendar mark, renamed the section Campus shuttle,

@@ -1,7 +1,6 @@
 (async () => {
   const S = window.Sanchari;
   const cards = document.getElementById('routeCards');
-  const notice = document.getElementById('bookingNotice');
   let data, availability = {booking_enabled:false}, direction = 'from', shuttleDirection = 'ab';
   const phases = {ab:0, ba:8}; // Campus timetable: each direction runs every 15 minutes, offset by 8 minutes.
   const pad = value => String(value).padStart(2,'0');
@@ -49,10 +48,8 @@
   renderShuttle();setInterval(renderShuttleCountdown,1000);setInterval(renderShuttleSchedule,30000);setInterval(renderDate,60000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderDate();renderShuttle();}});
   try{const response=await fetch('assets/routes.json?v=11');if(!response.ok)throw Error();data=await response.json();}
-  catch{cards.innerHTML='<p class="route-notice">Schedules could not load. Please refresh or contact Transport.</p>';notice.hidden=true;return;}
+  catch{cards.innerHTML='<p class="route-notice">Schedules could not load. Please refresh or contact Transport.</p>';return;}
   try{availability=await S.api('status.php');}catch{}
-  notice.textContent=availability.booking_enabled?'Online booking is open. Tap Buy for the next available trip.':'Schedules and trackers are available. Online booking opens after payment setup and Transport confirmation.';
-  notice.classList.toggle('ready',availability.booking_enabled);
   const names={patan:'Patancheru',miya:'Miyapur'};
   const statusByCard={};
   function extraHTML(id,cfg){
