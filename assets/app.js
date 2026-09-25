@@ -1,52 +1,91 @@
-(async()=>{
-  const S=window.Sanchari, cards=document.getElementById('routeCards'), notice=document.getElementById('bookingNotice');
-  let data, direction='from', selected, availability={booking_enabled:false}, activeBooking, pending=false;
-  const dialog=document.getElementById('journeyDialog'), pay=document.getElementById('confirmPay'), message=document.getElementById('checkoutMessage');
-  const h=Number(S.date(Date.now(),{hour:'numeric',hour12:false}));
-  document.getElementById('daypart').textContent=h<12?'Good morning, campus.':h<17?'Good afternoon, campus.':'Good evening, campus.';
-  document.getElementById('todayLabel').textContent=S.date(Date.now(),{weekday:'long',day:'numeric',month:'short'})+' · IST';
-  try{const response=await fetch('assets/routes.json?v=11');if(!response.ok)throw Error();data=await response.json()}catch{cards.innerHTML='<p class="notice">Bus schedules could not load. Please refresh or contact Transport.</p>';notice.hidden=true;return}
-  try{availability=await S.api('status.php')}catch{availability={booking_enabled:false}}
-  notice.textContent=availability.booking_enabled?'Online booking is open. Choose a departure to review your journey.':'Schedules are available. Online booking opens after payment setup and Transport confirmation.';
+(async () => {
+  const S = window.Sanchari;
+  const cards = document.getElementById('routeCards');
+  const notice = document.getElementById('bookingNotice');
+  let data, availability = {booking_enabled:false}, direction = 'from', shuttleDirection = 'ab';
+  const phases = {ab:0, ba:8}; // Campus timetable: each direction runs every 15 minutes, offset by 8 minutes.
+  const pad = value => String(value).padStart(2,'0');
+  const today = () => S.dayKey(Date.now());
+  const istMidnight = () => new Date(today()+'T00:00:00+05:30').getTime();
+  const shortClock = ts => S.clock(ts).replace(/\s*(am|pm)$/i, x => x.toUpperCase());
+  const tomorrow = () => S.dayKey(istMidnight()+86400000);
+  const shortWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tomorrow · '+shortClock(ts) : S.date(ts,{weekday:'short'})+' · '+shortClock(ts);
+  const longerWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tomorrow · '+shortClock(ts) : S.when(ts);
+  const minutesAway = ts => Math.max(1, Math.ceil((ts-Date.now())/60000));
+  const shuttleTimes = (dir,count=6) => {
+    const start=istMidnight()+phases[dir]*60000, gap=15*60000;
+    const first=Math.floor((Date.now()-start)/gap)+1;
+    return Array.from({length:count},(_,i)=>start+(first+i)*gap);
+  };
+  function renderShuttle(){
+    for(const dir of ['ab','ba']){
+      const min=minutesAway(shuttleTimes(dir,1)[0]);
+      document.getElementById('eta-'+dir).innerHTML=min+'<span style="font-size:10px;font-weight:800"> min</span>';
+    }
+    document.getElementById('slist').innerHTML=shuttleTimes(shuttleDirection).map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${shortClock(ts)}</span><span class="rel">${i===0?'next · ':''}${minutesAway(ts)} min</span></div>`).join('');
+  }
+  const hour=Number(S.date(Date.now(),{hour:'numeric',hour12:false}));
+  document.getElementById('daypart').textContent=(hour<12?'Good morning':hour<17?'Good afternoon':'Good evening')+',';
+  document.getElementById('todayLabel').textContent=S.date(Date.now(),{weekday:'long',day:'numeric',month:'long'})+' · IST';
+  document.querySelectorAll('.dir').forEach(button=>button.addEventListener('click',()=>{
+    shuttleDirection=button.dataset.dir;
+    document.querySelectorAll('.dir').forEach(b=>{b.classList.toggle('sel',b===button);b.setAttribute('aria-pressed',String(b===button));});
+    document.querySelectorAll('.pill').forEach(b=>{b.classList.toggle('on',b.dataset.sdir===shuttleDirection);b.setAttribute('aria-pressed',String(b.dataset.sdir===shuttleDirection));});
+    renderShuttle();
+  }));
+  document.querySelectorAll('.pill').forEach(button=>button.addEventListener('click',()=>document.querySelector(`.dir[data-dir="${button.dataset.sdir}"]`).click()));
+  document.getElementById('schedBtn').addEventListener('click',e=>{
+    const open=e.currentTarget.getAttribute('aria-expanded')!=='true';
+    e.currentTarget.setAttribute('aria-expanded',String(open));e.currentTarget.classList.toggle('open',open);
+    document.getElementById('schedPanel').classList.toggle('open',open);
+  });
+  renderShuttle();setInterval(renderShuttle,15000);
+  try{const response=await fetch('assets/routes.json?v=11');if(!response.ok)throw Error();data=await response.json();}
+  catch{cards.innerHTML='<p class="route-notice">Schedules could not load. Please refresh or contact Transport.</p>';notice.hidden=true;return;}
+  try{availability=await S.api('status.php');}catch{}
+  notice.textContent=availability.booking_enabled?'Online booking is open. Tap Buy for the next available trip.':'Schedules and trackers are available. Online booking opens after payment setup and Transport confirmation.';
   notice.classList.toggle('ready',availability.booking_enabled);
-  function render(){
-    const expanded=new Set([...cards.querySelectorAll('[aria-expanded="true"]')].map(x=>x.dataset.expand));
+  const names={patan:'Patancheru',miya:'Miyapur'};
+  const statusByCard={};
+  function extraHTML(id,cfg){
+    if(id!=='miya')return '';
+    const stops=direction==='to'?'<div class="rc-sec" style="margin-top:15px">Stops · Miyapur → IITH</div><div class="stops">'+cfg.stops.map(s=>`<div class="stop"><div class="rail"><span class="d"></span><span class="ln"></span></div><div class="si"><div><div class="nm2">${S.escape(s[0])}</div><div class="lm">${S.escape(s[1])}</div></div><div class="tm">${S.escape(s[2])}</div></div></div>`).join('')+'</div>':'<div class="rc-sec" style="margin-top:15px">From campus</div><div class="retnote">Board at <b>${S.escape(cfg.boarding_from)}</b>. The bus continues through institute stops towards Miyapur.</div>';
+    return stops+'<p class="note-days">Monday–Friday only · not on institute holidays.</p>';
+  }
+  function renderCards(){
+    const expanded=new Set([...cards.querySelectorAll('.rcard.open')].map(x=>x.dataset.bus));
     cards.innerHTML=Object.entries(data.routes).map(([id,cfg])=>{
-      const up=S.departures(cfg,direction,6,Date.now(),data.holidays);const first=up[0];
       const route=direction==='from'?'IITH → '+cfg.name:cfg.name+' → IITH';
-      const schedule=up.map((ts,i)=>`<div class="srow"><span class="ct">${S.when(ts)}</span><button data-review="${id}" data-departure="${ts}" aria-label="Review ${S.escape(route)} on ${S.when(ts)}">Select${i===0?' · next':''}</button></div>`).join('');
-      const stops=id==='miya'&&direction==='to'?'<p class="rc-sec">Morning boarding stops</p><div class="stops">'+cfg.stops.map(s=>`<div class="stop"><div class="rail"><span class="d"></span><span class="ln"></span></div><div class="si"><div><div class="nm2">${S.escape(s[0])}</div><div class="lm">${S.escape(s[1])}</div></div><div class="tm">${S.escape(s[2])}</div></div></div>`).join('')+'</div>':'';
-      return `<article class="rcard" data-bus="${id}"><div class="stubcard"><div class="rc-main"><div class="route-kicker">${cfg.weekdays?'Weekday service':'Daily service'} · approx. ${cfg.journey_mins===60?'1 hr':'1 hr 40 min'}</div><h3 class="rc-route">${S.escape(route)}</h3><div class="rc-when"><span class="rc-at">Next</span><span class="tm">${first?S.when(first):'No scheduled departures'}</span></div><div class="rc-actions"><button class="rc-expand" data-expand="${id}" aria-expanded="${expanded.has(id)}" aria-controls="schedule-${id}">Schedule <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button><a class="rc-live" href="${S.escape(cfg.live)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${cfg.name} external bus tracker">Track bus ↗</a></div></div><div class="rc-vp" aria-hidden="true"></div><div class="rc-stub"><div class="rc-farel">One way</div><div class="rc-fare">₹${cfg.fare}</div><div class="fare-sub">per passenger</div><button class="rc-buy" data-review="${id}" data-departure="${first||''}" ${first?'':'disabled'}>View trip</button></div></div><div class="rc-detail" id="schedule-${id}" ${expanded.has(id)?'':'hidden'}><div class="rc-detail-in"><p class="rc-sec">Upcoming departures · IST</p>${schedule}<p class="retnote">Board at: ${S.escape(cfg['boarding_'+direction])}</p>${stops}<p class="note-days">${cfg.weekdays?'Monday–Friday. ':''}Check holiday changes with Transport.${data.confirmed?'':' Current schedule awaits reconfirmation.'}</p></div></div></article>`;
+      // The backend only accepts a trip at least six minutes away. Show and buy that same departure.
+      const up=S.departures(cfg,direction,6,Date.now()+6*60000,data.holidays);
+      const first=up[0];
+      const rows=up.map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${longerWhen(ts)}</span><span class="rel">${i===0?'next · ':''}${S.dayKey(ts)===today()?minutesAway(ts)+' min away':''}</span></div>`).join('');
+      return `<article class="rcard ${expanded.has(id)?'open':''}" data-bus="${id}" data-departure="${first||''}"><div class="stubcard"><div class="rc-main"><div class="rc-route">${S.escape(route)}</div><div class="rc-when"><span class="rc-at">at</span><span class="tm">${first?shortWhen(first):'No trips listed'}</span><span class="rc-rel">${first&&S.dayKey(first)===today()?minutesAway(first)+' min':''}</span></div><div class="rc-actions"><button class="rc-expand" data-expand="${id}" aria-expanded="${expanded.has(id)}" aria-controls="schedule-${id}">Schedule <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button><a class="rc-live" href="${S.escape(cfg.live)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${S.escape(cfg.name)} external bus tracker"><span class="pulse"></span>Live</a></div></div><div class="rc-vp" aria-hidden="true"></div><div class="rc-stub"><div class="rc-farel">Fare</div><div class="rc-fare">₹${cfg.fare}</div><button class="rc-buy" data-buy="${id}" ${first&&availability.booking_enabled?'':'disabled'}>Buy</button></div></div><p class="card-status" role="status">${statusByCard[id]||''}</p><div class="rc-detail" id="schedule-${id}" ${expanded.has(id)?'':'hidden'}><div class="rc-detail-in"><div class="rc-sec">Upcoming departures</div><div class="slist">${rows}</div><div class="retnote">Board at: ${S.escape(cfg['boarding_'+direction])}</div>${extraHTML(id,cfg)}<p class="note-days">${data.confirmed?'Check for service updates with Transport.':'Please confirm schedule changes with Transport before travel.'}</p></div></div></article>`;
     }).join('');
   }
-  function review(id,ts){
-    selected={route:id,direction,departure:Math.floor(ts/1000)};activeBooking=null;
-    const cfg=data.routes[id],route=direction==='from'?'IITH → '+cfg.name:cfg.name+' → IITH';
-    document.getElementById('journeySummary').innerHTML=`<div class="trip-summary"><h3>${S.escape(route)}</h3><div class="summary-row"><span>Departure</span><span>${S.when(ts)} IST</span></div><div class="summary-row"><span>Est. arrival</span><span>${S.when(ts+cfg.journey_mins*60000)}</span></div><div class="summary-row"><span>Boarding</span><span>${S.escape(cfg['boarding_'+direction])}</span></div><div class="summary-row"><span>Total fare</span><strong>₹${cfg.fare}</strong></div></div>`;
-    pay.disabled=!availability.booking_enabled;pay.textContent=availability.booking_enabled?'Continue to payment · ₹'+cfg.fare:'Online booking opens soon';
-    message.textContent=availability.booking_enabled?'':'You can check schedules now. Payments are not open yet.';
-    document.getElementById('recoveryLink').hidden=true;dialog.showModal();
-  }
-  cards.addEventListener('click',e=>{const expand=e.target.closest('[data-expand]');if(expand){const panel=document.getElementById(expand.getAttribute('aria-controls'));panel.hidden=!panel.hidden;expand.setAttribute('aria-expanded',String(!panel.hidden));return}const button=e.target.closest('[data-review]');if(button)review(button.dataset.review,Number(button.dataset.departure))});
-  document.querySelectorAll('#specialToggle button').forEach(btn=>btn.addEventListener('click',()=>{direction=btn.dataset.tdir;document.querySelectorAll('#specialToggle button').forEach(x=>{x.classList.toggle('on',x===btn);x.setAttribute('aria-pressed',String(x===btn))});render()}));
-  pay.addEventListener('click',async()=>{
-    if(pending)return;pending=true;pay.disabled=true;message.textContent='Preparing your secure checkout…';
+  renderCards();
+  cards.addEventListener('click',async event=>{
+    const expand=event.target.closest('[data-expand]');
+    if(expand){const card=expand.closest('.rcard'),open=!card.classList.contains('open');card.classList.toggle('open',open);card.querySelector('.rc-detail').hidden=!open;expand.setAttribute('aria-expanded',String(open));return;}
+    const buy=event.target.closest('[data-buy]');if(!buy||buy.disabled)return;
+    const card=buy.closest('.rcard'),id=buy.dataset.buy,ts=Number(card.dataset.departure),epoch=Math.floor(ts/1000);
+    if(!ts||ts<Date.now()+6*60000){renderCards();return;}
+    buy.disabled=true;buy.dataset.busy='true';buy.textContent='Opening…';
+    const status=card.querySelector('.card-status');status.textContent='Preparing secure checkout…';
+    let booking=S.saved().find(x=>x.route===id&&x.direction===direction&&x.departure===epoch);
+    if(!booking){booking={id:'s_'+crypto.randomUUID().replace(/-/g,''),key:Array.from(crypto.getRandomValues(new Uint8Array(24)),x=>pad(x.toString(16))).join(''),route:id,direction,departure:epoch};
+      if(!S.save(booking)){status.textContent='Allow browser storage before buying so your ticket can be recovered.';buy.disabled=false;buy.textContent='Buy';delete buy.dataset.busy;return;}}
     try{
-      if(!activeBooking){activeBooking={id:'s_'+crypto.randomUUID().replace(/-/g,''),key:Array.from(crypto.getRandomValues(new Uint8Array(24)),x=>x.toString(16).padStart(2,'0')).join(''),...selected};const stored=S.save(activeBooking);if(!stored){activeBooking=null;throw Error('Allow browser storage before paying so your ticket can be recovered.');}}
-      const link=document.getElementById('recoveryLink');link.href=S.recovery(activeBooking);link.textContent='Recover this booking';link.hidden=false;
-      const order=await S.api('create-order.php',{...selected,id:activeBooking.id,recovery_key:activeBooking.key});
-      if(order.token){location.href='ticket.html#t='+encodeURIComponent(order.token);return}
-      const url=new URL(order.checkout_url);if(url.protocol!=='https:')throw Error('Could not open secure checkout. Use the recovery link.');location.assign(url.href);
-    }catch(error){message.textContent=error.message+' If a payment was attempted, check this booking before paying again.';pay.textContent='Retry this booking';pay.disabled=false}finally{pending=false}
+      const order=await S.api('create-order.php',{route:id,direction,departure:epoch,id:booking.id,recovery_key:booking.key});
+      if(order.token){location.href='ticket.html#t='+encodeURIComponent(order.token);return;}
+      const url=new URL(order.checkout_url);if(url.protocol!=='https:')throw Error('Secure checkout could not open.');
+      location.assign(url.href);
+    }catch(error){const link=S.recovery(booking);status.innerHTML=`${S.escape(error.message)} <a href="${S.escape(link)}">Check this booking</a> before trying again.`;buy.disabled=false;buy.textContent='Buy';delete buy.dataset.busy;}
   });
-  dialog.addEventListener('keydown',e=>{
-    if(e.key!=='Tab')return;
-    const controls=[...dialog.querySelectorAll('button:not([disabled]),a[href]')].filter(x=>!x.hidden&&x.getClientRects().length);
-    const first=controls[0],last=controls[controls.length-1];
-    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
-    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
-  });
-  dialog.addEventListener('cancel',e=>{if(pending)e.preventDefault()});render();
-  // Refresh only between interactions; never replace a focused button or open schedule.
-  setInterval(()=>{if(!dialog.open&&!cards.contains(document.activeElement)&&!cards.querySelector('[aria-expanded="true"]'))render()},60000);
+  document.querySelectorAll('#specialToggle button').forEach(button=>button.addEventListener('click',()=>{
+    direction=button.dataset.tdir;
+    document.querySelectorAll('#specialToggle button').forEach(b=>{b.classList.toggle('on',b===button);b.setAttribute('aria-pressed',String(b===button));});
+    renderCards();
+  }));
+  setInterval(()=>{if(!cards.contains(document.activeElement)&&!cards.querySelector('.rcard.open'))renderCards();},60000);
 })();

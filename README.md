@@ -12,7 +12,7 @@ Transport Department. It is **not** official institute infrastructure; see
 | **Repository** | `github.com/chandanmettu/iith-sanchari` (public). |
 | **Push via** | SSH host alias `github-iith-transport` (remote `git@github-iith-transport:chandanmettu/iith-sanchari.git`). The alias name predates the rename, so leave it. |
 | **Deploy** | Hostinger Git auto-deploy from `main`. **A push is a production release.** |
-| **Status** | Live schedule site; a redesigned UI and persistent ticketing flow are prepared locally. Booking remains disabled until activation and acceptance tests. |
+| **Status** | Live schedule site; a restored campus-first UI and persistent ticketing flow are prepared locally. Booking remains disabled until activation and acceptance tests. |
 
 ## Start here
 
@@ -32,7 +32,7 @@ Transport Department. It is **not** official institute infrastructure; see
 | QR | Vendored `qrcode-generator` (MIT) for tickets and `jsQR` 1.4.0 (Apache-2.0) for camera decoding; licence retained in assets. |
 
 ```text
-index.html               route schedules and journey review
+index.html               campus countdown, route schedules and direct Buy
 payment.html             payment recovery after redirect or interruption
 tickets.html             this browser's saved bookings
 ticket.html              server-verified QR travel pass
@@ -74,7 +74,7 @@ missing or stale `config.php`.
 
 ## Rules
 
-- **Never name the payment provider** in user-facing copy or new code and docs. Use generic wording. The old gateway's name still appears in this public repo (`api/razorpay.php`, the checkout script tag in `index.html`, some code comments). Clean it up as part of the gateway swap (SAN-004), not piecemeal.
+- **Never name the payment provider** in user-facing copy or new code and docs. Use generic wording. A legacy gateway helper remains blocked and unreferenced; clean it up as part of the gateway activation (SAN-004).
 - The repo root is `public_html`, so every committed file is publicly downloadable. Keep secrets and internal notes out of it. Account, KYC and institutional detail belong in the private Notion tracker.
 - Don't reword `legal.html`'s claims about the institute relationship without checking the tracker.
 - Logo and hero artwork are provided assets. Don't regenerate them.

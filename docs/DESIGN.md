@@ -10,17 +10,18 @@ The live implementation of every token below is `assets/app.css`. This document 
 
 ---
 
-## September 25 refinement
+## September 25 correction
 
-The owner requested Ruchi-inspired polish. The current local implementation
-retains the original logo, artwork, sunrise route distinction and ticket
-perforation. It now uses soft peach/gold gradients with dark text, warm glass
-surfaces, native system typography, consistent controls and a responsive
-route-board layout. This supersedes the older token catalogue below wherever
-it differs. `assets/app.css` remains canonical. The desktop shell is 1120px;
-mobile prioritises route cards before campus information. All motion respects
-reduced-motion preferences, controls have visible focus, and schedule disclosure
-uses real buttons with expanded states. No fabricated shuttle countdown.
+The owner confirmed that the original Main Gate–Hostel Circle shuttle
+countdown and its two 15-minute direction schedules reflected the working
+campus service. The home screen keeps this timetable and puts it before the
+paid routes. It follows scheduled times in IST; it is not a GPS prediction.
+The original 480px app-shell character, rounded type, hero artwork, vivid
+orange/gold ticket gradients, perforation and direct Buy action are the design
+baseline. Wider screens may add breathing room without turning the home into
+a multi-column dashboard. A trip today shows only its time because the date
+is already printed at the top. A later trip shows tomorrow or its weekday.
+Controls retain semantic buttons, visible focus and reduced-motion support.
 
 ## Palette — "Sunrise IITH"
 

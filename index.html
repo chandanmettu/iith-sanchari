@@ -1,60 +1,25 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#faf6ef"><meta name="description" content="Campus shuttle information and bus schedules for Patancheru and Miyapur. Plan your journey with Sanchari."><title>Sanchari — Your campus, connected</title><link rel="icon" href="assets/logo.svg"><link rel="apple-touch-icon" href="assets/logo.png"><link rel="stylesheet" href="assets/app.css?v=11"></head>
-<body class="home"><a class="skip-link" href="#routes">Skip to bus routes</a><div class="app">
-<header class="appbar"><a class="brandblock" href="index.html" aria-label="Sanchari home"><img class="applogo" src="assets/logo.svg" alt=""><div class="brand">sanchari<small>IIT HYDERABAD</small></div></a><nav class="topnav" aria-label="Quick links"><a href="tickets.html" class="quiet-btn">My tickets <span aria-hidden="true">↗</span></a><a href="mailto:office.transport@iith.ac.in" class="help-link">Help</a></nav></header>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fdf1e6"><meta name="description" content="Campus shuttle countdown and bus journeys from IIT Hyderabad.">
+<title>Sanchari — IIT Hyderabad bus tickets</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg"><link rel="apple-touch-icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/app.css?v=12">
+</head>
+<body><a class="skip-link" href="#campus">Skip to buses</a><div class="app">
+<header class="appbar"><a class="brandblock" href="index.html" aria-label="Sanchari home"><img class="applogo" src="assets/logo.svg" alt=""><span class="brand">SANCHARI<small>IIT HYDERABAD</small></span></a><a class="ticket-nav" href="tickets.html">My tickets ↗</a></header>
 <main class="scroll">
-<section class="hero" aria-labelledby="hero-title"><img class="hero-art" src="assets/hero.png" alt="Illustration of a bus outside IIT Hyderabad"><div class="hero-txt"><div class="hi" id="daypart">Your campus, connected</div><h1 id="hero-title">A little closer.<br><span>Wherever you go.</span></h1><p>Campus to city, one simple journey.</p><div class="today-chip" id="todayLabel">All times in IST</div></div></section>
-<div class="journey-layout"><section id="routes" class="routes-section" aria-labelledby="routes-title"><div class="special-head"><div><p class="eyebrow">BEYOND CAMPUS</p><h2 id="routes-title">Find your bus</h2></div><div class="toggle" id="specialToggle" role="group" aria-label="Journey direction"><button class="on" aria-pressed="true" data-tdir="from">From IITH</button><button aria-pressed="false" data-tdir="to">To IITH</button></div></div>
-<p class="section-note">One-way fares · all departures in IST</p><div id="bookingNotice" class="notice" role="status">Checking online booking availability…</div><div class="rcards" id="routeCards"><p>Loading bus schedules…</p></div><noscript><p>Turn on JavaScript to see schedules. For bus information, contact <a href="mailto:office.transport@iith.ac.in">Transport</a>.</p></noscript></section>
-<aside class="campus-section" aria-label="Campus travel information"><section class="campus-card"><div class="campus-heading"><span class="line-icon" aria-hidden="true">⇄</span><span class="free-badge">Free campus shuttle</span></div><h2>Staying on campus?</h2><p class="campus-route">Main Gate <span>↔</span> Hostel Circle</p><p>Timings are being confirmed with the Transport Office. Please check at the stop before you travel.</p><a href="mailto:office.transport@iith.ac.in" class="text-link">Ask the Transport Office <span aria-hidden="true">↗</span></a></section><section class="travel-note"><p class="eyebrow">BEFORE YOU HEAD OUT</p><h3>A smoother start.</h3><ul><li>Carry your institute ID.</li><li>Reach the boarding point 10 minutes early.</li><li>Schedules may change on institute holidays.</li></ul><p>Tracker links open an external service. Availability may vary.</p></section></aside></div>
-    <!--
-      COMING NEXT — temporarily hidden (Chandan, 2026-07-27).
-      To bring this section back: delete this opening comment line block
-      and the matching "END COMING NEXT" closing comment line block below,
-      leaving the <div class="comingnext">...</div> markup intact.
-    <div class="comingnext">
-      <div class="sect">Coming Next</div>
-      <div class="cn-grid">
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17V9l2-4h8l2 4v8M8 21v-2M16 21v-2"/></svg></div>
-          <div class="lbl">Cab Sharing</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6-6"/></svg></div>
-          <div class="lbl">Lost &amp; Found</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l6-11 4 6 3-4 5 9z"/><circle cx="8" cy="6" r="2"/></svg></div>
-          <div class="lbl">Tourist Places</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="13" rx="3"/><path d="M6 12h12M9 21l-1.5-2M15 21l1.5-2"/><circle cx="9" cy="8" r="1"/><circle cx="15" cy="8" r="1"/></svg></div>
-          <div class="lbl">Railway Station</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5L12 17l-6.5-2.5L3 16l1 1 2.5-.5 1.5 1.5-.5 2.5 1 1 1.5-3.5L13 19zM12.5 14.5L18 4l2 2-10.5 5.5z"/></svg></div>
-          <div class="lbl">Airport</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"/><path d="M12 8v4"/><circle cx="12" cy="14.5" r=".6" fill="currentColor" stroke="none"/></svg></div>
-          <div class="lbl">Complaints</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11v9H4v-9zM7 11l3-7 1 1v5h6a2 2 0 0 1 2 2l-1.5 6a2 2 0 0 1-2 1.5H7"/></svg></div>
-          <div class="lbl">Request a Trip</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 9l-4.5 4 1 6L12 16l-4.5 3 1-6L4 9l5.5-.5z"/></svg></div>
-          <div class="lbl">Rewards</div>
-        </div>
-        <div class="cn-tile">
-          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
-          <div class="lbl">Account Management</div>
-        </div>
-      </div>
-    </div>
-    END COMING NEXT -->
+<p class="today-line" id="todayLabel">All times in IST</p>
+<section class="hero" aria-labelledby="heroTitle"><img class="hero-art" src="assets/hero.png" alt=""><div class="hero-txt"><div class="hi" id="daypart">Good afternoon,</div><h1 class="big" id="heroTitle"><span class="hl">Where</span> to today?</h1></div></section>
+<div class="campus-label" id="campus"><h2 class="sect">Around campus</h2><span>Free shuttle · every 15 min</span></div>
+<section class="card" aria-label="Campus shuttle timetable">
+<button class="dir sel" data-dir="ab" aria-pressed="true"><span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5M20 20v-5h-5"/></svg></span><span class="route"><span class="rt">Main Gate → Hostel Circle<small>Every 15 min</small></span></span><span class="eta"><span class="m" id="eta-ab">–</span><span class="l">away</span></span></button>
+<button class="dir" data-dir="ba" aria-pressed="false"><span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5M20 20v-5h-5"/></svg></span><span class="route"><span class="rt">Hostel Circle → Main Gate<small>Every 15 min</small></span></span><span class="eta"><span class="m" id="eta-ba">–</span><span class="l">away</span></span></button>
+<button class="sched-btn" id="schedBtn" aria-controls="schedPanel" aria-expanded="false"><svg class="clk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>See full schedule<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+<div class="sched-panel" id="schedPanel"><div class="sched-inner"><div class="pills" role="group" aria-label="Shuttle direction"><button class="pill on" data-sdir="ab" aria-pressed="true">→ Hostel Circle</button><button class="pill" data-sdir="ba" aria-pressed="false">→ Main Gate</button></div><div class="slist" id="slist"></div></div></div>
+<p class="shuttle-caption">Countdown follows the campus shuttle timetable. Check at the stop if service changes.</p>
+</section>
+<section id="routes" aria-labelledby="routesTitle"><div class="special-head"><h2 class="sect" id="routesTitle">Special Buses</h2><div class="toggle" id="specialToggle" role="group" aria-label="Journey direction"><button class="on" data-tdir="from" aria-pressed="true">From IITH</button><button data-tdir="to" aria-pressed="false">To IITH</button></div></div><p class="route-notice" id="bookingNotice" role="status">Checking booking availability…</p><div class="rcards" id="routeCards"><p>Loading schedules…</p></div><noscript><p>Turn on JavaScript to see schedules. Contact <a href="mailto:office.transport@iith.ac.in">Transport</a> for bus information.</p></noscript></section>
 <footer class="footer"><div class="footer-links"><a href="legal.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="refund.html">Refunds</a><a href="mailto:office.transport@iith.ac.in">Contact</a></div><p class="footer-op">Sanchari is operated by Saichandan Mettu, in coordination with the IIT Hyderabad Transport Department.</p></footer>
-</main></div>
-<dialog id="journeyDialog" aria-labelledby="journeyTitle"><form method="dialog"><button class="dialog-close" aria-label="Close journey review">✕</button></form><p class="eyebrow">YOUR JOURNEY</p><h2 id="journeyTitle">Review your trip</h2><div id="journeySummary"></div><p class="small-copy">One passenger · one way. Carry your institute ID. This is a travel pass; a numbered seat is not reserved.</p><p class="small-copy">By continuing, you agree to the <a href="terms.html">terms</a> and <a href="refund.html">refund policy</a>.</p><p id="checkoutMessage" role="status"></p><button id="confirmPay" class="primary-btn">Continue to payment</button><a id="recoveryLink" hidden>Open payment recovery</a></dialog>
-<script src="assets/shared.js?v=11"></script><script src="assets/app.js?v=11"></script></body></html>
+</main></div><script src="assets/shared.js?v=11"></script><script src="assets/app.js?v=12"></script></body></html>
