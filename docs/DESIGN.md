@@ -13,8 +13,8 @@ The live implementation of every token below is `assets/app.css`. This document 
 ## September 25 visual refinement
 
 The current home is campus-first: date, the working Main Gate–Hostel Circle
-timetable, a short original-art welcome banner, then direct-Buy Patancheru
-and Miyapur cards. The shuttle value follows scheduled 15-minute intervals in IST; it is
+timetable, then direct-Buy Patancheru and Miyapur cards. The decorative hero
+was removed at the owner’s request; its artwork remains an unused source asset. The shuttle value follows scheduled 15-minute intervals in IST; it is
 not a GPS prediction. The owner asked for a cleaner design without changing
 features, so the layout stays a compact centered app rather than a dashboard.
 
@@ -91,7 +91,7 @@ phones and desktops. Its OFL license is in `assets/fonts/OFL-Outfit.txt`.
 Deliberately collapsed to **two tokens** — see `docs/PROGRESS.md` 2026-07-24 entry for why (it used to be four, and buttons were inconsistent as a result):
 
 ```css
---r-card: 23px;   /* every card, ticket, hero, modal-like surface */
+--r-card: 23px;   /* every card, ticket, modal-like surface */
 --r-btn:  999px;  /* every button, pill, chip, toggle segment — always a full stadium/pill */
 ```
 
