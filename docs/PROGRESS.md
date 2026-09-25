@@ -50,7 +50,7 @@ transport/
 
 **Do not move `index.html`/`ticket.html`/`legal.html`/`assets/`/`api/` out of repo root** — Hostinger's Git deploy serves the repo root as `public_html` directly. Moving them requires a manual hPanel deploy-path change first, or the live site goes down.
 
-## Current state (2026-09-25, local preparation)
+## Current state (2026-09-25, schedule/UI published; booking closed)
 
 - Original sunrise visual identity, campus shuttle countdown and two-direction
   schedule restored after owner correction. Route cards show the next bookable
@@ -63,7 +63,8 @@ transport/
   scans remain unverified. There are no email tickets or capacity reservations.
 - Local PHP integration tests pass with a private SQLite fixture and simulated
   provider. These are not MySQL/Hostinger/provider acceptance tests.
-- No production deployment or financial operation performed.
+- The schedule/UI changes were published and checked on the live site. No
+  financial operation was performed; paid booking remains disabled.
 - See `docs/LAUNCH.md` for activation, operational constraints and acceptance.
 
 ## Historical baseline (2026-07-24)
@@ -95,6 +96,19 @@ transport/
 ---
 
 ## Log (newest first)
+
+### 2026-09-25 — Publish campus-first UI and route updates
+
+- Pushed the ten prepared local commits through `e71f900` to `main`; Hostinger
+  now serves the restored shuttle countdown, updated route cards, Miyapur
+  weekend timetable and Patancheru pickup map.
+- Compared the live homepage, route data, CSS, scripts, ticket and scanner pages
+  byte-for-byte with the local release using cache-busted HTTPS requests. A
+  mobile browser check confirmed the countdown, route switch, pickup map and
+  weekend timetable with no JavaScript errors.
+- The live status endpoint reports `booking_enabled: false`. Payment setup,
+  operational confirmation, production database and full acceptance remain
+  open before paid booking can launch.
 
 ### 2026-09-25 — Add Patancheru pickup map (local)
 

@@ -12,7 +12,7 @@ Transport Department. It is **not** official institute infrastructure; see
 | **Repository** | `github.com/chandanmettu/iith-sanchari` (public). |
 | **Push via** | SSH host alias `github-iith-transport` (remote `git@github-iith-transport:chandanmettu/iith-sanchari.git`). The alias name predates the rename, so leave it. |
 | **Deploy** | Hostinger Git auto-deploy from `main`. **A push is a production release.** |
-| **Status** | Live schedule site; a restored campus-first UI and persistent ticketing flow are prepared locally. Booking remains disabled until activation and acceptance tests. |
+| **Status** | Live campus-first schedule site; the ticketing flow is deployed but booking remains disabled until activation and acceptance tests. |
 
 ## Start here
 
@@ -84,5 +84,5 @@ missing or stale `config.php`.
 Complete [activation and acceptance](docs/LAUNCH.md), including the production
 database, approved payment account, confirmed operational data, staff access,
 webhooks/cron/alerting and supervised payment-to-boarding/refund/settlement tests.
-Local tests do not establish production readiness. No deployment has been made
-as part of the September 25 preparation.
+Local tests do not establish production readiness. The schedule and UI release
+was published on 2026-09-25; paid booking remains disabled pending activation.
