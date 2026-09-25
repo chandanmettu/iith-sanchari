@@ -24,8 +24,6 @@
     }
     document.getElementById('slist').innerHTML=shuttleTimes(shuttleDirection).map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${shortClock(ts)}</span><span class="rel">${i===0?'next · ':''}${minutesAway(ts)} min</span></div>`).join('');
   }
-  const hour=Number(S.date(Date.now(),{hour:'numeric',hour12:false}));
-  document.getElementById('daypart').textContent=(hour<12?'Good morning':hour<17?'Good afternoon':'Good evening')+',';
   document.getElementById('todayLabel').textContent=S.date(Date.now(),{weekday:'long',day:'numeric',month:'long'})+' · IST';
   document.querySelectorAll('.dir').forEach(button=>button.addEventListener('click',()=>{
     shuttleDirection=button.dataset.dir;

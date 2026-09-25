@@ -96,6 +96,15 @@ transport/
 
 ## Log (newest first)
 
+### 2026-09-25 — Remove the welcome hero (local)
+
+- Removed the welcome banner from the homepage at the owner’s request. The
+  landing view now starts with the working shuttle timetable, followed by the
+  special bus cards. The original illustration file remains untouched.
+- Removed unused hero styles and greeting logic; bumped CSS to `v=16` on all
+  pages and the homepage script to `v=13`. Shuttle countdown, schedules,
+  trackers and direct Buy remain unchanged. Production is unchanged.
+
 ### 2026-09-25 — Put the shuttle first and condense the hero (local)
 
 - Moved the campus timetable immediately below the date. Kept the original

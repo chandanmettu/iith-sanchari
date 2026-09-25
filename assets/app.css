@@ -48,16 +48,6 @@ body{
 .scroll{flex:1;overflow-y:auto;padding:6px 16px 24px;-webkit-overflow-scrolling:touch}
 svg{display:block}
 
-/* ---- hero / greeting ---- */
-.hero{position:relative;margin-top:6px;border-radius:var(--r-card);overflow:hidden;background:#fef8f1;
-  min-height:128px;display:flex;align-items:center;box-shadow:0 14px 30px -20px var(--sh)}
-.hero-art{position:absolute;right:0;top:0;height:100%;width:auto;max-width:74%;object-fit:cover;object-position:right center;
-  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 16%);mask-image:linear-gradient(to right,transparent 0%,#000 16%)}
-.hero-txt{position:relative;z-index:2;padding:16px 18px;max-width:58%}
-.hero-txt .hi{font-size:13px;color:var(--m2);font-weight:600}
-.hero-txt .big{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:3px;color:var(--ink);line-height:1.22}
-.hero-txt .big .hl{color:var(--ox)}
-
 /* ---- campus shuttle ---- */
 .card{background:var(--paper);border:1px solid var(--pline);border-radius:var(--r-card);margin-top:10px;overflow:hidden;
   box-shadow:0 14px 30px -20px var(--sh)}
@@ -201,8 +191,6 @@ button{min-height:44px}
 .appbar .brandblock .applogo{margin:0}
 .ticket-nav{font-size:12px;font-weight:800;color:var(--ox);background:#fff;border:1px solid var(--pline);border-radius:999px;padding:10px 13px;text-decoration:none;white-space:nowrap}
 .today-line{font-size:11px;font-weight:800;letter-spacing:.02em;color:var(--m2);margin:13px 2px 0}
-.hero{margin-top:8px;min-height:150px;background:#fff8ef}
-.hero-txt .big{font-size:25px}
 .campus-label{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:20px 2px 0}
 .campus-label .sect{margin:0}
 .campus-label span{font-size:10px;font-weight:700;color:var(--m2)}
@@ -266,7 +254,7 @@ textarea{min-height:90px}
 .tk-status{font-size:11px!important}
 
 
-@media(min-width:700px){.app{max-width:540px}.hero{min-height:170px}.hero-txt .big{font-size:29px}.scroll{padding-left:20px;padding-right:20px}}
+@media(min-width:700px){.app{max-width:540px}.scroll{padding-left:20px;padding-right:20px}}
 @media(max-width:360px){.rc-main{padding:16px 12px}.rc-route{font-size:16px}.rc-stub{width:91px;padding:12px 6px}.rc-when .tm{font-size:17px}.rc-expand,.rc-live{font-size:11px;padding:8px 10px}.rc-actions{gap:6px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media print{body{background:white}.tk-top,.ticket-actions,.tk-note{display:none!important}.ticket{box-shadow:none!important}.tk-wrap{max-width:420px!important}.tk-band{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
@@ -317,12 +305,6 @@ a{color:var(--ox)}
 .ticket-nav{font-size:12px;font-weight:650;color:var(--ox);background:#fffdfa;border-color:#eedfd1;padding:10px 15px;box-shadow:0 3px 10px #783b1808}
 .scroll{padding:7px 20px 34px}
 .today-line{margin:9px 2px 10px;font-size:12px;font-weight:550;letter-spacing:.01em}
-.hero{min-height:122px;margin:23px 0 0;border:1px solid rgba(255,255,255,.95);border-radius:25px;background:linear-gradient(115deg,#fffdf9 10%,#fff4e5 100%);box-shadow:0 10px 30px -22px #8e522b38}
-.hero-art{max-width:70%;-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 24%);mask-image:linear-gradient(to right,transparent 0%,#000 24%)}
-.hero-txt{padding:17px 20px;max-width:58%}
-.hero-txt .hi{font-size:11.5px;font-weight:500;color:var(--m2)}
-.hero-txt .big{font-size:23px;font-weight:660;letter-spacing:-.045em;line-height:1.06;margin-top:7px}
-.hero-txt .big .hl{color:var(--ox)}
 .campus-label{margin:12px 2px 0}
 .campus-label .sect,.special-head .sect{font-size:12px;font-weight:750;letter-spacing:.105em;color:#a9341b}
 .campus-label span{font-size:11px;font-weight:500;color:var(--m2)}
@@ -396,8 +378,6 @@ input,select,textarea{background:#fffdfa;border-color:#d9c6b7}
 @media(max-width:360px){
   .appbar{padding-left:16px;padding-right:16px}
   .scroll{padding-left:16px;padding-right:16px}
-  .hero-txt{padding:18px 16px}
-  .hero-txt .big{font-size:21px}
   .dir{padding:15px 13px;gap:10px}
   .dir .rt{font-size:13px}
   .dir .eta .m{font-size:17px}
@@ -410,8 +390,6 @@ input,select,textarea{background:#fffdfa;border-color:#d9c6b7}
 }
 @media(min-width:700px){
   .app{max-width:560px}
-  .hero{min-height:134px}
-  .hero-txt .big{font-size:25px}
 }
 @media(hover:hover){
   .ticket-nav:hover,.rc-expand:hover,.rc-live:hover{transform:translateY(-1px);box-shadow:0 7px 16px #743c1922}
