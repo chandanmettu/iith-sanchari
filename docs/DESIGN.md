@@ -10,18 +10,23 @@ The live implementation of every token below is `assets/app.css`. This document 
 
 ---
 
-## September 25 correction
+## September 25 visual refinement
 
-The owner confirmed that the original Main Gate–Hostel Circle shuttle
-countdown and its two 15-minute direction schedules reflected the working
-campus service. The home screen keeps this timetable and puts it before the
-paid routes. It follows scheduled times in IST; it is not a GPS prediction.
-The original 480px app-shell character, rounded type, hero artwork, vivid
-orange/gold ticket gradients, perforation and direct Buy action are the design
-baseline. Wider screens may add breathing room without turning the home into
-a multi-column dashboard. A trip today shows only its time because the date
-is already printed at the top. A later trip shows tomorrow or its weekday.
-Controls retain semantic buttons, visible focus and reduced-motion support.
+The current home remains campus-first: date, original hero art, the working
+Main Gate–Hostel Circle timetable, then direct-Buy Patancheru and Miyapur
+cards. The shuttle value follows scheduled 15-minute intervals in IST; it is
+not a GPS prediction. The owner asked for a cleaner design without changing
+features, so the layout stays a compact centered app rather than a dashboard.
+
+`assets/app.css` is canonical. The current UI uses locally hosted Outfit under
+its Open Font License, warm ivory `#faf5ee`, dark espresso `#30231e`, muted
+brown `#66554b`, and stronger sunset orange and saffron card gradients. Cards
+have 23px corners, careful white space and warm low-opacity borders/shadows.
+The primary route times, fares and shuttle countdown are the most prominent
+numbers. Later departures show a short day label; today’s time appears without
+repeating the date. Buttons keep a visible focus ring and reduced-motion
+behavior. The palette/type catalogue below records the earlier sunrise system;
+use the CSS tokens for exact current values.
 
 ## Palette — "Sunrise IITH"
 
@@ -29,26 +34,26 @@ Named for the gradient in the hero illustration (`assets/hero.png`): a vivid ora
 
 | Token | Hex | Swatch | Usage |
 |---|---|---|---|
-| `--stage` | `#fdf1e6` | <span style="display:inline-block;width:14px;height:14px;background:#fdf1e6;border:1px solid #ccc;vertical-align:middle"></span> | Page background |
-| `--paper` | `#ffffff` | <span style="display:inline-block;width:14px;height:14px;background:#ffffff;border:1px solid #ccc;vertical-align:middle"></span> | Card / surface background |
-| `--paper2` | `#fbe9db` | <span style="display:inline-block;width:14px;height:14px;background:#fbe9db;border:1px solid #ccc;vertical-align:middle"></span> | Inset surfaces — toggle tracks, icon badges, chips |
-| `--paper3` | `#f5dcb8` | <span style="display:inline-block;width:14px;height:14px;background:#f5dcb8;border:1px solid #ccc;vertical-align:middle"></span> | Recessed/expanded panels that need to visibly separate from the page — e.g. the open schedule dropdown. Noticeably deeper than `--paper2`/`--stage` (which sit too close together for this); paired with an inset shadow for a "pressed-in" feel. |
-| `--ink` | `#241d1a` | <span style="display:inline-block;width:14px;height:14px;background:#241d1a;border:1px solid #ccc;vertical-align:middle"></span> | Primary text |
-| `--m2` | `#8c8078` | <span style="display:inline-block;width:14px;height:14px;background:#8c8078;border:1px solid #ccc;vertical-align:middle"></span> | Muted text / labels |
-| `--ox` | `#e8491f` | <span style="display:inline-block;width:14px;height:14px;background:#e8491f;border:1px solid #ccc;vertical-align:middle"></span> | Primary brand / accent (red-orange) |
-| `--ox2` | `#c93c17` | <span style="display:inline-block;width:14px;height:14px;background:#c93c17;border:1px solid #ccc;vertical-align:middle"></span> | Oxblood-dark — gradient shade, pressed states |
-| `--gold` | `#f2a71b` | <span style="display:inline-block;width:14px;height:14px;background:#f2a71b;border:1px solid #ccc;vertical-align:middle"></span> | Secondary accent (Miyapur route, gold gradient) |
-| `--goldt` | `#d98f12` | <span style="display:inline-block;width:14px;height:14px;background:#d98f12;border:1px solid #ccc;vertical-align:middle"></span> | Gold text / dark gold shade |
-| `--live` | `#1f8a4c` | <span style="display:inline-block;width:14px;height:14px;background:#1f8a4c;border:1px solid #ccc;vertical-align:middle"></span> | Live status, "Paid" badge, verified state — **semantic green, not a brand color** |
+| `--stage` | `#faf5ee` | <span style="display:inline-block;width:14px;height:14px;background:#faf5ee;border:1px solid #ccc;vertical-align:middle"></span> | Page background |
+| `--paper` | `#fffefa` | <span style="display:inline-block;width:14px;height:14px;background:#fffefa;border:1px solid #ccc;vertical-align:middle"></span> | Card / surface background |
+| `--paper2` | `#fff0e3` | <span style="display:inline-block;width:14px;height:14px;background:#fff0e3;border:1px solid #ccc;vertical-align:middle"></span> | Inset surfaces — toggle tracks, icon badges, chips |
+| `--paper3` | `#fff5e9` | <span style="display:inline-block;width:14px;height:14px;background:#fff5e9;border:1px solid #ccc;vertical-align:middle"></span> | Recessed/expanded panels that need to visibly separate from the page — e.g. the open schedule dropdown. A lighter warm surface that separates the open schedule from the surrounding page with a subtle inset edge. |
+| `--ink` | `#30231e` | <span style="display:inline-block;width:14px;height:14px;background:#30231e;border:1px solid #ccc;vertical-align:middle"></span> | Primary text |
+| `--m2` | `#66554b` | <span style="display:inline-block;width:14px;height:14px;background:#66554b;border:1px solid #ccc;vertical-align:middle"></span> | Muted text / labels |
+| `--ox` | `#bd3c1e` | <span style="display:inline-block;width:14px;height:14px;background:#bd3c1e;border:1px solid #ccc;vertical-align:middle"></span> | Primary brand / accent (red-orange) |
+| `--ox2` | `#932a1b` | <span style="display:inline-block;width:14px;height:14px;background:#932a1b;border:1px solid #ccc;vertical-align:middle"></span> | Oxblood-dark — gradient shade, pressed states |
+| `--gold` | `#e9a62f` | <span style="display:inline-block;width:14px;height:14px;background:#e9a62f;border:1px solid #ccc;vertical-align:middle"></span> | Secondary accent (Miyapur route, gold gradient) |
+| `--goldt` | `#82500f` | <span style="display:inline-block;width:14px;height:14px;background:#82500f;border:1px solid #ccc;vertical-align:middle"></span> | Gold text / dark gold shade |
+| `--live` | `#226443` | <span style="display:inline-block;width:14px;height:14px;background:#226443;border:1px solid #ccc;vertical-align:middle"></span> | Live status, "Paid" badge, verified state — **semantic green, not a brand color** |
 | `--pline` | `rgba(120,90,70,.14)` | | Hairlines / dividers |
 | `--sh` | `rgba(180,90,40,.18)` | | Shadow tint (warm, not neutral gray) |
 
 **Gradients** (both sampled from the hero sun — see `assets/app.css` for exact stops):
 ```css
---grad-ox:   linear-gradient(160deg,#ff8a3d 0%,#f0501c 42%,#c02a12 100%);
---grad-gold: linear-gradient(160deg,#ffd873 0%,#f2a71b 45%,#c67908 100%);
+--grad-ox:   linear-gradient(135deg,#ed6937 0%,#d94724 48%,#a82b20 100%);
+--grad-gold: linear-gradient(135deg,#ffe19a 0%,#f3b640 51%,#d5891b 100%);
 ```
-Used on: ticket cards (`--grad-ox` for Patancheru, `--grad-gold` for Miyapur), shuttle badges, active toggle/pill states, the ticket boarding-pass band.
+Used on the Patancheru and Miyapur ticket cards. Shuttle badges and active direction controls use darker companion gradients for readable labels.
 
 **Rule:** every shadow, divider, and neutral in this system has a warm bias toward the orange accent — never pure gray (`--pline`, `--sh` are both `rgba` tints of brown/orange, not black). Don't introduce a cold gray; it'll read as unconsidered against everything else.
 
@@ -57,24 +62,25 @@ Used on: ticket cards (`--grad-ox` for Patancheru, `--grad-gold` for Miyapur), s
 ## Typography
 
 ```css
-font-family: ui-rounded, "SF Pro Rounded", "Segoe UI Rounded",
-             -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-             Helvetica, Arial, sans-serif;
+@font-face { font-family: Outfit; src: url("fonts/outfit-variable.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+font-family: Outfit, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 ```
 
-One typeface, no serif, no second display face. **SF Rounded** was chosen deliberately (see `docs/PROGRESS.md` log) because its softened curves match the rounded-pill language used everywhere else — it's not a neutral default, it reinforces the shape system. Falls back cleanly to the platform system font on non-Apple devices.
+One locally hosted variable typeface with platform fallbacks. Outfit keeps the
+friendly rounded character while improving clarity and consistency across
+phones and desktops. Its OFL license is in `assets/fonts/OFL-Outfit.txt`.
 
 **Observed type scale** (no formal `--fs-*` tokens yet — these are the sizes actually in use):
 
 | Role | Size | Weight | Notes |
 |---|---|---|---|
-| Hero headline | 22px | 800 | `letter-spacing:-.02em` |
-| Ticket route / card title | 18–19px | 800 | |
-| Body / route names | 13.5–14px | 700 | |
-| Fare / time numerals | 19–23px | 900 | always `font-variant-numeric: tabular-nums` |
-| Labels (uppercase eyebrows) | 9–11px | 800 | `letter-spacing: .1em` to `.14em`, uppercase |
-| Buttons / pills | 11.5–13px | 800 | |
-| Muted / meta text | 10.5–13px | 600–700 | color `var(--m2)` |
+| Hero headline | 30px | 660 | `letter-spacing:-.02em` |
+| Ticket route / card title | 20px | 650 | |
+| Body / route names | 13–15px | 500–630 | |
+| Fare / time numerals | 19–28px | 700–720 | always `font-variant-numeric: tabular-nums` |
+| Labels (uppercase eyebrows) | 10–12px | 700–750 | `letter-spacing: .1em` to `.14em`, uppercase |
+| Buttons / pills | 12–13px | 600–700 | |
+| Muted / meta text | 11–13px | 450–550 | color `var(--m2)` |
 
 **Numerals always get `tabular-nums`** wherever digits align in a column or update dynamically (fares, times, countdowns) — non-negotiable, prevents layout jitter.
 
@@ -85,7 +91,7 @@ One typeface, no serif, no second display face. **SF Rounded** was chosen delibe
 Deliberately collapsed to **two tokens** — see `docs/PROGRESS.md` 2026-07-24 entry for why (it used to be four, and buttons were inconsistent as a result):
 
 ```css
---r-card: 20px;   /* every card, ticket, hero, modal-like surface */
+--r-card: 23px;   /* every card, ticket, hero, modal-like surface */
 --r-btn:  999px;  /* every button, pill, chip, toggle segment — always a full stadium/pill */
 ```
 
@@ -112,7 +118,7 @@ box-shadow: 0 6px 14px -8px var(--sh);
 
 **Cards** — `var(--paper)` background, `1px solid var(--pline)` border, `--r-card` radius, `--sh`-tinted shadow. Used for: the shuttle schedule card, ticket detail expansions, the ticket boarding pass itself.
 
-**Buttons / pills** — always `--r-btn` (full pill), always a gradient fill (`--grad-ox` or `--grad-gold`) when "primary," white/`--paper` fill with colored text when "on a colored surface" (e.g. Buy/Schedule/Live pills sitting on a gradient ticket card).
+**Buttons / pills** — always `--r-btn` (full pill). The selected direction uses a dark companion gradient; controls on ticket cards use white or light peach fills with dark labels.
 
 **Tear-off ticket cards** (Patancheru/Miyapur route cards, and the boarding pass) — the signature motif: a dashed vertical perforation with circular punch-hole notches. The notch math matters — get it wrong and it looks like plain circles instead of clean bitten semicircles:
 
