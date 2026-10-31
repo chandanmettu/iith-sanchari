@@ -97,6 +97,15 @@ transport/
 
 ## Log (newest first)
 
+### 2026-10-31 — Boarding pass prints out of a slot, tear-off gesture (local)
+- `ticket.html` now opens with the pass feeding out of a dark printer slot in eight short mechanical steps (about 2.2 s), bottom edge first. A shade at the slot mouth makes it read as paper leaving the machine. Tapping the pass while it prints finishes the print at once. Idea from a "boarding pass that prints" concept post Chandan shared.
+- Once printed, pulling the pass sideways (any direction with a mouse) tears it off: the top edge turns ragged, the matching torn stub stays in the slot, and the pass springs down to rest just below the printer. Up/down touch drags still scroll the page. Tearing is decoration only; the pass, QR and status read the same either way.
+- Paper shape: square corners, scalloped bottom edge and the torn top are `clip-path` polygons built in JS from the card's size (recomputed by a ResizeObserver); the shadow is a `drop-shadow` filter on the wrapper so it follows that shape. The 30-second status refresh swaps the pass inside the printer without replaying the print or un-tearing it.
+- Reduced motion: no print animation, the pass is shown printed; release after a drag snaps without the spring. Print CSS hides the printer and resets transforms.
+- New `assets/printer.js` (`SanchariPrinter.render`), called from `assets/ticket.js`; `ticket.js?v=13`, `printer.js?v=1`.
+- Bug fixed on the way: `ticket.html` had no `#ticketMessage`, so `ticket.js` threw after rendering and every verified pass showed "Unverified". Added the element (and closed the unclosed `.ticket-actions` div). This bug is on the live site too; it only matters once booking opens.
+- Verified locally with a mock verify-ticket response (phone 375 px and desktop): print steps, shade, scallops, tear, torn stub, settle, refresh-while-torn, no console errors from the new code. Not yet checked on a real phone or pushed.
+
 ### 2026-09-25 — Publish compact date and “Tom” label
 
 - Pushed the compact campus-heading date and one-line next-day label through
