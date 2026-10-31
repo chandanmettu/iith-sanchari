@@ -433,3 +433,14 @@ input,select,textarea{background:#fffdfa;border-color:#d9c6b7}
   .dir .eta .m{font-size:19px}
 }
 @media(prefers-reduced-motion:reduce){.sched-btn:hover{transition:none}}
+/* Secondary pages (My tickets, payment, pass, staff): these classes had no styles
+   and fell back to browser-default grey buttons. Same pill and type system as the home screen. */
+.eyebrow{margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ox)}
+.small-copy{font-size:14px;line-height:1.55;color:#6c5948}
+.quiet-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;padding:12px 18px;border:1px solid #ecd6c4;border-radius:var(--r-btn);background:#fff7f0;color:#8d2e1b;font-size:13px;font-weight:650;text-decoration:none;cursor:pointer}
+.quiet-btn:disabled{opacity:.55;cursor:default}
+.text-link{display:inline-flex;align-items:center;min-height:44px;margin-top:8px;font-size:13px;font-weight:650}
+.surface>.primary-btn+.primary-btn{margin-top:10px}
+#scanWorkspace>.quiet-btn:first-child{width:auto;min-height:38px;margin-left:auto;padding:8px 16px}
+@media(hover:hover){.quiet-btn:not(:disabled):hover{background:#ffefe2}}
+@media(prefers-reduced-motion:no-preference){.quiet-btn{transition:background .2s}}

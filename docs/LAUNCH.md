@@ -3,6 +3,32 @@
 Prepared locally on 25 September 2026. Booking stays off by default. A deployment
 of the UI is separate from permission to accept payments.
 
+## Before the gateway: what can be set up now
+
+Checked on 31 October 2026: the live server has no `api/config.php`, so there is
+no database or signing secret yet and every API call except `status.php`
+answers 503. Pages and timetables work without it. To be ready the day the
+gateway is approved:
+
+1. hPanel > Databases: create a MySQL database and user (choose the password
+   yourself). Open phpMyAdmin and import `api/schema.sql` once.
+2. On the Mac: `python3 tools/make-config.py "<private folder outside the repo>/config.php"`.
+   It asks for the database login, generates the ticket signing secret, one
+   access key per driver and office account (only bcrypt hashes are stored,
+   via macOS `htpasswd`) and a webhook login, and leaves payment values blank.
+3. Upload that file to `public_html/api/config.php` with File Manager. Booking
+   stays closed (`BOOKING_ENABLED`, `OPERATIONS_CONFIRMED` are false and
+   `routes.json` is unconfirmed), but tickets, check-in and the office page
+   can now reach the database.
+4. hPanel > Advanced > Cron Jobs: `php /home/<account>/domains/sanchari.iith.online/public_html/api/reconcile.php`
+   every minute (check the real path in File Manager).
+
+On approval: fill the `PAYMENT_*` values and `CHECKOUT_HOSTS` in the server
+config, enter the webhook login in the gateway dashboard, run the acceptance
+checklist below in sandbox, then switch the three launch flags on. The adapter
+speaks `oauth-checkout-v2`; a gateway with a different API needs its own
+adapter in `api/hosted.php` first.
+
 ## Server prerequisites
 
 - PHP 8.1+ with cURL, PDO and PDO MySQL; HTTPS; MySQL 8 or MariaDB with InnoDB.
