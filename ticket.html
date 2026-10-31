@@ -69,4 +69,30 @@
   .tk-banner{margin-top:16px;border-radius:14px;padding:13px 15px;font-size:11.5px;line-height:1.55;text-align:center}
   .tk-banner.bad{background:rgba(198,40,40,.09);color:#8e1f1f;font-weight:600}
   .tk-banner.warn{background:rgba(198,138,31,.12);color:#7a5310;font-weight:600}
-</style></head><body><main class="tk-wrap"><div class="tk-top"><a href="tickets.html" aria-label="Back to My tickets">←</a><div class="ttl">Your boarding pass</div></div><div id="tk-content" aria-live="polite"><p class="status-box">Checking your ticket…</p></div><div class="ticket-actions" hidden><div class="actions" style="margin-top:20px"><button id="copyTicket" class="quiet-btn">Copy ticket link</button><button id="printTicket" class="quiet-btn">Print / save PDF</button></div><button id="refreshTicket" class="primary-btn" style="margin-top:12px">Refresh ticket status</button><p class="tk-note">One passenger · one journey. Carry your institute ID. The driver scans this pass to confirm boarding. Keep the ticket link private.</p><a class="text-link" href="mailto:office.transport@iith.ac.in">Need help? Contact Transport ↗</a></main><script src="assets/qrcode.js"></script><script src="assets/shared.js?v=12"></script><script src="assets/ticket.js?v=12"></script></body></html>
+
+  /* Printer: the pass feeds out of the slot, then can be torn off (assets/printer.js).
+     The feed's top edge is the slot mouth; it clips only upwards so shadows still show. */
+  html,body{overflow-x:clip} /* a pass dragged past the screen edge must not widen the page */
+  .tk-printer{position:relative;margin-top:4px}
+  .tk-slot{position:relative;height:50px;margin:0 -6px;border-radius:16px;
+    background:linear-gradient(180deg,#4b3a31,#2e231e 55%,#241b17);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -2px 4px rgba(0,0,0,.35),0 16px 26px -16px rgba(70,32,14,.6);
+    animation:tk-in .35s cubic-bezier(.22,1,.36,1) both}
+  .tk-slot::before{content:"";position:absolute;left:10px;right:10px;top:15px;height:10px;border-radius:6px;
+    background:linear-gradient(#090605,#1b1411);box-shadow:inset 0 2px 3px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,.09)}
+  .tk-feed{position:relative;z-index:1;margin-top:-30px;padding:0 6px;clip-path:inset(0 -40px -90px)}
+  .tk-paper{position:relative;transform-origin:50% 0;will-change:transform;touch-action:pan-y pinch-zoom;cursor:grab;
+    filter:drop-shadow(0 16px 20px rgba(150,70,30,.17)) drop-shadow(0 2px 3px rgba(110,55,25,.12))}
+  .tk-paper .ticket{border:0;border-radius:0;box-shadow:none}
+  .tk-shade{position:absolute;left:0;right:0;top:0;height:58px;pointer-events:none;z-index:4;
+    background:linear-gradient(rgba(36,18,8,.55),rgba(36,18,8,.18) 38%,rgba(36,18,8,0));transition:opacity .35s}
+  .tk-remnant{position:absolute;left:6px;right:6px;top:-5px;height:13px;display:none;
+    background:linear-gradient(rgba(20,10,5,.75),rgba(20,10,5,.1) 55%,rgba(20,10,5,0)),var(--grad-ox)}
+  .is-printing .tk-paper{cursor:default}
+  .is-pulling .tk-paper{cursor:grabbing;-webkit-user-select:none;user-select:none}
+  .is-torn .tk-feed{clip-path:none;padding-bottom:38px}
+  .is-torn .tk-shade{opacity:0}
+  .is-torn .tk-remnant{display:block}
+  @keyframes tk-in{from{opacity:0;transform:translateY(-6px)}}
+  @media print{.tk-slot,.tk-shade,.tk-remnant{display:none!important}.tk-feed{margin:0;padding:0;clip-path:none}.tk-paper{transform:none!important;filter:none}}
+</style></head><body><main class="tk-wrap"><div class="tk-top"><a href="tickets.html" aria-label="Back to My tickets">←</a><div class="ttl">Your boarding pass</div></div><div id="tk-content" aria-live="polite"><p class="status-box">Checking your ticket…</p></div><div class="ticket-actions" hidden><div class="actions" style="margin-top:20px"><button id="copyTicket" class="quiet-btn">Copy ticket link</button><button id="printTicket" class="quiet-btn">Print / save PDF</button></div><button id="refreshTicket" class="primary-btn" style="margin-top:12px">Refresh ticket status</button><p id="ticketMessage" class="fine-print" style="text-align:center;margin:10px 0 0" aria-live="polite"></p><p class="tk-note">One passenger · one journey. Carry your institute ID. The driver scans this pass to confirm boarding. Keep the ticket link private.</p><a class="text-link" href="mailto:office.transport@iith.ac.in">Need help? Contact Transport ↗</a></div></main><script src="assets/qrcode.js"></script><script src="assets/shared.js?v=12"></script><script src="assets/printer.js?v=1"></script><script src="assets/ticket.js?v=13"></script></body></html>
