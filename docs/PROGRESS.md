@@ -97,6 +97,18 @@ transport/
 
 ## Log (newest first)
 
+### 2026-10-31 — Launch-readiness pass: schedule checks and fixes
+- Checked live: every public file matches the repo (images differ only by CDN compression); private files, SQL, docs and `tools/` return 403/404; PHP 8.3; no console errors. Countdown and next-bus times matched the IST clock on the live page.
+- Timetable maths (shared.js + the app.js shuttle formula) passed 21 fixed-time checks under Asia/Kolkata, America/Los_Angeles, UTC and Pacific/Kiritimati device clocks: both shuttle phases, midnight rollover, the six-minute cut-off, Miyapur weekday/weekend switch and boarding points, holiday skipping.
+- Fixed (live bugs): Miyapur "From campus" note printed `${S.escape(cfg.boarding_from)}` literally; now just says the bus continues through institute stops (the boarding point is already shown above it). "next ·" no longer dangles on future days, and every list row uses the same "5:45 PM" format.
+- Fixed: cards now refresh every minute and on tab return even with a schedule open (focus is restored; skipped while a checkout is opening), and a Buy error message survives the refresh.
+- Fixed (SAN-105): a failed/abandoned payment no longer blocks rebooking the same departure. Server rechecks the gateway, then returns `retry` only for failed/refunded/revoked; the page creates a fresh booking once. Mock-tested in the browser (old booking → retry → new booking saved first → checkout).
+- `verify-ticket.php` gives a readable message for an invalid link. `api/.htaccess` passes the `Authorization` header through for the webhook.
+- Design: `.quiet-btn`, `.eyebrow`, `.small-copy` and `.text-link` had no styles, so secondary pages showed grey browser-default buttons. Added pill/type styles matching the home screen. Payment page shows "Book again" after a failed payment.
+- New `tools/make-config.py` (+ `tools/.htaccess` deny) builds the server config on a Mac without PHP; `docs/LAUNCH.md` has a "Before the gateway" section. PHP changes were reviewed by hand only (no PHP runtime on this Mac); live endpoints were called after deploy to rule out parse errors.
+- Cache keys: `app.css?v=20` (all pages), `shared.js?v=13`, `app.js?v=20`, `payment.js?v=12`.
+- Still open: server config/database not created (needs the owner's database password); shuttle service hours (the countdown runs 24 hours); SAN-012 data (holidays, IITH → Patancheru and weekend Miyapur boarding points, boarding window minutes).
+
 ### 2026-10-31 — Boarding pass prints out of a slot, tear-off gesture
 - `ticket.html` now opens with the pass feeding out of a dark printer slot in eight short mechanical steps (about 2.2 s), bottom edge first. A shade at the slot mouth makes it read as paper leaving the machine. Tapping the pass while it prints finishes the print at once. Idea from a "boarding pass that prints" concept post Chandan shared.
 - Once printed, pulling the pass sideways (any direction with a mouse) tears it off: the top edge turns ragged, the matching torn stub stays in the slot, and the pass springs down to rest just below the printer. Up/down touch drags still scroll the page. Tearing is decoration only; the pass, QR and status read the same either way.

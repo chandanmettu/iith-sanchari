@@ -24,7 +24,7 @@ window.Sanchari = (() => {
   async function api(path, body){
     const r=await fetch('/api/'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store',signal:AbortSignal.timeout(25000)});
     let d;try{d=await r.json()}catch{throw new Error('The service is temporarily unavailable. Please try again.');}
-    if(!r.ok){const e=new Error(d.error||'Could not complete this request.');e.status=r.status;throw e;}return d;
+    if(!r.ok){const e=new Error(d.error||'Could not complete this request.');e.status=r.status;e.retry=d.retry===true;throw e;}return d;
   }
   const storageKey='sanchari.bookings.v1';
   function saved(){try{const v=JSON.parse(localStorage.getItem(storageKey)||'[]');return Array.isArray(v)?v.filter(x=>x&&typeof x.id==='string'&&typeof x.key==='string'):[]}catch{return []}}

@@ -9,7 +9,7 @@
   const shortClock = ts => S.clock(ts).replace(/\s*(am|pm)$/i, x => x.toUpperCase());
   const tomorrow = () => S.dayKey(istMidnight()+86400000);
   const shortWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tom · '+shortClock(ts) : S.date(ts,{weekday:'short'})+' · '+shortClock(ts);
-  const longerWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tom · '+shortClock(ts) : S.when(ts);
+  const longerWhen = ts => S.dayKey(ts)===today() ? shortClock(ts) : S.dayKey(ts)===tomorrow() ? 'Tom · '+shortClock(ts) : S.date(ts,{weekday:'short',day:'numeric',month:'short'})+' · '+shortClock(ts);
   const minutesAway = ts => Math.max(1, Math.ceil((ts-Date.now())/60000));
   const shuttleTimes = (dir,count=6) => {
     const start=istMidnight()+phases[dir]*60000, gap=15*60000;
@@ -60,20 +60,22 @@
   function extraHTML(id,cfg,first){
     if(id!=='miya')return '';
     const weekend=first&&['Sat','Sun'].includes(S.date(first,{weekday:'short'}));
-    const stops=direction==='to'&&!weekend?'<div class="rc-sec" style="margin-top:15px">Weekday morning stops · Miyapur → IITH</div><div class="stops">'+cfg.stops.map(s=>`<div class="stop"><div class="rail"><span class="d"></span><span class="ln"></span></div><div class="si"><div><div class="nm2">${S.escape(s[0])}</div><div class="lm">${S.escape(s[1])}</div></div><div class="tm">${S.escape(s[2])}</div></div></div>`).join('')+'</div>':direction==='to'?'<p class="note-days">Weekend intermediate stop times are not listed.</p>':'<div class="rc-sec" style="margin-top:15px">From campus</div><div class="retnote">Board at <b>${S.escape(cfg.boarding_from)}</b>. The bus continues through institute stops towards Miyapur.</div>';
+    const stops=direction==='to'&&!weekend?'<div class="rc-sec" style="margin-top:15px">Weekday morning stops · Miyapur → IITH</div><div class="stops">'+cfg.stops.map(s=>`<div class="stop"><div class="rail"><span class="d"></span><span class="ln"></span></div><div class="si"><div><div class="nm2">${S.escape(s[0])}</div><div class="lm">${S.escape(s[1])}</div></div><div class="tm">${S.escape(s[2])}</div></div></div>`).join('')+'</div>':direction==='to'?'<p class="note-days">Weekend intermediate stop times are not listed.</p>':'<div class="rc-sec" style="margin-top:15px">From campus</div><div class="retnote">The bus continues through institute stops towards Miyapur.</div>';
     return stops+'<p class="note-days">Runs daily except institute holidays. Weekdays: 7:40 AM Miyapur → IITH and 5:45 PM IITH → Miyapur. Weekends: 8:30 AM IITH → Miyapur and 5:45 PM Miyapur → IITH.</p>';
   }
   function renderCards(){
     const expanded=new Set([...cards.querySelectorAll('.rcard.open')].map(x=>x.dataset.bus));
+    const focused=cards.contains(document.activeElement)?document.activeElement.closest('[data-expand],[data-buy]'):null;
     cards.innerHTML=Object.entries(data.routes).map(([id,cfg])=>{
       const route=direction==='from'?'IITH → '+cfg.name:cfg.name+' → IITH';
       // The backend only accepts a trip at least six minutes away. Show and buy that same departure.
       const up=S.departures(cfg,direction,6,Date.now()+6*60000,data.holidays);
       const first=up[0];
       const mapLink=direction==='to'&&cfg.boarding_to_url?`<br><a href="${S.escape(cfg.boarding_to_url)}" target="_blank" rel="noopener noreferrer">Open pickup stop in Maps ↗</a>`:'';
-      const rows=up.map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${longerWhen(ts)}</span><span class="rel">${i===0?'next · ':''}${S.dayKey(ts)===today()?minutesAway(ts)+' min away':''}</span></div>`).join('');
-      return `<article class="rcard ${expanded.has(id)?'open':''}" data-bus="${id}" data-departure="${first||''}"><div class="stubcard"><div class="rc-main"><div class="rc-route">${S.escape(route)}</div><div class="rc-when">${first&&S.dayKey(first)===today()?'<span class="rc-at">at</span>':''}<span class="tm">${first?shortWhen(first):'No trips listed'}</span><span class="rc-rel">${first&&S.dayKey(first)===today()?minutesAway(first)+' min':''}</span></div><div class="rc-actions"><button class="rc-expand" data-expand="${id}" aria-expanded="${expanded.has(id)}" aria-controls="schedule-${id}">Schedule <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>${id==='miya'&&direction==='from'?'':`<a class="rc-live" href="${S.escape(cfg.live)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${S.escape(cfg.name)} external bus tracker"><span class="pulse"></span>Live</a>`}</div></div><div class="rc-vp" aria-hidden="true"></div><div class="rc-stub"><div class="rc-farel">Fare</div><div class="rc-fare">₹${cfg.fare}</div><button class="rc-buy" data-buy="${id}" ${first&&availability.booking_enabled?'':'disabled'}>Buy</button></div></div><p class="card-status" role="status">${statusByCard[id]||''}</p><div class="rc-detail" id="schedule-${id}" ${expanded.has(id)?'':'hidden'}><div class="rc-detail-in"><div class="rc-sec">Upcoming departures</div><div class="slist">${rows}</div><div class="retnote">Board at: ${S.escape(S.boarding(cfg,direction,first))}${mapLink}</div>${extraHTML(id,cfg,first)}<p class="note-days">${data.confirmed?'Check for service updates with Transport.':'Please confirm schedule changes with Transport before travel.'}</p></div></div></article>`;
+      const rows=up.map((ts,i)=>`<div class="srow ${i===0?'next':''}"><span class="ct">${longerWhen(ts)}</span><span class="rel">${[i===0?'next':'',S.dayKey(ts)===today()?minutesAway(ts)+' min away':''].filter(Boolean).join(' · ')}</span></div>`).join('');
+      return `<article class="rcard ${expanded.has(id)?'open':''}" data-bus="${id}" data-departure="${first||''}"><div class="stubcard"><div class="rc-main"><div class="rc-route">${S.escape(route)}</div><div class="rc-when">${first&&S.dayKey(first)===today()?'<span class="rc-at">at</span>':''}<span class="tm">${first?shortWhen(first):'No trips listed'}</span><span class="rc-rel">${first&&S.dayKey(first)===today()?minutesAway(first)+' min':''}</span></div><div class="rc-actions"><button class="rc-expand" data-expand="${id}" aria-expanded="${expanded.has(id)}" aria-controls="schedule-${id}">Schedule <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg></button>${id==='miya'&&direction==='from'?'':`<a class="rc-live" href="${S.escape(cfg.live)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${S.escape(cfg.name)} external bus tracker"><span class="pulse"></span>Live</a>`}</div></div><div class="rc-vp" aria-hidden="true"></div><div class="rc-stub"><div class="rc-farel">Fare</div><div class="rc-fare">₹${cfg.fare}</div><button class="rc-buy" data-buy="${id}" ${first&&availability.booking_enabled?'':'disabled'}>Buy</button></div></div><p class="card-status" role="status">${statusByCard[id+direction]||''}</p><div class="rc-detail" id="schedule-${id}" ${expanded.has(id)?'':'hidden'}><div class="rc-detail-in"><div class="rc-sec">Upcoming departures</div><div class="slist">${rows}</div><div class="retnote">Board at: ${S.escape(S.boarding(cfg,direction,first))}${mapLink}</div>${extraHTML(id,cfg,first)}<p class="note-days">${data.confirmed?'Check for service updates with Transport.':'Please confirm schedule changes with Transport before travel.'}</p></div></div></article>`;
     }).join('');
+    if(focused)cards.querySelector(focused.dataset.expand?`[data-expand="${focused.dataset.expand}"]`:`[data-buy="${focused.dataset.buy}"]`)?.focus({preventScroll:true});
   }
   renderCards();
   cards.addEventListener('click',async event=>{
@@ -82,22 +84,35 @@
     const buy=event.target.closest('[data-buy]');if(!buy||buy.disabled)return;
     const card=buy.closest('.rcard'),id=buy.dataset.buy,ts=Number(card.dataset.departure),epoch=Math.floor(ts/1000);
     if(!ts||ts<Date.now()+6*60000){renderCards();return;}
-    buy.disabled=true;buy.dataset.busy='true';buy.textContent='Opening…';
+    buy.disabled=true;buy.dataset.busy='true';buy.textContent='Opening…';const slot=id+direction;statusByCard[slot]='';
     const status=card.querySelector('.card-status');status.textContent='Preparing secure checkout…';
+    const done=html=>{statusByCard[slot]=html;status.innerHTML=html;buy.disabled=false;buy.textContent='Buy';delete buy.dataset.busy;};
+    const fresh=()=>({id:'s_'+crypto.randomUUID().replace(/-/g,''),key:Array.from(crypto.getRandomValues(new Uint8Array(24)),x=>pad(x.toString(16))).join(''),route:id,direction,departure:epoch});
+    const noStorage='Allow browser storage before buying so your ticket can be recovered.';
     let booking=S.saved().find(x=>x.route===id&&x.direction===direction&&x.departure===epoch);
-    if(!booking){booking={id:'s_'+crypto.randomUUID().replace(/-/g,''),key:Array.from(crypto.getRandomValues(new Uint8Array(24)),x=>pad(x.toString(16))).join(''),route:id,direction,departure:epoch};
-      if(!S.save(booking)){status.textContent='Allow browser storage before buying so your ticket can be recovered.';buy.disabled=false;buy.textContent='Buy';delete buy.dataset.busy;return;}}
+    if(!booking&&!S.save(booking=fresh())){done(noStorage);return;}
+    const create=()=>S.api('create-order.php',{route:id,direction,departure:epoch,id:booking.id,recovery_key:booking.key});
     try{
-      const order=await S.api('create-order.php',{route:id,direction,departure:epoch,id:booking.id,recovery_key:booking.key});
+      let order;
+      try{order=await create();}
+      catch(error){
+        // The server only says retry once the gateway has confirmed the earlier attempt failed.
+        if(!error.retry)throw error;
+        if(!S.save(booking=fresh())){done(noStorage);return;}
+        order=await create();
+      }
       if(order.token){location.href='ticket.html#t='+encodeURIComponent(order.token);return;}
       const url=new URL(order.checkout_url);if(url.protocol!=='https:')throw Error('Secure checkout could not open.');
       location.assign(url.href);
-    }catch(error){const link=S.recovery(booking);status.innerHTML=`${S.escape(error.message)} <a href="${S.escape(link)}">Check this booking</a> before trying again.`;buy.disabled=false;buy.textContent='Buy';delete buy.dataset.busy;}
+    }catch(error){done(`${S.escape(error.message)} <a href="${S.escape(S.recovery(booking))}">Check this booking</a> before trying again.`);}
   });
   document.querySelectorAll('#specialToggle button').forEach(button=>button.addEventListener('click',()=>{
     direction=button.dataset.tdir;
     document.querySelectorAll('#specialToggle button').forEach(b=>{b.classList.toggle('on',b===button);b.setAttribute('aria-pressed',String(b===button));});
     renderCards();
   }));
-  setInterval(()=>{if(!cards.contains(document.activeElement)&&!cards.querySelector('.rcard.open'))renderCards();},60000);
+  // Keep the next departure current, but never redraw under a checkout that is opening.
+  const refreshCards=()=>{if(!cards.querySelector('[data-busy]'))renderCards();};
+  setInterval(refreshCards,60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshCards();});
 })();

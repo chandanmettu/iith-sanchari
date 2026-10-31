@@ -80,7 +80,7 @@ schema on the host's MySQL/MariaDB, verify access rules, test real camera scans
 and prove the full acceptance checklist before opening bookings. Confirm the
 transition plan for any outstanding legacy passes.
 
-## Locally addressed — awaiting deployment
+## Addressed and deployed (published 2026-09-25)
 
 ### SAN-002 — Campus shuttle countdown restored
 **Local change:** 2026-09-25
@@ -165,6 +165,25 @@ The issuing endpoint strips base64 padding, and strict decoding is not
 guaranteed to tolerate its absence — a genuine ticket whose signature had just
 passed could have been rejected as undecodable. Padding is now restored before
 decoding.
+
+### SAN-105 — A failed payment blocked rebooking the same bus
+**Fixed:** 2026-10-31
+
+Buy reuses the booking saved in the browser for that exact departure, and the
+server answered any existing non-paid booking with "already exists". After a
+failed or abandoned UPI payment the rider could never buy that bus again.
+`create-order.php` now rechecks the gateway first (a closed tab may already be
+paid), and only a confirmed failed, refunded or revoked booking returns
+`retry`; the page then starts a fresh booking. An ambiguous `creating` booking
+still never gets a second order. Tested against a mock server, not a gateway.
+
+### SAN-106 — Valid passes showed "Unverified"; raw code in Miyapur schedule
+**Fixed:** 2026-10-31
+
+`ticket.html` lacked `#ticketMessage`, so `ticket.js` threw after rendering and
+marked every verified pass Unverified. Separately, the Miyapur "From campus"
+note printed `${S.escape(cfg.boarding_from)}` literally (a template placeholder
+inside a single-quoted string). Both were live.
 
 
 ## Historical open-issue descriptions (before 2026-09-25)
