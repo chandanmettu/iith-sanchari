@@ -37,13 +37,38 @@ function field($data,$key,$pattern) {
     if (!is_string($value) || !preg_match($pattern,$value)) respond(['error'=>'Invalid ' . str_replace('_',' ',$key) . '.'],400);
     return $value;
 }
+// With no DB_DSN, bookings live in a SQLite file that creates itself: outside the web root
+// when the host allows it, otherwise in api/data/ behind a deny-all .htaccess.
+function data_dir() {
+    // A subdomain can sit inside another site's public_html, so never go "outside" into a public folder.
+    $parent=realpath(dirname(__DIR__,2));$outside=$parent.'/sanchari-data';
+    if ($parent && !str_contains($parent,'public_html') && (is_dir($outside) || (is_writable($parent) && @mkdir($outside,0700)))) return $outside;
+    $inside=__DIR__.'/data';
+    if (!is_dir($inside) && !@mkdir($inside,0700)) throw new RuntimeException('Storage unavailable');
+    if (!is_file($inside.'/.htaccess')) file_put_contents($inside.'/.htaccess',"Require all denied\n");
+    return $inside;
+}
+function sqlite_schema($db) {
+    if ((int)$db->query('PRAGMA user_version')->fetchColumn()>=1) return;
+    $db->exec("CREATE TABLE IF NOT EXISTS bookings (id TEXT PRIMARY KEY, recovery_hash TEXT NOT NULL, route TEXT NOT NULL, direction TEXT NOT NULL,
+        departure INTEGER NOT NULL, valid_from INTEGER NOT NULL, valid_until INTEGER NOT NULL, amount INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'creating',
+        provider_order TEXT NULL, payment_id TEXT UNIQUE NULL, checkout_url TEXT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+        last_checked INTEGER NOT NULL DEFAULT 0, used_at INTEGER NULL, used_by TEXT NULL);
+        CREATE INDEX IF NOT EXISTS reconcile ON bookings (status, last_checked);
+        CREATE INDEX IF NOT EXISTS departures ON bookings (departure);
+        CREATE TABLE IF NOT EXISTS rate_limits (bucket TEXT PRIMARY KEY, hits INTEGER NOT NULL DEFAULT 0, expires_at INTEGER NOT NULL);
+        CREATE INDEX IF NOT EXISTS expiry ON rate_limits (expires_at);
+        CREATE TABLE IF NOT EXISTS operations (id TEXT PRIMARY KEY, booking_id TEXT NOT NULL, action TEXT NOT NULL, actor TEXT NOT NULL, created_at INTEGER NOT NULL);
+        PRAGMA user_version=1;");
+}
 function db() {
     static $db;
     if (!$db) {
         $c=config(); $dsn=$c['DB_DSN']??'';
-        if (!str_starts_with($dsn,'mysql:') && !(($c['APP_ENV']??'')==='test' && str_starts_with($dsn,'sqlite:'))) throw new RuntimeException('Database unavailable');
+        if ($dsn==='') $dsn='sqlite:'.data_dir().'/sanchari.sqlite';
+        if (!str_starts_with($dsn,'mysql:') && !str_starts_with($dsn,'sqlite:')) throw new RuntimeException('Database unavailable');
         $db=new PDO($dsn,$c['DB_USER']??null,$c['DB_PASSWORD']??null,[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false]);
-        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME)==='sqlite') $db->exec('PRAGMA busy_timeout=5000');
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME)==='sqlite') { $db->exec('PRAGMA busy_timeout=5000'); $db->exec('PRAGMA journal_mode=WAL'); sqlite_schema($db); }
     }
     return $db;
 }

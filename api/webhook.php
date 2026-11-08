@@ -1,5 +1,15 @@
 <?php
-require __DIR__.'/hosted.php';
+require __DIR__.'/gateway.php';
+if(($_SERVER['REQUEST_METHOD']??'')!=='POST'){header('Allow: POST');respond(['error'=>'Use POST.'],405);}
+if(payment_protocol()==='hosted-links-v1'){
+    // Format-agnostic: the body is only searched for our booking reference, then the API is asked.
+    $raw=file_get_contents('php://input',false,null,0,65537);
+    if(strlen($raw)>65536)respond(['error'=>'Request too large.'],413);
+    limit_requests('webhook',120,60);
+    $id=notification_booking_id($raw);$row=$id?booking($id):null;
+    if($row)reconcile($row,true); // A failure answers 503, so the gateway retries later.
+    respond(['received'=>true]);
+}
 $in=input();$c=config();
 if(empty($c['WEBHOOK_USERNAME'])||empty($c['WEBHOOK_PASSWORD']))respond(['error'=>'Unavailable'],503);
 $actual=$_SERVER['HTTP_AUTHORIZATION']??$_SERVER['REDIRECT_HTTP_AUTHORIZATION']??'';

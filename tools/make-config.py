@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Build Sanchari's server-only api/config.php on a Mac, without PHP.
 
-It generates the ticket signing secret, one access key per staff member (only a bcrypt
-hash goes in the file, made with macOS's htpasswd) and the webhook login, asks for the
-database login, and writes the file with owner-only permissions outside this repository.
-Upload the result to public_html/api/config.php with Hostinger's File Manager.
+It generates the ticket signing secret, one access key per staff member (only a bcrypt hash
+goes in the file, made with macOS's htpasswd) and, for test keys, a private test pass. It asks
+only for the payment client ID and secret; everything else comes from the flags below. Bookings
+are stored in a SQLite file the server creates by itself, so there is no database to set up.
 
-Payment values can stay blank until the gateway is approved, and booking always starts
-switched off: BOOKING_ENABLED and OPERATIONS_CONFIRMED are launch decisions made by hand.
+Upload the result to public_html/api/config.php with Hostinger's File Manager, then delete
+the local copy. Booking for the public always starts switched off: BOOKING_ENABLED,
+OPERATIONS_CONFIRMED and "confirmed" in assets/routes.json are launch decisions made by hand.
 
-Usage: python3 tools/make-config.py "/path/outside/the/repo/config.php"
+Usage: python3 tools/make-config.py OUTPUT --env test|live --base URL --hosts HOST[,HOST]
+       [--api-version V] [--drivers ID,ID] [--office ID,ID] [--before MIN] [--after MIN]
 """
+import argparse
 import getpass
 import os
 import re
@@ -23,32 +26,19 @@ REPO = Path(__file__).resolve().parent.parent
 STAFF_ID = re.compile(r'^[A-Za-z0-9._-]{1,64}$')
 
 
-def ask(label, default=None, secret=False, optional=False):
-    hint = f' [{default}]' if default else ' (blank to fill in later)' if optional else ''
+def ask(label, secret=False):
     while True:
-        value = (getpass.getpass if secret else input)(f'{label}{hint}: ').strip()
-        if not value and default is not None:
-            return default
-        if value or optional:
+        value = (getpass.getpass if secret else input)(f'{label}: ').strip()
+        if value:
             return value
 
 
-def minutes(label):
-    while True:
-        value = ask(label, optional=True)
-        if not value:
-            return None
-        if value.isdigit():
-            return int(value)
-        print('  Enter whole minutes, or leave it blank.')
-
-
-def staff_ids(label):
-    while True:
-        ids = [x.strip() for x in ask(label, optional=True).split(',') if x.strip()]
-        if all(STAFF_ID.match(x) for x in ids):
-            return ids
-        print('  Use letters, numbers, dot, dash or underscore, separated by commas.')
+def ids(value):
+    out = [x.strip() for x in (value or '').split(',') if x.strip()]
+    bad = [x for x in out if not STAFF_ID.match(x)]
+    if bad:
+        sys.exit(f'Staff IDs may use letters, numbers, dot, dash or underscore: {bad}')
+    return out
 
 
 def bcrypt(key):
@@ -71,52 +61,46 @@ def php(value):
 
 
 def main():
-    if len(sys.argv) != 2:
-        sys.exit(__doc__.strip().splitlines()[-1])
-    out = Path(sys.argv[1]).expanduser().resolve()
+    p = argparse.ArgumentParser(usage=__doc__.strip().split('Usage: ', 1)[1])
+    p.add_argument('output')
+    p.add_argument('--env', choices=['test', 'live'], required=True)
+    p.add_argument('--base', required=True, help='Payment API base URL (https)')
+    p.add_argument('--hosts', required=True, help='Allowed checkout page hosts, comma separated')
+    p.add_argument('--api-version', default='2025-01-01')
+    p.add_argument('--drivers', default='')
+    p.add_argument('--office', default='')
+    p.add_argument('--before', type=int, help='Minutes before departure a pass becomes valid')
+    p.add_argument('--after', type=int, help='Minutes after departure it stays valid')
+    a = p.parse_args()
+
+    out = Path(a.output).expanduser().resolve()
     if out == REPO or REPO in out.parents:
         sys.exit('Write the file outside the repository: anything committed here is public.')
-    if out.exists() and ask(f'{out} exists. Overwrite? (yes/no)') != 'yes':
+    if not a.base.startswith('https://'):
+        sys.exit('--base must start with https://')
+    if out.exists() and input(f'{out} exists. Overwrite? (yes/no): ').strip() != 'yes':
         sys.exit('Nothing written.')
 
-    print('\nDatabase (create it in hPanel > Databases, then import api/schema.sql in phpMyAdmin)')
-    host = ask('  Host', 'localhost')
-    name = ask('  Database name')
-    user = ask('  Database user')
-    password = ask('  Database password', secret=True)
+    print(f'\nPaste the payment keys for the {a.env.upper()} environment (the secret stays hidden as you paste).')
+    client_id = ask('  Client ID (App ID)')
+    client_secret = ask('  Client secret (Secret key)', secret=True)
 
-    print('\nBoarding window (both values must be approved by Transport before launch)')
-    before = minutes('  Minutes before departure a pass becomes valid')
-    after = minutes('  Minutes after departure it stays valid')
-
-    print('\nStaff (each person gets their own key; only its hash is stored)')
     staff, keys = {}, {}
-    for role, label in (('driver', '  Driver IDs, comma separated'), ('admin', '  Office IDs, comma separated')):
-        for sid in staff_ids(label):
+    for role, group in (('driver', ids(a.drivers)), ('admin', ids(a.office))):
+        for sid in group:
             keys[sid] = secrets.token_urlsafe(12)
             staff[sid] = {'password_hash': bcrypt(keys[sid]), 'role': role}
 
-    gateway = {'PAYMENT_PROTOCOL': '', 'PAYMENT_CLIENT_ID': '', 'PAYMENT_CLIENT_SECRET': '', 'PAYMENT_CLIENT_VERSION': '',
-               'PAYMENT_AUTH_URL': '', 'PAYMENT_BASE_URL': '', 'CHECKOUT_HOSTS': []}
-    if ask('\nFill in the payment gateway now? (yes/no)', 'no') == 'yes':
-        gateway.update(
-            PAYMENT_PROTOCOL=ask('  Protocol', 'oauth-checkout-v2'),
-            PAYMENT_CLIENT_ID=ask('  Client ID'),
-            PAYMENT_CLIENT_SECRET=ask('  Client secret', secret=True),
-            PAYMENT_CLIENT_VERSION=ask('  Client version'),
-            PAYMENT_AUTH_URL=ask('  Auth URL (exact, https)'),
-            PAYMENT_BASE_URL=ask('  Base URL (before /checkout/v2)'),
-            CHECKOUT_HOSTS=[h.strip() for h in ask('  Checkout redirect hosts, comma separated').split(',') if h.strip()],
-        )
-    webhook_user, webhook_pass = 'sanchari-' + secrets.token_hex(3), secrets.token_urlsafe(18)
-
+    test_key = secrets.token_urlsafe(32) if a.env == 'test' else ''
     config = {
         'APP_ENV': 'production', 'BOOKING_ENABLED': False, 'OPERATIONS_CONFIRMED': False, 'ORDER_RATE_PER_MIN': 60,
-        'PUBLIC_URL': 'https://sanchari.iith.online',
-        'DB_DSN': f'mysql:host={host};dbname={name};charset=utf8mb4', 'DB_USER': user, 'DB_PASSWORD': password,
-        'TICKET_HMAC_SECRET': secrets.token_hex(32), **gateway,
-        'WEBHOOK_USERNAME': webhook_user, 'WEBHOOK_PASSWORD': webhook_pass,
-        'BOARDING_BEFORE_MIN': before, 'BOARDING_AFTER_MIN': after, 'STAFF': staff,
+        'PUBLIC_URL': 'https://sanchari.iith.online', 'DB_DSN': '',
+        'TICKET_HMAC_SECRET': secrets.token_hex(32),
+        'PAYMENT_PROTOCOL': 'hosted-links-v1', 'PAYMENT_ENV': a.env, 'PAYMENT_BASE_URL': a.base.rstrip('/'),
+        'PAYMENT_API_VERSION': a.api_version, 'PAYMENT_CLIENT_ID': client_id, 'PAYMENT_CLIENT_SECRET': client_secret,
+        'CHECKOUT_HOSTS': [h.strip() for h in a.hosts.split(',') if h.strip()],
+        'TEST_MODE_KEY': test_key,
+        'BOARDING_BEFORE_MIN': a.before, 'BOARDING_AFTER_MIN': a.after, 'STAFF': staff,
     }
     body = '<?php\n// Server-only Sanchari configuration made by tools/make-config.py. Never commit or share this file.\nreturn [\n'
     body += ''.join(f'    {php(k)} => {php(v)},\n' for k, v in config.items()) + '];\n'
@@ -127,14 +111,17 @@ def main():
     os.chmod(out, 0o600)
 
     print(f'\nWrote {out} (readable only by you).')
-    print('Upload it to public_html/api/config.php in Hostinger File Manager, then delete any other copies.')
+    print('Upload it to public_html/api/config.php in Hostinger File Manager, then delete this local copy.')
     if keys:
-        print('\nStaff access keys. Hand each one over privately; they are not saved anywhere:')
+        print('\nStaff access keys. Keep them private; they are not saved anywhere else:')
         for sid, key in keys.items():
-            print(f'  {sid:<20} {staff[sid]["role"]:<7} {key}')
-    print('\nWebhook login for the gateway dashboard (its "SHA256 username:password" authentication):')
-    print(f'  username {webhook_user}\n  password {webhook_pass}')
-    print('\nStill off on purpose: BOOKING_ENABLED, OPERATIONS_CONFIRMED and "confirmed" in assets/routes.json.')
+            print(f'  {sid:<16} {staff[sid]["role"]:<7} {key}')
+    if test_key:
+        print('\nYour private test pass. Open this on the phone you will test with (keep it private):')
+        print(f'  https://sanchari.iith.online/#test={test_key}')
+        print('  To switch it off later: https://sanchari.iith.online/#test-off')
+    if a.before is None or a.after is None:
+        print('\nNote: --before/--after not set, so booking stays closed until a boarding window is configured.')
 
 
 if __name__ == '__main__':

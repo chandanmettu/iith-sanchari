@@ -1,6 +1,10 @@
 Options -Indexes
 # Some PHP handlers drop the Authorization header; the payment webhook authenticates with it.
 SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
-<FilesMatch "^(config.*|common|hosted|fares|razorpay|reconcile)\.php$">
+<FilesMatch "^(config.*|common|hosted|gateway|links|fares|razorpay|reconcile)\.php$">
+  Require all denied
+</FilesMatch>
+# Self-made booking storage and PHP error logs are never public
+<FilesMatch "(\.(sqlite|sqlite-wal|sqlite-shm|db)|^error_log)$">
   Require all denied
 </FilesMatch>

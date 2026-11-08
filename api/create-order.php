@@ -1,6 +1,6 @@
 <?php
-require __DIR__.'/hosted.php';
-$in=input();if(!ready())respond(['error'=>'Online booking is not open yet.'],503);
+require __DIR__.'/gateway.php';
+$in=input();if(!booking_open())respond(['error'=>'Online booking is not open yet.'],503);
 limit_requests('create',max(1,(int)(config()['ORDER_RATE_PER_MIN']??60)),60);
 $id=field($in,'id','/^s_[a-f0-9]{32}$/D');$key=field($in,'recovery_key','/^[a-f0-9]{48}$/D');
 $route=field($in,'route','/^(patan|miya)$/D');$direction=field($in,'direction','/^(from|to)$/D');
@@ -18,7 +18,10 @@ if($existing=booking($id)){
 }
 $data=route_data();$cfg=$data['routes'][$route];$d=(new DateTimeImmutable('@'.$departure))->setTimezone(new DateTimeZone('Asia/Kolkata'));
 if($departure<time()+360||$departure>time()+14*86400||!in_array($d->format('H:i'),scheduled_times($cfg,$direction,$d),true)||$d->format('s')!=='00'||in_array($d->format('Y-m-d'),$data['holidays'],true))respond(['error'=>'That departure is not available. Please select another journey.'],400);
+// The payment page needs a mobile number. It goes to the gateway only and is not stored here.
+$phone=$in['phone']??null;
+if(payment_protocol()==='hosted-links-v1'&&(!is_string($phone)||!preg_match('/^[6-9][0-9]{9}$/D',$phone)))respond(['error'=>'Enter a 10-digit mobile number.','phone'=>true],400);
 $c=config();
 try{query('INSERT INTO bookings (id,recovery_hash,route,direction,departure,valid_from,valid_until,amount,status,created_at,updated_at,last_checked) VALUES (?,?,?,?,?,?,?,?,?,?,?,0)',[$id,hash('sha256',$key),$route,$direction,$departure,$departure-$c['BOARDING_BEFORE_MIN']*60,$departure+$c['BOARDING_AFTER_MIN']*60,$cfg['fare']*100,'creating',time(),time()]);}
 catch(PDOException $e){if(in_array((string)$e->getCode(),['23000','23505']))respond(['error'=>'Booking is already being created. Open payment recovery.'],409);throw $e;}
-$row=gateway_create(booking($id),$key);respond(['id'=>$id,'checkout_url'=>$row['checkout_url']]);
+$row=gateway_create(booking($id),$key,$phone);respond(['id'=>$id,'checkout_url'=>$row['checkout_url']]);

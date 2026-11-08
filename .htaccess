@@ -4,6 +4,6 @@ Options -Indexes
   Header always set Referrer-Policy "no-referrer"
   Header always set X-Frame-Options "DENY"
 </IfModule>
-<FilesMatch "(^\.|\.(sql|md|log|bak|env)$)">
+<FilesMatch "(^\.|\.(sql|md|log|bak|env|sqlite|py)$|^error_log$)">
   Require all denied
 </FilesMatch>

@@ -32,10 +32,12 @@ bank settlement must be observed. See `docs/LAUNCH.md`.
 ### SAN-004 — Payment account and adapter activation
 **Severity:** High · **Affects:** launch
 
-A provisional OAuth hosted-checkout adapter is ready for account-specific UAT.
-Other protocols need their own adapter. Production keys/URLs, redirect hosts,
-notification authentication and acceptance are not configured. Booking defaults
-closed. Legacy helpers remain unreferenced and blocked from direct web access.
+Two adapters exist: OAuth hosted checkout (`hosted.php`) and hosted payment
+links (`links.php`, added 2026-11-08). The payment-link adapter is the one being
+activated, first with test-environment keys through the private test mode. Live
+keys, a real paid trip, and the switch from test to live (new signing secret,
+test bookings cleared) are still to do. Booking defaults closed. Legacy helpers
+remain unreferenced and blocked from direct web access.
 
 ### SAN-006 — Public operator disclosures await confirmation
 **Severity:** Medium · **Affects:** public policies

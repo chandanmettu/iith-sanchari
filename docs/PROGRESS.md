@@ -97,6 +97,18 @@ transport/
 
 ## Log (newest first)
 
+### 2026-11-08 — Hosted payment-link adapter, self-made storage, private test mode
+- **New adapter `api/links.php` (`PAYMENT_PROTOCOL` = `hosted-links-v1`)** for gateways that sell through hosted payment links. The booking id is the link id, so a retried create returns the same link (idempotency key) and every status check uses our own reference. Paid status comes only from the gateway API (`/links/{id}/orders?status=PAID`, amount must match); `EXPIRED`/`CANCELLED` mark a booking failed; a link that never existed fails a `creating` booking after two minutes. Each link carries its own return and notify URLs, so nothing has to be configured in the gateway dashboard.
+- **`api/webhook.php`** in this protocol is format-agnostic: it only finds our booking reference in the body and re-checks through the API, so a forged notification can at most trigger a status check (rate-limited).
+- **`api/gateway.php`** loads the adapter for the configured protocol (`hosted.php` remains for `oauth-checkout-v2`); endpoints now require it. Both are blocked from direct web access.
+- **Storage:** with `DB_DSN` blank, bookings go in a SQLite file the server creates on first use (`PRAGMA user_version` schema, WAL). It lives beside the site folder when that is not inside any `public_html`, otherwise in `api/data/` with its own deny-all `.htaccess`; `.sqlite` files and `error_log` are also denied in `api/.htaccess` and the root `.htaccess`. MySQL with `api/schema.sql` still works if `DB_DSN` is set.
+- **Private test mode:** with test-environment keys (`PAYMENT_ENV` = `test`) and a `TEST_MODE_KEY`, opening `/#test=<key>` sets an HttpOnly test-pass cookie (`api/test-mode.php`); that browser can book with test money while the public still sees booking closed. Live keys never allow it. The home page shows a test-mode notice for that browser.
+- **Mobile number at checkout:** the gateway requires a customer phone, so the Buy flow asks once inside the card and remembers it in the browser. It is passed to the gateway and not stored server-side. Privacy and legal pages updated to say so (they previously said no phone number was asked).
+- `payment.js` now reads the booking reference from anywhere in the return address, in case the gateway appends its own query.
+- `tools/make-config.py` rewritten: one command, paste client ID and secret; generates signing secret, staff keys and the test pass; no database questions.
+- Cache keys: app.css 21, app.js 21, shared.js 14, payment.js 13.
+- **Not yet proven:** the PHP was reviewed by hand but has not run (no PHP on the build Mac); it is exercised for the first time on the live host in test mode. Refund notifications are not handled in this protocol: revoke the pass in operations, then refund in the gateway dashboard.
+
 ### 2026-10-31 — Launch-readiness pass: schedule checks and fixes
 - Checked live: every public file matches the repo (images differ only by CDN compression); private files, SQL, docs and `tools/` return 403/404; PHP 8.3; no console errors. Countdown and next-bus times matched the IST clock on the live page.
 - Timetable maths (shared.js + the app.js shuttle formula) passed 21 fixed-time checks under Asia/Kolkata, America/Los_Angeles, UTC and Pacific/Kiritimati device clocks: both shuttle phases, midnight rollover, the six-minute cut-off, Miyapur weekday/weekend switch and boarding points, holiday skipping.

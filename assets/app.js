@@ -54,7 +54,23 @@
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderDate();renderShuttle();}});
   try{const response=await fetch('assets/routes.json?v=13');if(!response.ok)throw Error();data=await response.json();}
   catch{cards.innerHTML='<p class="route-notice">Schedules could not load. Please refresh or contact Transport.</p>';return;}
+  // Private test pass: #test=<key> turns it on for this browser, #test-off turns it off.
+  const testKey=(location.hash.match(/^#test=([A-Za-z0-9_-]{32,200})$/)||[])[1];
+  if(testKey||location.hash==='#test-off'){history.replaceState(null,'',location.pathname+location.search);try{await S.api('test-mode.php',testKey?{key:testKey}:{action:'off'});}catch{}}
   try{availability=await S.api('status.php');}catch{}
+  if(availability.test_mode){const note=document.createElement('p');note.className='test-note';note.setAttribute('role','status');note.textContent='Test mode: payments use test money. These tickets are not valid for travel.';cards.before(note);}
+  const phoneKey='sanchari.phone';
+  const savedPhone=()=>{try{const v=localStorage.getItem(phoneKey)||'';return /^[6-9][0-9]{9}$/.test(v)?v:'';}catch{return '';}};
+  const forgetPhone=()=>{try{localStorage.removeItem(phoneKey);}catch{}};
+  // The payment page needs a mobile number. Ask once, inside the card, and remember it in this browser.
+  const askPhone=status=>new Promise(resolve=>{
+    status.innerHTML='<form class="phone-ask" novalidate><label for="phoneInput">Mobile number for the payment page</label><div class="phone-row"><input id="phoneInput" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" placeholder="10-digit number" required><button type="submit">Continue</button></div><button type="button" class="phone-cancel">Cancel</button></form>';
+    const form=status.querySelector('form'),input=form.querySelector('input');input.focus();
+    form.addEventListener('submit',event=>{event.preventDefault();const v=input.value.replace(/\D/g,'').replace(/^(?:91)?(?=[6-9]\d{9}$)/,'');
+      if(!/^[6-9][0-9]{9}$/.test(v)){input.setAttribute('aria-invalid','true');form.querySelector('label').textContent='Enter a 10-digit mobile number';input.focus();return;}
+      try{localStorage.setItem(phoneKey,v);}catch{}resolve(v);});
+    form.querySelector('.phone-cancel').addEventListener('click',()=>resolve(''));
+  });
   const names={patan:'Patancheru',miya:'Miyapur'};
   const statusByCard={};
   function extraHTML(id,cfg,first){
@@ -87,11 +103,13 @@
     buy.disabled=true;buy.dataset.busy='true';buy.textContent='Opening…';const slot=id+direction;statusByCard[slot]='';
     const status=card.querySelector('.card-status');status.textContent='Preparing secure checkout…';
     const done=html=>{statusByCard[slot]=html;status.innerHTML=html;buy.disabled=false;buy.textContent='Buy';delete buy.dataset.busy;};
+    let phone=savedPhone();
+    if(!phone){buy.textContent='Buy';phone=await askPhone(status);if(!phone){done('');return;}buy.textContent='Opening…';status.textContent='Preparing secure checkout…';}
     const fresh=()=>({id:'s_'+crypto.randomUUID().replace(/-/g,''),key:Array.from(crypto.getRandomValues(new Uint8Array(24)),x=>pad(x.toString(16))).join(''),route:id,direction,departure:epoch});
     const noStorage='Allow browser storage before buying so your ticket can be recovered.';
     let booking=S.saved().find(x=>x.route===id&&x.direction===direction&&x.departure===epoch);
     if(!booking&&!S.save(booking=fresh())){done(noStorage);return;}
-    const create=()=>S.api('create-order.php',{route:id,direction,departure:epoch,id:booking.id,recovery_key:booking.key});
+    const create=()=>S.api('create-order.php',{route:id,direction,departure:epoch,id:booking.id,recovery_key:booking.key,phone});
     try{
       let order;
       try{order=await create();}
@@ -104,7 +122,9 @@
       if(order.token){location.href='ticket.html#t='+encodeURIComponent(order.token);return;}
       const url=new URL(order.checkout_url);if(url.protocol!=='https:')throw Error('Secure checkout could not open.');
       location.assign(url.href);
-    }catch(error){done(`${S.escape(error.message)} <a href="${S.escape(S.recovery(booking))}">Check this booking</a> before trying again.`);}
+    }catch(error){
+      if(error.phone){forgetPhone();done(`${S.escape(error.message)} Tap Buy to enter it again.`);return;}
+      done(`${S.escape(error.message)} <a href="${S.escape(S.recovery(booking))}">Check this booking</a> before trying again.`);}
   });
   document.querySelectorAll('#specialToggle button').forEach(button=>button.addEventListener('click',()=>{
     direction=button.dataset.tdir;

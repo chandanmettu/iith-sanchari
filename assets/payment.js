@@ -1,5 +1,7 @@
 (()=>{
- const S=Sanchari,params=new URLSearchParams(location.hash.slice(1)),id=params.get('id'),key=params.get('key');
+ // Read the reference from anywhere in the address: a gateway may add its own query on return.
+ const S=Sanchari,href=location.href,id=(href.match(/[#&?]id=(s_[a-f0-9]{32})/)||[])[1],key=(href.match(/[#&?]key=([a-f0-9]{48})/)||[])[1];
+ if(id&&key)history.replaceState(null,'','payment.html#id='+id+'&key='+key);
  const status=document.getElementById('paymentStatus'),again=document.getElementById('checkAgain'),link=document.getElementById('openTicket'),title=document.getElementById('paymentTitle');let busy=false,count=0;
  if(!/^s_[a-f0-9]{32}$/.test(id||'')||!/^[a-f0-9]{48}$/.test(key||'')){title.textContent='No booking link found';status.textContent='Open the original recovery link or choose your booking in My tickets.';again.hidden=true;document.getElementById('copyRecovery').hidden=true;return}
  document.getElementById('bookingReference').textContent='Reference: '+id;

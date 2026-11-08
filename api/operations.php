@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/hosted.php';
+require __DIR__.'/gateway.php';
 $in=input();$staff=staff_auth();if($staff['role']!=='admin')respond(['error'=>'Administrator access required.'],403);
 $action=$in['action']??'list';
 if($action==='list'){
