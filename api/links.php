@@ -18,13 +18,16 @@ function link_http($path,$method='GET',$body=null,$idempotency=null) {
 }
 function link_ok($path,$method='GET',$body=null,$idempotency=null) {
     [$code,$data]=link_http($path,$method,$body,$idempotency);
-    if($code<200||$code>=300||!is_array($data)){error_log('sanchari gateway http='.$code.' path='.strtok($path,'?'));throw new RuntimeException('Gateway request failed');}
+    if($code<200||$code>=300||!is_array($data)){
+        $why=['http'=>$code,'path'=>strtok($path,'?'),'code'=>substr((string)($data['code']??''),0,60),'message'=>substr((string)($data['message']??''),0,200)];
+        error_log('sanchari gateway '.json_encode($why));if(function_exists('test_trace'))test_trace('gateway_error',$why);
+        throw new RuntimeException('Gateway request failed');}
     return $data;
 }
 function checkout_allowed($url) {
     $host=parse_url((string)$url,PHP_URL_HOST);
     if(parse_url((string)$url,PHP_URL_SCHEME)==='https'&&in_array($host,config()['CHECKOUT_HOSTS']??[],true))return true;
-    error_log('sanchari checkout host not allowed host='.$host);return false;
+    error_log('sanchari checkout host not allowed host='.$host);if(function_exists('test_trace'))test_trace('checkout_host_rejected',['host'=>(string)$host]);return false;
 }
 function ist_time($ts) { return (new DateTimeImmutable('@'.$ts))->setTimezone(new DateTimeZone('Asia/Kolkata'))->format('Y-m-d\TH:i:sP'); }
 function gateway_create($row,$recoveryKey,$phone=null) {

@@ -9,7 +9,8 @@ if(!is_int($departure))respond(['error'=>'Select a scheduled departure.'],400);
 if($existing=booking($id)){
     if(!hash_equals($existing['recovery_hash'],hash('sha256',$key))||$existing['route']!==$route||$existing['direction']!==$direction||(int)$existing['departure']!==$departure)respond(['error'=>'Booking details do not match.'],409);
     // Ask the gateway first: a closed tab may already be paid, and only a confirmed failure is safe to retry.
-    if(in_array($existing['status'],['pending','failed'])){try{$existing=reconcile($existing,true);}catch(Throwable $e){error_log('sanchari create recheck failed booking='.$id);}}
+    // Payment links are idempotent on the booking id, so a stuck 'creating' booking is safe to recheck too.
+    if(in_array($existing['status'],payment_protocol()==='hosted-links-v1'?['creating','pending','failed']:['pending','failed'])){try{$existing=reconcile($existing,true);}catch(Throwable $e){error_log('sanchari create recheck failed booking='.$id);}}
     if(in_array($existing['status'],['paid','used']))respond(booking_response($existing));
     if(in_array($existing['status'],['failed','refunded','revoked']))respond(['error'=>'The earlier payment for this journey did not go through.','retry'=>true],409);
     if($existing['status']==='pending'&&$existing['checkout_url']&&$departure>time()+360)respond(['id'=>$id,'checkout_url'=>$existing['checkout_url']]);
