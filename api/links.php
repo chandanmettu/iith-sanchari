@@ -12,9 +12,11 @@ function link_http($path,$method='GET',$body=null,$idempotency=null) {
     $ch=curl_init($url);
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_HTTPHEADER=>$headers,CURLOPT_TIMEOUT=>15,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_FOLLOWLOCATION=>false]);
     if($body!==null)curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode($body,JSON_UNESCAPED_SLASHES));
-    $raw=curl_exec($ch);$code=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);curl_close($ch);
-    if($raw===false)throw new RuntimeException('Gateway request failed');
-    return [$code,json_decode($raw,true)];
+    $raw=curl_exec($ch);$code=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);$curlError=curl_error($ch);curl_close($ch);
+    if($raw===false){if(function_exists('test_trace'))test_trace('gateway_unreachable',['path'=>strtok($path,'?'),'curl'=>substr($curlError,0,160)]);throw new RuntimeException('Gateway request failed');}
+    $data=json_decode($raw,true);
+    if(($code<200||$code>=300)&&$code!==404&&function_exists('test_trace'))test_trace('gateway_http',['http'=>$code,'path'=>strtok($path,'?'),'code'=>substr((string)($data['code']??''),0,60),'message'=>substr((string)($data['message']??''),0,200)]);
+    return [$code,$data];
 }
 function link_ok($path,$method='GET',$body=null,$idempotency=null) {
     [$code,$data]=link_http($path,$method,$body,$idempotency);
