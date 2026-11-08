@@ -55,8 +55,11 @@
   try{const response=await fetch('assets/routes.json?v=13');if(!response.ok)throw Error();data=await response.json();}
   catch{cards.innerHTML='<p class="route-notice">Schedules could not load. Please refresh or contact Transport.</p>';return;}
   // Private test pass: #test=<key> turns it on for this browser, #test-off turns it off.
-  const testKey=(location.hash.match(/^#test=([A-Za-z0-9_-]{32,200})$/)||[])[1];
+  // Tolerate links broken by copying (spaces, line breaks, encoded characters); say so if too short.
+  const testRaw=location.hash.startsWith('#test=')?decodeURIComponent(location.hash.slice(6)).replace(/[^A-Za-z0-9_-]/g,''):'';
+  const testKey=testRaw.length>=32&&testRaw.length<=200?testRaw:'';
   let testMessage='';
+  if(location.hash.startsWith('#test=')&&!testKey){history.replaceState(null,'',location.pathname+location.search);testMessage='This test link is incomplete: part of it was cut off when copying. Copy the whole link again.';}
   if(testKey||location.hash==='#test-off'){history.replaceState(null,'',location.pathname+location.search);
     try{await S.api('test-mode.php',testKey?{key:testKey}:{action:'off'});if(!testKey)testMessage='Test mode is off on this device.';}
     catch(error){if(testKey)testMessage='This test link was not accepted ('+error.message+'). Copy the whole link again.';}}
