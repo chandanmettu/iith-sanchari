@@ -8,7 +8,6 @@ if(($in['action']??'')==='off'){
     respond(['test_mode'=>false]);
 }
 $key=$in['key']??'';
-if(!is_string($key)||strlen($key)>200||!hash_equals(test_mode_key(),$key)){test_trace('pass_rejected',['len'=>is_string($key)?strlen($key):-1]);limit_requests('test-pass-failed',10,300);respond(['error'=>'Test pass not accepted.'],401);}
-test_trace('pass_accepted');
+if(!is_string($key)||strlen($key)>200||!hash_equals(test_mode_key(),$key)){limit_requests('test-pass-failed',10,300);respond(['error'=>'Test pass not accepted.'],401);}
 setcookie('sanchari_test',$value,['expires'=>time()+7*86400,'path'=>'/','secure'=>true,'httponly'=>true,'samesite'=>'Lax']);
 respond(['test_mode'=>true]);

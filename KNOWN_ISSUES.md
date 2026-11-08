@@ -25,9 +25,10 @@ must stay disabled. No numbered seats or capacity inventory are implemented.
 ### SAN-003 — No real payment has completed the new flow
 **Severity:** High · **Affects:** launch
 
-A local provider simulator validates application behavior, but the selected
-account's sandbox, hosted return, webhook delivery, real paid trip, refund and
-bank settlement must be observed. See `docs/LAUNCH.md`.
+A test-money payment through the payment-link adapter worked end to end on the
+live host in test mode (2026-11-08): hosted page, return and ticket issue. Still
+to observe: driver scan and rescan on a real phone, webhook delivery, a real paid
+trip, refund and bank settlement. See `docs/LAUNCH.md`.
 
 ### SAN-004 — Payment account and adapter activation
 **Severity:** High · **Affects:** launch

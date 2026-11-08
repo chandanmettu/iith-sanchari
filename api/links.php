@@ -13,23 +13,21 @@ function link_http($path,$method='GET',$body=null,$idempotency=null) {
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_HTTPHEADER=>$headers,CURLOPT_TIMEOUT=>15,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_FOLLOWLOCATION=>false]);
     if($body!==null)curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode($body,JSON_UNESCAPED_SLASHES));
     $raw=curl_exec($ch);$code=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);$curlError=curl_error($ch);curl_close($ch);
-    if($raw===false){if(function_exists('test_trace'))test_trace('gateway_unreachable',['path'=>strtok($path,'?'),'curl'=>substr($curlError,0,160)]);throw new RuntimeException('Gateway request failed');}
+    if($raw===false){error_log('sanchari gateway unreachable path='.strtok($path,'?').' curl='.substr($curlError,0,160));throw new RuntimeException('Gateway request failed');}
     $data=json_decode($raw,true);
-    if(($code<200||$code>=300)&&$code!==404&&function_exists('test_trace'))test_trace('gateway_http',['http'=>$code,'path'=>strtok($path,'?'),'code'=>substr((string)($data['code']??''),0,60),'message'=>substr((string)($data['message']??''),0,200)]);
+    // The gateway's own error code and message (never keys) go to the private PHP error log.
+    if(($code<200||$code>=300)&&$code!==404)error_log('sanchari gateway '.json_encode(['http'=>$code,'path'=>strtok($path,'?'),'code'=>substr((string)($data['code']??''),0,60),'message'=>substr((string)($data['message']??''),0,200)]));
     return [$code,$data];
 }
 function link_ok($path,$method='GET',$body=null,$idempotency=null) {
     [$code,$data]=link_http($path,$method,$body,$idempotency);
-    if($code<200||$code>=300||!is_array($data)){
-        $why=['http'=>$code,'path'=>strtok($path,'?'),'code'=>substr((string)($data['code']??''),0,60),'message'=>substr((string)($data['message']??''),0,200)];
-        error_log('sanchari gateway '.json_encode($why));if(function_exists('test_trace'))test_trace('gateway_error',$why);
-        throw new RuntimeException('Gateway request failed');}
+    if($code<200||$code>=300||!is_array($data))throw new RuntimeException('Gateway request failed');
     return $data;
 }
 function checkout_allowed($url) {
     $host=parse_url((string)$url,PHP_URL_HOST);
     if(parse_url((string)$url,PHP_URL_SCHEME)==='https'&&in_array($host,config()['CHECKOUT_HOSTS']??[],true))return true;
-    error_log('sanchari checkout host not allowed host='.$host);if(function_exists('test_trace'))test_trace('checkout_host_rejected',['host'=>(string)$host]);return false;
+    error_log('sanchari checkout host not allowed host='.$host);return false;
 }
 function ist_time($ts) { return (new DateTimeImmutable('@'.$ts))->setTimezone(new DateTimeZone('Asia/Kolkata'))->format('Y-m-d\TH:i:sP'); }
 function gateway_create($row,$recoveryKey,$phone=null) {

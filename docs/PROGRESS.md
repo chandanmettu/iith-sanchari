@@ -97,6 +97,12 @@ transport/
 
 ## Log (newest first)
 
+### 2026-11-08 (later) — Test-mode payment worked; paused until the official launch
+- On the live host in test mode, a test-money payment opened the gateway's hosted page and returned a ticket (owner's phone). Two setup faults found on the way, both fixed: the phone had a stale cached home page (HTML now sends `Cache-Control: no-cache`), and the client secret had been pasted three times into the hidden prompt (gateway answered 401; `make-config.py` now confirms the secret's length and ends and rejects a repeated paste).
+- The home page now says why a test link does not work (incomplete link, rejected pass, pass not kept, booking not ready) instead of failing silently. Stuck `creating` bookings are rechecked by the payment-link adapter.
+- Temporary diagnostics (trace log, public self-check page) were removed. Gateway errors (HTTP status plus the gateway's own error code/message, never keys) go to the private PHP error log.
+- **Still to do at launch:** driver scan and rescan on a real phone; live keys via `make-config.py --env live` (new signing secret, Transport-approved boarding window, real staff IDs); move the SQLite file aside so test bookings are gone; set `BOOKING_ENABLED`, `OPERATIONS_CONFIRMED` and `confirmed` in `assets/routes.json`; one real paid trip and refund check.
+
 ### 2026-11-08 — Hosted payment-link adapter, self-made storage, private test mode
 - **New adapter `api/links.php` (`PAYMENT_PROTOCOL` = `hosted-links-v1`)** for gateways that sell through hosted payment links. The booking id is the link id, so a retried create returns the same link (idempotency key) and every status check uses our own reference. Paid status comes only from the gateway API (`/links/{id}/orders?status=PAID`, amount must match); `EXPIRED`/`CANCELLED` mark a booking failed; a link that never existed fails a `creating` booking after two minutes. Each link carries its own return and notify URLs, so nothing has to be configured in the gateway dashboard.
 - **`api/webhook.php`** in this protocol is format-agnostic: it only finds our booking reference in the body and re-checks through the API, so a forged notification can at most trigger a status check (rate-limited).
