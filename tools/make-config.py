@@ -83,7 +83,15 @@ def main():
 
     print(f'\nPaste the payment keys for the {a.env.upper()} environment (the secret stays hidden as you paste).')
     client_id = ask('  Client ID (App ID)')
-    client_secret = ask('  Client secret (Secret key)', secret=True)
+    while True:
+        client_secret = ask('  Client secret (Secret key). Paste ONCE, then press Enter; nothing shows while you paste', secret=True)
+        repeated = any(len(client_secret) % n == 0 and client_secret == client_secret[:len(client_secret) // n] * n for n in (2, 3, 4))
+        if repeated or ' ' in client_secret or client_secret == client_id:
+            print('  That looks pasted more than once (or it is the App ID). Paste the Secret Key once, then press Enter.')
+            continue
+        print(f'  Secret received: {len(client_secret)} characters, starts {client_secret[:9]}... ends ...{client_secret[-3:]}')
+        if input('  Does that match the Secret Key? (yes/no): ').strip().lower() in ('y', 'yes'):
+            break
 
     staff, keys = {}, {}
     for role, group in (('driver', ids(a.drivers)), ('admin', ids(a.office))):
