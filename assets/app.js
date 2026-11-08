@@ -66,6 +66,7 @@
   try{availability=await S.api('status.php');}catch{}
   if(availability.test_mode)testMessage='Test mode: payments use test money. These tickets are not valid for travel.';
   else if(availability.test_pass)testMessage='Test pass is on, but booking is not ready on the server yet.';
+  else if(testKey&&!testMessage)testMessage=availability.test_cookie_seen?'Test link accepted, but the pass did not match. Open the test link again.':'Test link accepted, but this browser did not keep the test pass. Turn off "Block All Cookies" in Settings > Safari, then open the link again.';
   if(testMessage){const note=document.createElement('p');note.className='test-note';note.setAttribute('role','status');note.textContent=testMessage;cards.before(note);}
   const phoneKey='sanchari.phone';
   const savedPhone=()=>{try{const v=localStorage.getItem(phoneKey)||'';return /^[6-9][0-9]{9}$/.test(v)?v:'';}catch{return '';}};

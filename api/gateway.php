@@ -19,3 +19,9 @@ function booking_open() {
     if(ready())return true;
     return has_test_pass()&&ready(true);
 }
+// Temporary test-mode trace (2026-11-08): event names and yes/no flags only, never keys or cookie values.
+function test_trace($event,$extra=[]) {
+    try{$ua=$_SERVER['HTTP_USER_AGENT']??'';$dev=str_contains($ua,'iPhone')?'iphone':(str_contains($ua,'Android')?'android':(str_contains($ua,'Mac')?'mac':'other'));
+        $line=json_encode(['t'=>date('H:i:s'),'e'=>$event,'dev'=>$dev]+$extra)."\n";
+        file_put_contents(data_dir().'/test-trace.log',$line,FILE_APPEND|LOCK_EX);}catch(Throwable $e){}
+}
