@@ -56,9 +56,14 @@
   catch{cards.innerHTML='<p class="route-notice">Schedules could not load. Please refresh or contact Transport.</p>';return;}
   // Private test pass: #test=<key> turns it on for this browser, #test-off turns it off.
   const testKey=(location.hash.match(/^#test=([A-Za-z0-9_-]{32,200})$/)||[])[1];
-  if(testKey||location.hash==='#test-off'){history.replaceState(null,'',location.pathname+location.search);try{await S.api('test-mode.php',testKey?{key:testKey}:{action:'off'});}catch{}}
+  let testMessage='';
+  if(testKey||location.hash==='#test-off'){history.replaceState(null,'',location.pathname+location.search);
+    try{await S.api('test-mode.php',testKey?{key:testKey}:{action:'off'});if(!testKey)testMessage='Test mode is off on this device.';}
+    catch(error){if(testKey)testMessage='This test link was not accepted ('+error.message+'). Copy the whole link again.';}}
   try{availability=await S.api('status.php');}catch{}
-  if(availability.test_mode){const note=document.createElement('p');note.className='test-note';note.setAttribute('role','status');note.textContent='Test mode: payments use test money. These tickets are not valid for travel.';cards.before(note);}
+  if(availability.test_mode)testMessage='Test mode: payments use test money. These tickets are not valid for travel.';
+  else if(availability.test_pass)testMessage='Test pass is on, but booking is not ready on the server yet.';
+  if(testMessage){const note=document.createElement('p');note.className='test-note';note.setAttribute('role','status');note.textContent=testMessage;cards.before(note);}
   const phoneKey='sanchari.phone';
   const savedPhone=()=>{try{const v=localStorage.getItem(phoneKey)||'';return /^[6-9][0-9]{9}$/.test(v)?v:'';}catch{return '';}};
   const forgetPhone=()=>{try{localStorage.removeItem(phoneKey);}catch{}};

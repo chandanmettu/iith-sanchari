@@ -3,6 +3,10 @@ Options -Indexes
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "no-referrer"
   Header always set X-Frame-Options "DENY"
+  # Pages are small: make browsers recheck them, so a release never waits on a stale cached page.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
 </IfModule>
 <FilesMatch "(^\.|\.(sql|md|log|bak|env|sqlite|py)$|^error_log$)">
   Require all denied
